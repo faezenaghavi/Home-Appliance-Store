@@ -1,4 +1,4 @@
-# WEAVE Store — Premium Home Appliances E-Commerce
+# Novira Store — Premium Home Appliances E-Commerce
 
 A premium Next.js e-commerce website for electronic home appliances, inspired by the WEAVE air purifier brand design.
 
