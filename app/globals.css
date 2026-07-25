@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'Inter', sans-serif;
+  
+  --color-dark: #1a1a1a;
+  --color-light: #f5f0eb;
+  --color-accent: #c4a882;
+  --color-accent-dark: #a88c66; /* اضافه شد برای hover ها */
+  --color-accent-light: #d4c4a8;
+  --color-cream: #faf8f5;
+  --color-muted: #8a8577; /* اضافه شد برای متن‌های خاکستری */
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--color-dark);
+    background-color: var(--color-cream);
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: white;
+  }
+}
+
+@layer components {
+  .section-padding {
+    @apply px-6 sm:px-8 lg:px-16 xl:px-24;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-6 py-3 bg-weave-dark text-white rounded-full 
+           font-medium text-sm tracking-wide transition-all duration-300 
+           hover:bg-weave-accent hover:shadow-lg active:scale-95;
+  }
+
+  .btn-accent {
+    @apply inline-flex items-center gap-2 px-6 py-3 bg-weave-accent text-white rounded-full 
+           font-medium text-sm tracking-wide transition-all duration-300 
+           hover:bg-weave-accentDark hover:shadow-lg active:scale-95;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center gap-2 px-6 py-3 border border-weave-dark text-weave-dark 
+           rounded-full font-medium text-sm tracking-wide transition-all duration-300 
+           hover:bg-weave-dark hover:text-white active:scale-95;
+  }
+
+  .btn-outline-light {
+    @apply inline-flex items-center gap-2 px-6 py-3 border border-white/30 text-white 
+           rounded-full font-medium text-sm tracking-wide transition-all duration-300 
+           hover:bg-white hover:text-weave-dark active:scale-95;
+  }
+
+  .card-hover {
+    @apply transition-all duration-500 hover:shadow-xl hover:-translate-y-1;
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-accent);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent-dark);
+}
