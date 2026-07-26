@@ -9,7 +9,6 @@ import NewArrivals from "@/app/sections/NewArrivals";
 import SpecialOffers from "@/app/sections/SpecialOffers";
 import BrandShowcase from "@/app/sections/BrandShowcase";
 import TestimonialsSection from "@/app/sections/TestimonialsSection";
-import NewsletterSection from "@/app/sections/NewsletterSection";
 
 export default function Home() {
   return (
@@ -23,7 +22,6 @@ export default function Home() {
       <SpecialOffers />
       <BrandShowcase />
       <TestimonialsSection />
-      <NewsletterSection />
       <Footer />
     </main>
   );
