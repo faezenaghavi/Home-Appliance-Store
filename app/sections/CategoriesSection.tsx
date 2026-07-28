@@ -3,6 +3,7 @@
 import { ArrowUpRight, Monitor, Refrigerator, WashingMachine, Wind, Sparkles, ChefHat } from "lucide-react";
 import { useI18n } from "@/app/i18n/Provider";
 import { useScrollAnimation } from "@/app/hooks/useScrollAnimation";
+import Link from "next/link"; 
 
 const iconMap: Record<string, React.ElementType> = {
   Monitor,
@@ -13,13 +14,14 @@ const iconMap: Record<string, React.ElementType> = {
   ChefHat,
 };
 
-// Demo data with images and descriptions
+// متون انگلیسی و فارسی اصلاح شدند
 const demoCategories = [
   {
     id: "tv",
     name: "TV & Entertainment",
     nameFa: "تلویزیون و سرگرمی",
-    description: "تلویزیون‌های هوشمند، ساندبار و سیستم‌های سینمای خانگی",
+    description: "Smart TVs, soundbars, and home theater systems",
+    descriptionFa: "تلویزیون‌های هوشمند، ساندبار و سیستم‌های سینمای خانگی",
     productCount: 24,
     icon: "Monitor",
     image: "https://images.unsplash.com/photo-1593784991095-a205069470b6?w=800&q=80",
@@ -29,7 +31,8 @@ const demoCategories = [
     id: "refrigerator",
     name: "Refrigerators",
     nameFa: "یخچال و فریزر",
-    description: "یخچال‌های ساید بای ساید، دوقلو و فریزر",
+    description: "Side-by-side, French door, and upright freezers",
+    descriptionFa: "یخچال‌های ساید بای ساید، دوقلو و فریزر",
     productCount: 18,
     icon: "Refrigerator",
     image: "https://images.unsplash.com/photo-1571175443880-49e1d58b794a?w=800&q=80",
@@ -39,7 +42,8 @@ const demoCategories = [
     id: "laundry",
     name: "Laundry",
     nameFa: "لباسشویی و خشکشویی",
-    description: "ماشین‌های لباسشویی و خشک‌کن",
+    description: "Washing machines and dryers",
+    descriptionFa: "ماشین‌های لباسشویی و خشک‌کن",
     productCount: 15,
     icon: "WashingMachine",
     image: "https://images.unsplash.com/photo-1626806775351-538068a21838?w=600&q=80",
@@ -49,7 +53,8 @@ const demoCategories = [
     id: "hvac",
     name: "Heating & Cooling",
     nameFa: "سرمایش و گرمایش",
-    description: "کولر، بخاری و تصفیه‌کننده‌های هوا",
+    description: "Air conditioners, heaters, and air purifiers",
+    descriptionFa: "کولر، بخاری و تصفیه‌کننده‌های هوا",
     productCount: 21,
     icon: "Wind",
     image: "https://images.unsplash.com/photo-1631545308772-81a0e0a3a6eb?w=600&q=80",
@@ -59,7 +64,8 @@ const demoCategories = [
     id: "cleaning",
     name: "Cleaning",
     nameFa: "تمیزکاری",
-    description: "جاروبرقی، بخارشو و جاروهای رباتیک",
+    description: "Vacuums, steam mops, and robotic cleaners",
+    descriptionFa: "جاروبرقی، بخارشو و جاروهای رباتیک",
     productCount: 12,
     icon: "Sparkles",
     image: "https://images.unsplash.com/photo-1558317374-067fb5f30001?w=800&q=80",
@@ -69,7 +75,8 @@ const demoCategories = [
     id: "kitchen",
     name: "Kitchen",
     nameFa: "آشپزخانه",
-    description: "فر، مایکروویو و لوازم کوچک آشپزخانه",
+    description: "Ovens, microwaves, and small kitchen appliances",
+    descriptionFa: "فر، مایکروویو و لوازم کوچک آشپزخانه",
     productCount: 30,
     icon: "ChefHat",
     image: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=600&q=80",
@@ -78,8 +85,8 @@ const demoCategories = [
 ];
 
 export default function CategorySection() {
-  const { locale } = useI18n();
-  const isRTL = locale === "fa";
+  const { locale, direction } = useI18n();
+  const isRTL = direction === "rtl";
   const { ref, isVisible } = useScrollAnimation(0.1);
 
   return (
@@ -107,7 +114,7 @@ export default function CategorySection() {
             style={{ color: "#1a1a1a", fontFamily: "var(--font-display), 'Playfair Display', serif" }}
             className="text-4xl md:text-5xl font-bold mb-4"
           >
-            {isRTL ? "برندهای برتر لوازم خانگی" : "Top Appliance Brands"}
+            {isRTL ? "برندهای برتر لوازم خانگی" : "Top Appliance Categories"}
           </h2>
           <p
             style={{ color: "#8a8577" }}
@@ -128,9 +135,9 @@ export default function CategorySection() {
             const isTall = cat.gridClass.includes("col-span-1") && cat.gridClass.includes("row-span-2");
 
             return (
-              <a
+              <Link
                 key={cat.id}
-                href={`#${cat.id}`}
+                href={`/${locale}/products?category=${cat.id}`}
                 className={`group relative rounded-3xl overflow-hidden transition-all duration-700 hover:shadow-2xl ${cat.gridClass} ${
                   isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                 }`}
@@ -192,6 +199,7 @@ export default function CategorySection() {
                         style={{ color: "rgba(255,255,255,0.65)" }}
                         className="text-xs mb-3 leading-relaxed max-w-[220px]"
                       >
+                        {/* نمایش توضیحات بر اساس زبان */}
                         {isRTL && cat.descriptionFa ? cat.descriptionFa : cat.description}
                       </p>
 
@@ -232,7 +240,7 @@ export default function CategorySection() {
                     border: "2px solid rgba(196,168,130,0.4)",
                   }}
                 />
-              </a>
+              </Link>
             );
           })}
         </div>

@@ -1,40 +1,39 @@
-import { notFound } from "next/navigation";
+// app/[locale]/layout.tsx
 import { I18nProvider } from "@/app/i18n/Provider";
 import { getDictionary } from "@/app/i18n/dictionary";
-import { locales, Locale } from "@/app/i18n/config";
-import { CartProvider } from "@/app/context/CartContext";
-import { WishlistProvider } from "@/app/context/WishlistContext";
+import { defaultLocale, Locale } from "@/app/i18n/config"; // اضافه کردن نوع Locale
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 
 export function generateStaticParams() {
-  return locales.map((locale) => ({ locale }));
+  return [
+    { locale: "en" },
+    { locale: "fa" }
+  ];
 }
+
+export const dynamicParams = false;
 
 export default async function LocaleLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ locale: string }>;
+  params: { locale: string };
 }) {
-  const { locale } = await params;
-
-  if (!locales.includes(locale as Locale)) {
-    notFound();
-  }
-
-  const dictionary = await getDictionary(locale as Locale);
+  // تبدیل نوع string به Locale
+  const locale = (params.locale || defaultLocale) as Locale;
+  
+  const dictionary = await getDictionary(locale);
 
   return (
-    <I18nProvider initialLocale={locale as Locale} initialDictionary={dictionary}>
-      <CartProvider>
-        <WishlistProvider>
-          <Navbar />
-          {children}
-          <Footer />
-        </WishlistProvider>
-      </CartProvider>
+    // حالا locale از نوع Locale است و ارور نمی‌دهد
+    <I18nProvider initialLocale={locale} initialDictionary={dictionary}>
+      <Navbar cartCount={0} wishlistCount={0} />
+      <main className="pt-20 sm:pt-24 min-h-screen bg-[#faf8f5]">
+        {children}
+      </main>
+      <Footer />
     </I18nProvider>
   );
 }

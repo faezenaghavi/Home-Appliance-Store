@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Star, ArrowUpRight, Heart } from "lucide-react";
 import { Product } from "@/app/types";
 import { useScrollAnimation } from "@/app/hooks/useScrollAnimation";
+import { useI18n } from "@/app/i18n/Provider"; // ایمپورت useI18n برای دریافت زبان
 
 interface ProductCardProps {
   product: Product;
@@ -14,11 +16,20 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
   const [isLiked, setIsLiked] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
   const { ref, isVisible } = useScrollAnimation(0.1);
+  
+  const { locale } = useI18n(); // دریافت زبان فعلی
+  const router = useRouter(); // هوک ناوبری
+
+  // تابع هدایت به صفحه جزئیات محصول
+  const goToProduct = () => {
+    router.push(`/${locale}/products/${product.id}`);
+  };
 
   return (
     <div
       ref={ref}
-      className={`group transition-all duration-700 ${
+      onClick={goToProduct} // با کلیک روی کل کارت، به صفحه محصول می‌رود
+      className={`group transition-all duration-700 cursor-pointer ${
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
       }`}
       style={{ transitionDelay: `${index * 150}ms` }}
@@ -33,7 +44,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
           />
 
           {/* Badges */}
-          <div className="absolute top-4 left-4 flex flex-col gap-2">
+          <div className="absolute top-4 left-4 flex flex-col gap-2 pointer-events-none">
             {product.isNew && (
               <span className="px-3 py-1 bg-weave-accent text-white text-xs font-semibold rounded-full">
                 New
@@ -53,9 +64,12 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
 
           {/* Like Button */}
           <button
-            onClick={() => setIsLiked(!isLiked)}
+            onClick={(e) => {
+              e.stopPropagation(); // جلوگیری از انتقال کاربر به صفحه محصول
+              setIsLiked(!isLiked);
+            }}
             className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm 
-                     flex items-center justify-center shadow-soft transition-all hover:scale-110"
+                     flex items-center justify-center shadow-soft transition-all hover:scale-110 z-10"
           >
             <Heart
               className={`w-4 h-4 transition-colors ${
@@ -65,9 +79,14 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
           </button>
 
           {/* Quick View Overlay */}
-          <div className="absolute inset-0 bg-weave-dark/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 
-                        flex items-center justify-center">
-            <button className="btn-accent transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+          <div className="absolute inset-0 bg-weave-dark/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+            <button 
+              onClick={(e) => {
+                e.stopPropagation(); // جلوگیری از اجرای دو بار
+                goToProduct(); // هدایت به صفحه محصول
+              }}
+              className="btn-accent transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
+            >
               Quick View
               <ArrowUpRight className="w-4 h-4" />
             </button>
@@ -92,7 +111,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
           </p>
 
           {/* Rating */}
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center gap-2 mb-4 pointer-events-none">
             <div className="flex items-center gap-0.5">
               {[...Array(5)].map((_, i) => (
                 <Star
@@ -115,7 +134,10 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
             {product.colors.map((color, i) => (
               <button
                 key={color.name}
-                onClick={() => setSelectedImage(i)}
+                onClick={(e) => {
+                  e.stopPropagation(); // جلوگیری از رفتن به صفحه محصول
+                  setSelectedImage(i);
+                }}
                 className={`w-6 h-6 rounded-full border-2 transition-all ${
                   selectedImage === i
                     ? "border-weave-accent scale-110"
@@ -139,8 +161,14 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
                 </span>
               )}
             </div>
-            <button className="w-10 h-10 rounded-full bg-weave-dark text-white flex items-center justify-center
-                           hover:bg-weave-accent transition-colors">
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                goToProduct();
+              }}
+              className="w-10 h-10 rounded-full bg-weave-dark text-white flex items-center justify-center
+                         hover:bg-weave-accent transition-colors"
+            >
               <ArrowUpRight className="w-4 h-4" />
             </button>
           </div>

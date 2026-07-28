@@ -2,79 +2,38 @@
 
 import { useState } from "react";
 import { Heart } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useI18n } from "@/app/i18n/Provider";
 import { useScrollAnimation } from "@/app/hooks/useScrollAnimation";
+import { appliances } from "@/app/data/appliances"; // ایمپورت دیتابیس اصلی
 
-// Demo home appliances with real images
-const demoProducts = [
-  {
-    id: "1",
-    name: "Samsung Family Hub Refrigerator",
-    nameFa: "یخچال ساید بای ساید سامسونگ",
-    description: "صفحه نمایش هوشمند ۲۱ اینچ، دوربین داخلی، سیستم خنک‌کننده دوگانه، گنجایش ۲۸ فوت",
-    price: 85000000,
-    originalPrice: 98000000,
-    image: "https://images.unsplash.com/photo-1571175443880-49e1d58b794a?w=600&q=80",
-    isNew: true,
-  },
-  {
-    id: "2",
-    name: "LG Front Load Washing Machine",
-    nameFa: "ماشین لباسشویی ۹ کیلویی ال‌جی",
-    description: "موتور اینورتر دایرکت درایو، ۱۴ برنامه شستشو، کاهش لرزش، مصرف انرژی A+++",
-    price: 32000000,
-    image: "https://images.unsplash.com/photo-1626806775351-538068a21838?w=600&q=80",
-    isBestseller: true,
-  },
-  {
-    id: "3",
-    name: "Dyson V15 Detect Vacuum",
-    nameFa: "جاروبرقی بی‌سیم دایسون V15",
-    description: "سنسور لیزری گرد و غبار، باتری ۶۰ دقیقه‌ای، فیلتر HEPA، مکش ۲۳۰AW",
-    price: 28000000,
-    originalPrice: 35000000,
-    image: "https://images.unsplash.com/photo-1558317374-067fb5f30001?w=600&q=80",
-    isNew: true,
-  },
-  {
-    id: "4",
-    name: "Bosch Built-in Oven",
-    nameFa: "فر توکار بوش سری ۸",
-    description: "ظرفیت ۷۱ لیتر، ۱۵ برنامه پخت، تمیزشویی کاتالیزی، درب سه‌جداره",
-    price: 45000000,
-    image: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=600&q=80",
-    isBestseller: true,
-  },
-];
-
-interface Product {
-  id: string;
-  name: string;
-  nameFa?: string;
-  description?: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  isNew?: boolean;
-  isBestseller?: boolean;
-}
-
-function ProductCardItem({ product, index = 0 }: { product: Product; index?: number }) {
+function ProductCardItem({ product, index = 0 }: { product: typeof appliances[0]; index?: number }) {
   const [isLiked, setIsLiked] = useState(false);
+  const { locale, direction } = useI18n();
+  const isRTL = direction === "rtl";
+  const router = useRouter();
   const { ref, isVisible } = useScrollAnimation(0.1);
 
   const formatPrice = (price: number) => {
-    return price.toLocaleString("fa-IR");
+    return price.toLocaleString(isRTL ? "fa-IR" : "en-US");
+  };
+
+  const productName = isRTL ? (product.nameFa || product.name) : product.name;
+  const productDesc = isRTL ? (product.descriptionFa || product.description) : product.description;
+
+  const goToProduct = () => {
+    router.push(`/${locale}/products/${product.id}`);
   };
 
   return (
     <div
       ref={ref}
-      dir="rtl"
-      className={`group transition-all duration-700 ${
+      dir={direction}
+      className={`group transition-all duration-700 cursor-pointer ${
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
       }`}
       style={{ transitionDelay: `${index * 150}ms` }}
+      onClick={goToProduct}
     >
       <div
         className="relative overflow-hidden"
@@ -84,15 +43,13 @@ function ProductCardItem({ product, index = 0 }: { product: Product; index?: num
           boxShadow: "0 8px 32px rgba(0,0,0,0.15)",
         }}
       >
-        {/* Background Image */}
         <img
-          src={product.image}
-          alt={product.nameFa || product.name}
+          src={product.images?.[0] || product.images}
+          alt={productName}
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           loading="lazy"
         />
 
-        {/* Dark Gradient Overlay */}
         <div
           className="absolute inset-0"
           style={{
@@ -101,7 +58,6 @@ function ProductCardItem({ product, index = 0 }: { product: Product; index?: num
           }}
         />
 
-        {/* Badge */}
         {product.isNew && (
           <div
             className="absolute top-4 right-4 z-10"
@@ -119,7 +75,7 @@ function ProductCardItem({ product, index = 0 }: { product: Product; index?: num
                 letterSpacing: 0.5,
               }}
             >
-              محصول جدید
+              {isRTL ? "محصول جدید" : "New"}
             </span>
           </div>
         )}
@@ -140,14 +96,16 @@ function ProductCardItem({ product, index = 0 }: { product: Product; index?: num
                 letterSpacing: 0.5,
               }}
             >
-              پرفروش
+              {isRTL ? "پرفروش" : "Bestseller"}
             </span>
           </div>
         )}
 
-        {/* Like Button */}
         <button
-          onClick={() => setIsLiked(!isLiked)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsLiked(!isLiked);
+          }}
           className="absolute top-4 left-4 z-10 flex items-center justify-center transition-all hover:scale-110"
           style={{
             width: 36,
@@ -168,12 +126,10 @@ function ProductCardItem({ product, index = 0 }: { product: Product; index?: num
           />
         </button>
 
-        {/* Content at Bottom */}
         <div
           className="absolute bottom-0 left-0 right-0 p-5 z-10"
-          style={{ direction: "rtl" }}
+          style={{ direction: direction }}
         >
-          {/* Title */}
           <h3
             style={{
               color: "#ffffff",
@@ -184,10 +140,9 @@ function ProductCardItem({ product, index = 0 }: { product: Product; index?: num
               fontFamily: "var(--font-display), 'Vazirmatn', 'Tahoma', sans-serif",
             }}
           >
-            {product.nameFa || product.name}
+            {productName}
           </h3>
 
-          {/* Description */}
           <p
             style={{
               color: "rgba(255,255,255,0.75)",
@@ -197,12 +152,10 @@ function ProductCardItem({ product, index = 0 }: { product: Product; index?: num
               fontFamily: "var(--font-body), 'Vazirmatn', 'Tahoma', sans-serif",
             }}
           >
-            {product.description}
+            {productDesc}
           </p>
 
-          {/* Price Row */}
           <div className="flex items-center justify-between">
-            {/* Price */}
             <div className="flex items-baseline gap-1.5">
               <span
                 style={{
@@ -221,7 +174,7 @@ function ProductCardItem({ product, index = 0 }: { product: Product; index?: num
                   fontWeight: 500,
                 }}
               >
-                تومان
+                {isRTL ? "تومان" : "IRR"}
               </span>
               {product.originalPrice && (
                 <span
@@ -229,7 +182,8 @@ function ProductCardItem({ product, index = 0 }: { product: Product; index?: num
                     color: "rgba(255,255,255,0.45)",
                     fontSize: 12,
                     textDecoration: "line-through",
-                    marginRight: 8,
+                    marginRight: isRTL ? 8 : 0,
+                    marginLeft: isRTL ? 0 : 8,
                   }}
                 >
                   {formatPrice(product.originalPrice)}
@@ -237,8 +191,11 @@ function ProductCardItem({ product, index = 0 }: { product: Product; index?: num
               )}
             </div>
 
-            {/* CTA Button */}
             <button
+              onClick={(e) => {
+                e.stopPropagation();
+                goToProduct();
+              }}
               className="cta-btn"
               style={{
                 border: "1.5px solid rgba(255,255,255,0.6)",
@@ -266,7 +223,7 @@ function ProductCardItem({ product, index = 0 }: { product: Product; index?: num
                 btn.style.borderColor = "rgba(255,255,255,0.6)";
               }}
             >
-              مشاهده و خرید
+              {isRTL ? "مشاهده و خرید" : "View & Buy"}
             </button>
           </div>
         </div>
@@ -276,19 +233,21 @@ function ProductCardItem({ product, index = 0 }: { product: Product; index?: num
 }
 
 export default function FeaturedProducts() {
-  const { locale } = useI18n();
-  const isRTL = locale === "fa";
+  const { locale, direction } = useI18n();
+  const isRTL = direction === "rtl";
   const { ref, isVisible } = useScrollAnimation(0.1);
+
+  // انتخاب 4 محصول اول از دیتابیس اصلی
+  const featuredItems = appliances.slice(0, 4);
 
   return (
     <section
       id="products"
-      dir={isRTL ? "rtl" : "ltr"}
+      dir={direction}
       style={{ backgroundColor: "#f5f0eb" }}
       className="py-24 md:py-32"
     >
       <div className="px-6 sm:px-8 lg:px-16 xl:px-24 max-w-[1400px] mx-auto">
-        {/* Header */}
         <div
           ref={ref}
           className={`flex flex-col md:flex-row md:items-end justify-between mb-16 gap-4 transition-all duration-1000 ${
@@ -322,9 +281,8 @@ export default function FeaturedProducts() {
           </p>
         </div>
 
-        {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {demoProducts.map((product, index) => (
+          {featuredItems.map((product, index) => (
             <ProductCardItem key={product.id} product={product} index={index} />
           ))}
         </div>

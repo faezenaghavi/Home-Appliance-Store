@@ -1,16 +1,26 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
-import { products } from "@/app/data/products";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { appliances } from "@/app/data/appliances";
 import ProductCard from "@/app/components/ProductCard";
 import { useScrollAnimation } from "@/app/hooks/useScrollAnimation";
+import { useI18n } from "@/app/i18n/Provider";
+import Link from "next/link";
 
 export default function ProductsSection() {
   const { ref, isVisible } = useScrollAnimation(0.05);
+  const { locale, direction, t } = useI18n();
+  const isRTL = direction === "rtl";
+
+  // فیلتر کردن 4 محصول ویژه برای نمایش در صفحه اصلی
+  const featuredProducts = appliances
+    .filter((p) => p.isBestseller || p.isNew || p.badge)
+    .slice(0, 4);
 
   return (
-    <section id="products" className="py-24 md:py-32 bg-weave-cream">
-      <div className="section-padding">
+    <section id="products" dir={direction} className="py-24 md:py-32 bg-[#faf8f5]">
+      <div className="px-4 sm:px-6 lg:px-8 xl:px-12 max-w-[1440px] mx-auto">
+        
         {/* Section Header */}
         <div
           ref={ref}
@@ -19,32 +29,38 @@ export default function ProductsSection() {
           }`}
         >
           <div>
-            <span className="text-weave-accent text-xs font-semibold uppercase tracking-widest mb-4 block">
-              Products
+            <span className="text-[#c4a882] text-xs font-semibold uppercase tracking-widest mb-4 block">
+              {t("products.featured")}
             </span>
-            <h2 className="font-display text-4xl md:text-5xl font-bold text-weave-dark">
-              WEAVE<br />Air Purifier
+            <h2 className="font-display text-4xl md:text-5xl font-bold text-[#1a1a1a] leading-tight">
+              {t("products.title")}
             </h2>
           </div>
-          <p className="text-weave-muted text-sm max-w-md mt-4 md:mt-0 leading-relaxed">
-            Engineered with cutting-edge technology and designed for modern living. 
-            Weave brings you the perfect blend of functionality and style.
+          <p className="text-[#8a8577] text-sm max-w-md mt-4 md:mt-0 leading-relaxed">
+            {t("products.subtitle")}
           </p>
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {products.map((product, index) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {featuredProducts.map((product, index) => (
             <ProductCard key={product.id} product={product} index={index} />
           ))}
         </div>
 
         {/* View All CTA */}
         <div className="text-center mt-16">
-          <a href="#" className="btn-outline">
-            View All Products
-            <ArrowRight className="w-4 h-4" />
-          </a>
+          <Link 
+            href={`/${locale}/products?featured=true`} 
+            className="inline-flex items-center gap-2 px-6 py-3 border border-[#1a1a1a] text-[#1a1a1a] rounded-xl font-medium hover:bg-[#1a1a1a] hover:text-white transition-colors duration-300 group"
+          >
+            <span>{t("categories.viewAll")}</span>
+            {isRTL ? (
+              <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+            ) : (
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            )}
+          </Link>
         </div>
       </div>
     </section>

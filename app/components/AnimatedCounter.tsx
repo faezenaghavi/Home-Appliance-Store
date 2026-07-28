@@ -1,6 +1,6 @@
 "use client";
 
-import { useCountUp } from "@/app/hooks/useScrollAnimation";
+import { useCountUp } from "@/app/hooks/useCountUp"; // مسیر ایمپورت اصلاح شد
 
 interface AnimatedCounterProps {
   end: number;
@@ -21,12 +21,12 @@ export default function AnimatedCounter({
 
   return (
     <div ref={ref} className="text-center">
-      <div className="font-display text-4xl md:text-5xl font-bold text-weave-dark mb-2">
+      <div className="font-display text-4xl md:text-5xl font-bold text-[#1a1a1a] mb-2">
         {prefix}
         {count.toLocaleString()}
         {suffix}
       </div>
-      <p className="text-weave-muted text-sm uppercase tracking-wider">{label}</p>
+      <p className="text-[#1a1a1a] text-sm uppercase tracking-wider">{label}</p>
     </div>
   );
 }
