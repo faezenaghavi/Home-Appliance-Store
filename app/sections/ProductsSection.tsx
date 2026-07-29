@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { appliances } from "@/app/data/appliances";
@@ -29,7 +29,7 @@ export default function ProductsSection() {
           }`}
         >
           <div>
-            <span className="text-[#c4a882] text-xs font-semibold uppercase tracking-widest mb-4 block">
+            <span className="text-[#808080] text-xs font-semibold uppercase tracking-widest mb-4 block">
               {t("products.featured")}
             </span>
             <h2 className="font-display text-4xl md:text-5xl font-bold text-[#1a1a1a] leading-tight">
@@ -51,7 +51,7 @@ export default function ProductsSection() {
         {/* View All CTA */}
         <div className="text-center mt-16">
           <Link 
-            href={`/${locale}/products?featured=true`} 
+            href={`/${locale}/featured`} 
             className="inline-flex items-center gap-2 px-6 py-3 border border-[#1a1a1a] text-[#1a1a1a] rounded-xl font-medium hover:bg-[#1a1a1a] hover:text-white transition-colors duration-300 group"
           >
             <span>{t("categories.viewAll")}</span>

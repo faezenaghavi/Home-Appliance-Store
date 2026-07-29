@@ -24,6 +24,9 @@ const config: Config = {
       fontFamily: {
         display: ["var(--font-display)", "serif"],
         body: ["var(--font-body)", "sans-serif"],
+        vazir: ["var(--font-vazir)", "Tahoma", "sans-serif"],
+        inter: ["var(--font-inter)", "system-ui", "sans-serif"],
+        playfair: ["var(--font-playfair)", "Georgia", "serif"],
       },
     },
   },

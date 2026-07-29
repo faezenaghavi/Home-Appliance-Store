@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { ArrowRight, Timer, Heart, Star, ShoppingCart } from "lucide-react";
 import { appliances } from "@/app/data/appliances";
@@ -7,6 +7,9 @@ import { useScrollAnimation } from "@/app/hooks/useScrollAnimation";
 import { useState, useEffect, useRef, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { useCart } from "@/app/context/CartContext";
+import { useWishlist } from "@/app/context/WishlistContext";
+import { useToast } from "@/app/context/Toastcontext";
 
 // ─── Optimized Countdown (isolated, no full re-renders) ───
 const CountdownTimer = memo(function CountdownTimer({ locale }: { locale: string }) {
@@ -47,7 +50,7 @@ const CountdownTimer = memo(function CountdownTimer({ locale }: { locale: string
     <div className={`flex items-center gap-2 sm:gap-3 ${isRTL ? "flex-row-reverse" : ""}`}>
       {units.map((item, i) => (
         <div key={i} className="text-center group">
-          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-white/[0.05] border border-white/[0.06] flex items-center justify-center mb-1 transition-all duration-300 group-hover:border-[#c4a882]/20 group-hover:bg-white/[0.08]">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-white/[0.05] border border-white/[0.06] flex items-center justify-center mb-1 transition-all duration-300 group-hover:border-[#808080]/20 group-hover:bg-white/[0.08]">
             <span className="font-display text-lg sm:text-xl font-bold text-[#f5f0e8] tabular-nums">
               {formatTime(item.value)}
             </span>
@@ -74,8 +77,11 @@ const OfferCard = memo(function OfferCard({
   isVisible: boolean;
   t: (key: string) => string;
 }) {
-  const [liked, setLiked] = useState(false);
   const isRTL = locale === "fa";
+  const { addItem } = useCart();
+  const { toggleWishlist, isWishlisted } = useWishlist();
+  const { showToast } = useToast();
+  const liked = isWishlisted(product.id);
   const discount = product.originalPrice
     ? Math.round((1 - product.price / product.originalPrice) * 100)
     : 0;
@@ -83,12 +89,39 @@ const OfferCard = memo(function OfferCard({
   const formatPrice = (price: number) =>
     new Intl.NumberFormat(isRTL ? "fa-IR" : "en-US").format(price);
 
+  const productName = isRTL && product.nameFa ? product.nameFa : product.name;
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const color = product.colors[0] || { name: "Default", nameFa: "پیش‌فرض", hex: "#808080" };
+    addItem(product, color, 1);
+    showToast({
+      title: isRTL ? "به سبد خرید اضافه شد" : "Added to Cart",
+      description: productName,
+      variant: "cart",
+    });
+  };
+
+  const handleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const isAdded = toggleWishlist(product);
+    showToast({
+      title: isAdded
+        ? (isRTL ? "به علاقه‌مندی‌ها اضافه شد" : "Added to Wishlist")
+        : (isRTL ? "از علاقه‌مندی‌ها حذف شد" : "Removed from Wishlist"),
+      description: productName,
+      variant: isAdded ? "wishlist" : "info",
+    });
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={isVisible ? { opacity: 1, y: 0 } : {}}
       transition={{ delay: index * 0.15, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="group bg-[#141210]/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl overflow-hidden border border-white/[0.06] hover:border-[#c4a882]/20 transition-all duration-700 hover:shadow-[0_20px_60px_rgba(0,0,0,0.5)] hover:bg-[#141210]/95"
+      className="group bg-[#141210]/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl overflow-hidden border border-white/[0.06] hover:border-[#808080]/20 transition-all duration-700 hover:shadow-[0_20px_60px_rgba(0,0,0,0.5)] hover:bg-[#141210]/95"
     >
       {/* Image — now links to the product detail page */}
       <Link href={`/${locale}/products/${product.id}`} className="relative aspect-[4/3] overflow-hidden block">
@@ -107,11 +140,8 @@ const OfferCard = memo(function OfferCard({
         </div>
 
         <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setLiked((p) => !p);
-          }}
+          type="button"
+          onClick={handleWishlist}
           className="absolute top-3 right-3 sm:top-4 sm:right-4 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/[0.08] backdrop-blur-sm flex items-center justify-center hover:bg-white/[0.15] transition-all duration-300 hover:scale-110 active:scale-95 border border-white/[0.06]"
         >
           <Heart
@@ -130,7 +160,7 @@ const OfferCard = memo(function OfferCard({
           {isRTL && product.categoryFa ? product.categoryFa : product.category}
         </p>
         <Link href={`/${locale}/products/${product.id}`}>
-          <h3 className="font-display text-sm sm:text-base font-semibold text-[#f5f0e8] mb-2 line-clamp-1 group-hover:text-[#c4a882] transition-colors duration-300">
+          <h3 className="font-display text-sm sm:text-base font-semibold text-[#f5f0e8] mb-2 line-clamp-1 group-hover:text-[#808080] transition-colors duration-300">
             {isRTL && product.nameFa ? product.nameFa : product.name}
           </h3>
         </Link>
@@ -143,8 +173,8 @@ const OfferCard = memo(function OfferCard({
                 key={i}
                 className="w-3 h-3"
                 style={{
-                  color: i < Math.floor(product.rating) ? "#c4a882" : "rgba(245,240,232,0.1)",
-                  fill: i < Math.floor(product.rating) ? "#c4a882" : "none",
+                  color: i < Math.floor(product.rating) ? "#808080" : "rgba(245,240,232,0.1)",
+                  fill: i < Math.floor(product.rating) ? "#808080" : "none",
                 }}
               />
             ))}
@@ -156,7 +186,7 @@ const OfferCard = memo(function OfferCard({
 
         {/* Price */}
         <div className={`flex items-baseline gap-2 sm:gap-3 mb-4 sm:mb-5 ${isRTL ? "flex-row-reverse" : ""}`}>
-          <span className="font-display text-xl sm:text-2xl font-bold text-[#c4a882]">
+          <span className="font-display text-xl sm:text-2xl font-bold text-[#808080]">
             {formatPrice(product.price)} {isRTL ? t("common.toman") : "$"}
           </span>
           {product.originalPrice && (
@@ -172,25 +202,26 @@ const OfferCard = memo(function OfferCard({
             <span className="text-[#a8a095]/50">
               {isRTL ? "فروخته‌شده: ۷۸٪" : "Sold: 78%"}
             </span>
-            <span className="text-[#c4a882]">
+            <span className="text-[#808080]">
               {isRTL ? "۵ عدد باقیمانده" : "5 left"}
             </span>
           </div>
           <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
-            <div className="h-full w-[78%] bg-gradient-to-r from-[#c4a882] to-[#d4b896] rounded-full relative overflow-hidden">
+            <div className="h-full w-[78%] bg-gradient-to-r from-[#808080] to-[#959595] rounded-full relative overflow-hidden">
               <div className="absolute inset-0 bg-white/20 animate-shimmer" />
             </div>
           </div>
         </div>
 
         {/* CTA — links to the product detail page */}
-        <Link
-          href={`/${locale}/products/${product.id}`}
-          className="w-full flex items-center justify-center gap-2 py-2.5 sm:py-3 bg-[#c4a882] text-[#1a1a1a] rounded-xl text-[11px] sm:text-xs font-semibold hover:bg-[#d4b896] transition-all duration-300 hover:shadow-[0_0_20px_rgba(196,168,130,0.3)] active:scale-[0.98]"
+        <button
+          type="button"
+          onClick={handleAddToCart}
+          className="w-full flex items-center justify-center gap-2 py-2.5 sm:py-3 bg-[#808080] text-white rounded-xl text-[11px] sm:text-xs font-semibold hover:bg-[#959595] transition-all duration-300 hover:shadow-[0_0_20px_rgba(128,128,128,0.3)] active:scale-[0.98]"
         >
           <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           {t("products.addToCart")}
-        </Link>
+        </button>
       </div>
     </motion.div>
   );
@@ -208,18 +239,18 @@ export default function SpecialOffers() {
       {/* ─── Background matching Hero ─── */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] via-[#141210] to-[#1a1815]" />
 
-      {/* Subtle gold texture overlay */}
+      {/* Subtle gray texture overlay */}
       <div
         className="absolute inset-0 opacity-[0.025]"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c4a882' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23808080' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
         }}
       />
 
       {/* Accent glows */}
-      <div className="absolute -top-32 -right-32 w-96 h-96 bg-[#c4a882]/5 rounded-full blur-[120px]" />
-      <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-[#c4a882]/3 rounded-full blur-[100px]" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#c4a882]/[0.02] rounded-full blur-[150px]" />
+      <div className="absolute -top-32 -right-32 w-96 h-96 bg-[#808080]/5 rounded-full blur-[120px]" />
+      <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-[#808080]/3 rounded-full blur-[100px]" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#808080]/[0.02] rounded-full blur-[150px]" />
 
       <div className="px-4 sm:px-6 lg:px-12 xl:px-24 max-w-[1400px] mx-auto relative z-10">
         {/* Header */}
@@ -231,8 +262,8 @@ export default function SpecialOffers() {
         >
           <div className={isRTL ? "text-right" : "text-left"}>
             <div className="flex items-center gap-2 mb-3 sm:mb-4">
-              <Timer className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#c4a882] animate-pulse" />
-              <span className="text-[#c4a882] text-[11px] sm:text-xs font-semibold uppercase tracking-widest">
+              <Timer className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#808080] animate-pulse" />
+              <span className="text-[#808080] text-[11px] sm:text-xs font-semibold uppercase tracking-widest">
                 {isRTL ? "محدود" : "Limited Time"}
               </span>
             </div>
@@ -246,7 +277,7 @@ export default function SpecialOffers() {
             {/* Was missing entirely — now links to the offers-filtered products page */}
             <Link
               href={`/${locale}/products?offers=true`}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-[#c4a882]/30 text-[#c4a882] text-xs font-semibold hover:bg-[#c4a882] hover:text-[#1a1a1a] transition-all duration-300"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-[#808080]/30 text-[#808080] text-xs font-semibold hover:bg-[#808080] hover:text-[#1a1a1a] transition-all duration-300"
             >
               {isRTL ? "مشاهده همه تخفیف‌ها" : "View All Offers"}
               <ArrowRight className={`w-3.5 h-3.5 ${isRTL ? "rotate-180" : ""}`} />

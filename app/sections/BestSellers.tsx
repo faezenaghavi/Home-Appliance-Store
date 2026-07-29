@@ -1,10 +1,14 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useCallback } from "react";
 import { Heart, ShoppingBag, ArrowLeft, TrendingUp, Star, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ScrollReveal from "@/app/components/ScrollReveal";
 import { useI18n } from "@/app/i18n/Provider";
+import { useCart } from "@/app/context/CartContext";
+import { useWishlist } from "@/app/context/WishlistContext";
+import { useToast } from "@/app/context/Toastcontext";
+import type { Product as StoreProduct } from "@/app/types";
 
 const bestsellers = [
   {
@@ -73,10 +77,38 @@ interface Product {
   rank: number;
 }
 
+function toStoreProduct(product: Product): StoreProduct {
+  return {
+    id: product.id,
+    name: product.name,
+    nameFa: product.nameFa,
+    category: "bestsellers",
+    categoryFa: "پرفروش‌ترین‌ها",
+    price: product.price,
+    originalPrice: product.originalPrice,
+    description: product.description,
+    descriptionFa: product.descriptionFa,
+    features: [],
+    featuresFa: [],
+    specs: {},
+    specsFa: {},
+    images: [product.image],
+    colors: [{ name: "Default", nameFa: "پیش‌فرض", hex: "#808080" }],
+    rating: product.rating,
+    reviews: product.reviews,
+    isBestseller: true,
+  };
+}
+
 function ProductCard({ product, index, onCardClick }: { product: Product; index: number; onCardClick: () => void }) {
-  const [liked, setLiked] = useState(false);
-  const { locale, direction } = useI18n();
+  const { locale, direction, t } = useI18n();
+  const { addItem } = useCart();
+  const { toggleWishlist, isWishlisted } = useWishlist();
+  const { showToast } = useToast();
   const isRTL = direction === "rtl";
+
+  const storeProduct = toStoreProduct(product);
+  const liked = isWishlisted(product.id);
 
   const formatPrice = (price: number) => price.toLocaleString(isRTL ? "fa-IR" : "en-US");
   const isEven = index % 2 === 0;
@@ -88,7 +120,7 @@ function ProductCard({ product, index, onCardClick }: { product: Product; index:
     <ScrollReveal animation="fade-up" delay={index * 150} duration={700}>
       <div
         onClick={onCardClick}
-        className="group relative flex flex-col md:flex-row overflow-hidden transition-all duration-500 hover:shadow-[0_20px_60px_rgba(0,0,0,0.5)] cursor-pointer border border-white/[0.06] hover:border-[#c4a882]/20 bg-[#141210]/80 backdrop-blur-sm"
+        className="group relative flex flex-col md:flex-row overflow-hidden transition-all duration-500 hover:shadow-[0_20px_60px_rgba(0,0,0,0.5)] cursor-pointer border border-white/[0.06] hover:border-[#808080]/20 bg-[#141210]/80 backdrop-blur-sm"
         style={{ borderRadius: 24, minHeight: 280 }}
         dir={direction}
       >
@@ -97,7 +129,7 @@ function ProductCard({ product, index, onCardClick }: { product: Product; index:
           className="absolute top-4 right-6 z-20 font-bold select-none pointer-events-none"
           style={{
             fontSize: 72,
-            color: "rgba(196,168,130,0.06)",
+            color: "rgba(128,128,128,0.06)",
             lineHeight: 1,
             fontFamily: "var(--font-display), 'Playfair Display', serif",
           }}
@@ -129,7 +161,14 @@ function ProductCard({ product, index, onCardClick }: { product: Product; index:
           <button
             onClick={(e) => {
               e.stopPropagation();
-              setLiked(!liked);
+              const isAdded = toggleWishlist(storeProduct);
+              showToast({
+                title: isAdded
+                  ? (t("common.addedToWishlist") as string)
+                  : (t("common.removedFromWishlist") as string),
+                description: name,
+                variant: isAdded ? "wishlist" : "info",
+              });
             }}
             className="absolute top-4 left-4 z-10 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
             style={{
@@ -154,10 +193,10 @@ function ProductCard({ product, index, onCardClick }: { product: Product; index:
           {/* Trending Badge */}
           <div
             className="absolute bottom-4 left-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-            style={{ backgroundColor: "rgba(196,168,130,0.15)", backdropFilter: "blur(8px)", border: "1px solid rgba(196,168,130,0.1)" }}
+            style={{ backgroundColor: "rgba(128,128,128,0.15)", backdropFilter: "blur(8px)", border: "1px solid rgba(128,128,128,0.1)" }}
           >
-            <TrendingUp className="w-3 h-3" style={{ color: "#c4a882" }} />
-            <span style={{ color: "#c4a882", fontSize: 10, fontWeight: 600 }}>
+            <TrendingUp className="w-3 h-3" style={{ color: "#808080" }} />
+            <span style={{ color: "#808080", fontSize: 10, fontWeight: 600 }}>
               {isRTL ? "پرفروش" : "Bestseller"}
             </span>
           </div>
@@ -175,8 +214,8 @@ function ProductCard({ product, index, onCardClick }: { product: Product; index:
                   key={i}
                   className="w-3.5 h-3.5"
                   style={{
-                    color: i < Math.floor(product.rating) ? "#c4a882" : "rgba(255,255,255,0.1)",
-                    fill: i < Math.floor(product.rating) ? "#c4a882" : "none",
+                    color: i < Math.floor(product.rating) ? "#808080" : "rgba(255,255,255,0.1)",
+                    fill: i < Math.floor(product.rating) ? "#808080" : "none",
                   }}
                 />
               ))}
@@ -211,7 +250,7 @@ function ProductCard({ product, index, onCardClick }: { product: Product; index:
               <span
                 className="text-xl font-bold"
                 style={{
-                  color: "#c4a882",
+                  color: "#808080",
                   fontFamily: "var(--font-display), 'Vazirmatn', 'Tahoma', sans-serif",
                 }}
               >
@@ -233,11 +272,17 @@ function ProductCard({ product, index, onCardClick }: { product: Product; index:
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                alert(`${name} ${isRTL ? "به سبد اضافه شد!" : "added to cart!"}`);
+                const defaultColor = storeProduct.colors[0];
+                addItem(storeProduct, defaultColor, 1);
+                showToast({
+                  title: t("common.addedToCart") as string,
+                  description: name,
+                  variant: "cart",
+                });
               }}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-semibold transition-all hover:scale-105 active:scale-95 hover:shadow-[0_0_20px_rgba(196,168,130,0.3)]"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-semibold transition-all hover:scale-105 active:scale-95 hover:shadow-[0_0_20px_rgba(128,128,128,0.3)]"
               style={{
-                backgroundColor: "#c4a882",
+                backgroundColor: "#808080",
                 color: "#1a1a1a",
                 cursor: "pointer",
               }}
@@ -254,7 +299,9 @@ function ProductCard({ product, index, onCardClick }: { product: Product; index:
 
 export default function BestSellers() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const { locale, direction } = useI18n();
+  const { locale, direction, t } = useI18n();
+  const { addItem } = useCart();
+  const { showToast } = useToast();
   const isRTL = direction === "rtl";
 
   useEffect(() => {
@@ -275,25 +322,25 @@ export default function BestSellers() {
         {/* ─── Background matching Hero ─── */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] via-[#141210] to-[#1a1815]" />
 
-        {/* Subtle gold texture overlay */}
+        {/* Subtle gray texture overlay */}
         <div 
           className="absolute inset-0 opacity-[0.025]"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c4a882' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23808080' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }}
         />
 
         {/* Accent glows */}
-        <div className="absolute -top-32 -right-32 w-96 h-96 bg-[#c4a882]/5 rounded-full blur-[120px]" />
-        <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-[#c4a882]/3 rounded-full blur-[100px]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#c4a882]/[0.02] rounded-full blur-[150px]" />
+        <div className="absolute -top-32 -right-32 w-96 h-96 bg-[#808080]/5 rounded-full blur-[120px]" />
+        <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-[#808080]/3 rounded-full blur-[100px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#808080]/[0.02] rounded-full blur-[150px]" />
 
         <div className="px-4 sm:px-6 lg:px-12 xl:px-24 max-w-[1400px] mx-auto relative z-10">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 md:mb-16 gap-4 md:gap-6">
             <ScrollReveal animation="fade-right" duration={800}>
               <div className={isRTL ? "text-right" : "text-left"}>
-                <span className="text-[#c4a882] text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] mb-3 sm:mb-4 block">
+                <span className="text-[#808080] text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] mb-3 sm:mb-4 block">
                   {isRTL ? "پرفروش‌ترین‌ها" : "Bestsellers"}
                 </span>
                 <h2
@@ -384,8 +431,8 @@ export default function BestSellers() {
                         key={i}
                         className="w-3.5 h-3.5 sm:w-4 sm:h-4"
                         style={{
-                          color: i < Math.floor(selectedProduct.rating) ? "#c4a882" : "rgba(255,255,255,0.1)",
-                          fill: i < Math.floor(selectedProduct.rating) ? "#c4a882" : "none",
+                          color: i < Math.floor(selectedProduct.rating) ? "#808080" : "rgba(255,255,255,0.1)",
+                          fill: i < Math.floor(selectedProduct.rating) ? "#808080" : "none",
                         }}
                       />
                     ))}
@@ -409,7 +456,7 @@ export default function BestSellers() {
                 <div className="mt-auto pt-4 sm:pt-5 border-t border-white/[0.06]">
                   <div className="flex items-baseline gap-2 mb-5 sm:mb-6">
                     <span
-                      className="text-2xl sm:text-3xl font-bold text-[#c4a882]"
+                      className="text-2xl sm:text-3xl font-bold text-[#808080]"
                       style={{ fontFamily: "var(--font-display), sans-serif" }}
                     >
                       {selectedProduct.price.toLocaleString(isRTL ? "fa-IR" : "en-US")}
@@ -425,8 +472,17 @@ export default function BestSellers() {
                   </div>
 
                   <button
-                    className="w-full flex items-center justify-center gap-2 py-3 sm:py-3.5 rounded-xl text-sm font-semibold transition-all hover:scale-[1.02] active:scale-95 hover:shadow-[0_0_30px_rgba(196,168,130,0.2)]"
-                    style={{ backgroundColor: "#c4a882", color: "#1a1a1a" }}
+                    onClick={() => {
+                      const storeProduct = toStoreProduct(selectedProduct);
+                      addItem(storeProduct, storeProduct.colors[0], 1);
+                      showToast({
+                        title: t("common.addedToCart") as string,
+                        description: isRTL ? selectedProduct.nameFa : selectedProduct.name,
+                        variant: "cart",
+                      });
+                    }}
+                    className="w-full flex items-center justify-center gap-2 py-3 sm:py-3.5 rounded-xl text-sm font-semibold transition-all hover:scale-[1.02] active:scale-95 hover:shadow-[0_0_30px_rgba(128,128,128,0.2)]"
+                    style={{ backgroundColor: "#808080", color: "#1a1a1a" }}
                   >
                     <ShoppingBag className="w-4 h-4" />
                     {isRTL ? "افزودن به سبد خرید" : "Add to Cart"}

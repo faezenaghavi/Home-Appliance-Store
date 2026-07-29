@@ -4,6 +4,7 @@ import { useI18n } from "@/app/i18n/Provider";
 import { useCart } from "@/app/context/CartContext";
 import { ShoppingBag, Trash2, Minus, Plus, ArrowRight, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import Breadcrumb from "@/app/components/Breadcrumb";
 
 const formatPrice = (price: number, locale: string) => {
   return locale === "fa" ? new Intl.NumberFormat("fa-IR").format(price) : new Intl.NumberFormat("en-US").format(price);
@@ -15,15 +16,23 @@ export default function CartContent() {
   const { items, removeItem, updateQuantity, subtotal, clearCart } = useCart();
 
   return (
-    <div dir={direction} className="min-h-screen bg-[#faf8f5] py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        
-        <div className="mb-10 text-center">
-          <h1 className="text-3xl sm:text-4xl font-bold text-[#1a1a1a] mb-3 flex items-center justify-center gap-3">
-            <ShoppingBag className="w-8 h-8 text-[#c4a882]" />
+    <main dir={direction} className="min-h-screen bg-[#faf8f5]">
+      <div className="px-4 sm:px-6 lg:px-8 xl:px-12 max-w-4xl mx-auto pt-24 sm:pt-28 pb-16">
+        <Breadcrumb items={[{ label: t("cart.title") as string }]} className="mb-8" />
+
+        <div className="mb-10">
+          <h1 className="text-3xl sm:text-4xl font-bold text-[#1a1a1a] mb-3 flex items-center gap-3">
+            <ShoppingBag className="w-8 h-8 text-[#808080]" />
             {t("cart.title")}
           </h1>
-          <div className="w-20 h-1 bg-[#c4a882] mx-auto mt-4 rounded-full"></div>
+          <p className="text-[#8a8577] text-base">
+            {items.length > 0
+              ? isRTL
+                ? `${items.length} محصول در سبد خرید شما`
+                : `${items.length} item${items.length > 1 ? "s" : ""} in your cart`
+              : t("cart.emptyDesc")}
+          </p>
+          <div className="w-20 h-1 bg-[#808080] mt-6 rounded-full"></div>
         </div>
 
         {items.length === 0 ? (
@@ -31,7 +40,7 @@ export default function CartContent() {
             <ShoppingBag className="w-16 h-16 text-[#1a1a1a]/10 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-[#1a1a1a]">{t("cart.empty")}</h3>
             <p className="text-[#8a8577] mt-2 text-sm mb-6">{t("cart.emptyDesc")}</p>
-            <Link href={`/${locale}/products`} className="inline-flex items-center gap-2 px-6 py-3 bg-[#1a1a1a] text-white rounded-xl font-medium hover:bg-[#c4a882] transition-colors">
+            <Link href={`/${locale}/products`} className="inline-flex items-center gap-2 px-6 py-3 bg-[#1a1a1a] text-white rounded-xl font-medium hover:bg-[#808080] transition-colors">
               {t("cart.continueShopping")}
               {isRTL ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
             </Link>
@@ -55,7 +64,7 @@ export default function CartContent() {
                   <div key={`${pId}-${cName}`} className="flex items-center gap-4 p-4 sm:p-6 hover:bg-[#faf8f5]/50 transition-colors">
                     
                     <div className="w-24 h-24 bg-[#faf8f5] rounded-xl border border-[#1a1a1a]/5 flex items-center justify-center overflow-hidden shrink-0 relative">
-                      <span className="text-[#c4a882] text-2xl font-bold">{item.product.name.charAt(0)}</span>
+                      <span className="text-[#808080] text-2xl font-bold">{item.product.name.charAt(0)}</span>
                       <div className="absolute bottom-2 right-2 w-5 h-5 rounded-full border-2 border-white shadow-sm" style={{ backgroundColor: item.selectedColor.hex }} title={isRTL ? item.selectedColor.nameFa : item.selectedColor.name} />
                     </div>
 
@@ -87,14 +96,14 @@ export default function CartContent() {
                       <div className="flex items-center border border-[#1a1a1a]/10 rounded-lg bg-[#faf8f5]">
                         <button 
                           onClick={() => updateQuantity(pId, cName, item.quantity - 1)}
-                          className="w-8 h-8 flex items-center justify-center text-[#1a1a1a]/70 hover:text-[#c4a882] transition-colors"
+                          className="w-8 h-8 flex items-center justify-center text-[#1a1a1a]/70 hover:text-[#808080] transition-colors"
                         >
                           <Minus className="w-3.5 h-3.5" />
                         </button>
                         <span className="w-8 h-8 flex items-center justify-center text-sm font-semibold border-x border-[#1a1a1a]/10">{item.quantity}</span>
                         <button 
                           onClick={() => updateQuantity(pId, cName, item.quantity + 1)}
-                          className="w-8 h-8 flex items-center justify-center text-[#1a1a1a]/70 hover:text-[#c4a882] transition-colors"
+                          className="w-8 h-8 flex items-center justify-center text-[#1a1a1a]/70 hover:text-[#808080] transition-colors"
                         >
                           <Plus className="w-3.5 h-3.5" />
                         </button>
@@ -118,7 +127,7 @@ export default function CartContent() {
                   {formatPrice(subtotal, locale)} {t("common.currency")}
                 </p>
               </div>
-              <Link href={`/${locale}/checkout`} className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-[#c4a882] text-white rounded-xl font-semibold hover:bg-[#1a1a1a] transition-colors shadow-lg shadow-[#c4a882]/20">
+              <Link href={`/${locale}/checkout`} className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-[#808080] text-white rounded-xl font-semibold hover:bg-[#1a1a1a] transition-colors shadow-lg shadow-[#808080]/20">
                 {t("cart.checkout")}
                 {isRTL ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
               </Link>
@@ -126,6 +135,6 @@ export default function CartContent() {
           </div>
         )}
       </div>
-    </div>
+    </main>
   );
 }

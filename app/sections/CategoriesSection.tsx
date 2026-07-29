@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { ArrowUpRight, Monitor, Refrigerator, WashingMachine, Wind, Sparkles, ChefHat } from "lucide-react";
 import { useI18n } from "@/app/i18n/Provider";
@@ -105,7 +105,7 @@ export default function CategorySection() {
           }`}
         >
           <span
-            style={{ color: "#c4a882", letterSpacing: "0.2em" }}
+            style={{ color: "#808080", letterSpacing: "0.2em" }}
             className="text-xs font-semibold uppercase mb-4 block"
           >
             {isRTL ? "دسته‌بندی‌ها" : "Categories"}
@@ -174,12 +174,12 @@ export default function CategorySection() {
                         style={{
                           width: isLarge ? 52 : 44,
                           height: isLarge ? 52 : 44,
-                          backgroundColor: "rgba(196,168,130,0.25)",
+                          backgroundColor: "rgba(128,128,128,0.25)",
                           backdropFilter: "blur(8px)",
                         }}
                       >
                         <Icon
-                          className="text-[#c4a882]"
+                          className="text-[#808080]"
                           style={{ width: isLarge ? 26 : 22, height: isLarge ? 26 : 22 }}
                         />
                       </div>
@@ -204,7 +204,7 @@ export default function CategorySection() {
                       </p>
 
                       <span
-                        style={{ color: "#c4a882" }}
+                        style={{ color: "#808080" }}
                         className="text-xs font-medium"
                       >
                         {cat.productCount} {isRTL ? "محصول" : "products"}
@@ -217,7 +217,7 @@ export default function CategorySection() {
                       style={{
                         width: isLarge ? 48 : 40,
                         height: isLarge ? 48 : 40,
-                        backgroundColor: "rgba(196,168,130,0.3)",
+                        backgroundColor: "rgba(128,128,128,0.3)",
                         backdropFilter: "blur(8px)",
                       }}
                     >
@@ -237,7 +237,7 @@ export default function CategorySection() {
                 <div
                   className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                   style={{
-                    border: "2px solid rgba(196,168,130,0.4)",
+                    border: "2px solid rgba(128,128,128,0.4)",
                   }}
                 />
               </Link>

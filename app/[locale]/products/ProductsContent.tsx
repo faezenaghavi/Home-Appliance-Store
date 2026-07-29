@@ -80,7 +80,7 @@ export default function ProductsContent() {
     if (isFeatured) {
       return (
         <div className="mb-12 text-center">
-          <span style={{ color: "#c4a882", letterSpacing: "0.2em" }} className="text-xs font-semibold uppercase mb-4 block">
+          <span style={{ color: "#808080", letterSpacing: "0.2em" }} className="text-xs font-semibold uppercase mb-4 block">
             {isRTL ? "محصولات ویژه" : "Featured"}
           </span>
           <h1 style={{ color: "#1a1a1a", fontFamily: "var(--font-display), 'Playfair Display', serif" }} className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
@@ -89,14 +89,14 @@ export default function ProductsContent() {
           <p style={{ color: "#8a8577" }} className="text-sm max-w-md mx-auto leading-relaxed mb-8">
             {isRTL ? "محبوب‌ترین محصولات از نگاه مشتریان ما را کشف کنید" : "Discover the most popular products chosen by our customers"}
           </p>
-          <div className="w-16 sm:w-24 h-[2px] bg-gradient-to-r from-transparent via-[#c4a882] to-transparent mx-auto rounded-full" />
+          <div className="w-16 sm:w-24 h-[2px] bg-gradient-to-r from-transparent via-[#808080] to-transparent mx-auto rounded-full" />
         </div>
       );
     }
     if (brand) {
       return (
         <div className="mb-12 text-center">
-          <span style={{ color: "#c4a882", letterSpacing: "0.2em" }} className="text-xs font-semibold uppercase mb-4 block">
+          <span style={{ color: "#808080", letterSpacing: "0.2em" }} className="text-xs font-semibold uppercase mb-4 block">
             {isRTL ? "برند" : "Brand"}
           </span>
           <h1 style={{ color: "#1a1a1a", fontFamily: "var(--font-display), 'Playfair Display', serif" }} className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
@@ -105,14 +105,14 @@ export default function ProductsContent() {
           <p style={{ color: "#8a8577" }} className="text-sm max-w-md mx-auto leading-relaxed mb-8">
             {isRTL ? `مشاهده تمام محصولات مربوط به برند ${currentBrandFa}` : `Browse all products from ${currentBrandFa}`}
           </p>
-          <div className="w-16 sm:w-24 h-[2px] bg-gradient-to-r from-transparent via-[#c4a882] to-transparent mx-auto rounded-full" />
+          <div className="w-16 sm:w-24 h-[2px] bg-gradient-to-r from-transparent via-[#808080] to-transparent mx-auto rounded-full" />
         </div>
       );
     }
     if (category) {
       return (
         <div className="mb-12 text-center">
-          <span style={{ color: "#c4a882", letterSpacing: "0.2em" }} className="text-xs font-semibold uppercase mb-4 block">
+          <span style={{ color: "#808080", letterSpacing: "0.2em" }} className="text-xs font-semibold uppercase mb-4 block">
             {isRTL ? "دسته‌بندی" : "Category"}
           </span>
           <h1 style={{ color: "#1a1a1a", fontFamily: "var(--font-display), 'Playfair Display', serif" }} className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
@@ -121,13 +121,13 @@ export default function ProductsContent() {
           <p style={{ color: "#8a8577" }} className="text-sm max-w-md mx-auto leading-relaxed mb-8">
             {currentCategoryObj ? (isRTL ? currentCategoryObj.descriptionFa : currentCategoryObj.description) : ""}
           </p>
-          <div className="w-16 sm:w-24 h-[2px] bg-gradient-to-r from-transparent via-[#c4a882] to-transparent mx-auto rounded-full" />
+          <div className="w-16 sm:w-24 h-[2px] bg-gradient-to-r from-transparent via-[#808080] to-transparent mx-auto rounded-full" />
         </div>
       );
     }
     return (
       <div className="mb-12 text-center">
-        <span style={{ color: "#c4a882", letterSpacing: "0.2em" }} className="text-xs font-semibold uppercase mb-4 block">
+        <span style={{ color: "#808080", letterSpacing: "0.2em" }} className="text-xs font-semibold uppercase mb-4 block">
           {isRTL ? "محصولات" : "Products"}
         </span>
         <h1 style={{ color: "#1a1a1a", fontFamily: "var(--font-display), 'Playfair Display', serif" }} className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
@@ -136,7 +136,7 @@ export default function ProductsContent() {
         <p style={{ color: "#8a8577" }} className="text-sm max-w-md mx-auto leading-relaxed mb-8">
           {isRTL ? "مجموعه کاملی از لوازم خانگی مدرن و باکیفیت" : "A complete collection of modern and high-quality home appliances"}
         </p>
-        <div className="w-16 sm:w-24 h-[2px] bg-gradient-to-r from-transparent via-[#c4a882] to-transparent mx-auto rounded-full" />
+        <div className="w-16 sm:w-24 h-[2px] bg-gradient-to-r from-transparent via-[#808080] to-transparent mx-auto rounded-full" />
       </div>
     );
   };
@@ -148,18 +148,18 @@ export default function ProductsContent() {
       style={{ backgroundColor: "#f5f0eb" }}
     >
       {/* Background Subtle Glow */}
-      <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#c4a882]/[0.05] rounded-full blur-[120px]" />
+      <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#808080]/[0.05] rounded-full blur-[120px]" />
 
       <div className="px-4 sm:px-6 lg:px-8 xl:px-12 max-w-[1400px] mx-auto relative z-10">
         
         {/* Breadcrumb یکپارچه شده */}
         <div className="mb-12 text-sm text-[#8a8577] flex items-center gap-2 flex-wrap">
-          <Link href={`/${locale}`} scroll={true} className="hover:text-[#c4a882] transition-colors flex items-center gap-1.5">
+          <Link href={`/${locale}`} scroll={true} className="hover:text-[#808080] transition-colors flex items-center gap-1.5">
             <Home className="w-3.5 h-3.5" />
             {isRTL ? "خانه" : "Home"}
           </Link>
           {isRTL ? <ChevronLeft className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
-          <Link href={`/${locale}/products`} className="hover:text-[#c4a882] transition-colors">
+          <Link href={`/${locale}/products`} className="hover:text-[#808080] transition-colors">
             {isRTL ? "محصولات" : "Products"}
           </Link>
           

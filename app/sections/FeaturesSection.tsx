@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Heart } from "lucide-react";
@@ -228,7 +228,7 @@ export default function FeaturedProducts() {
         >
           <div className={isRTL ? "text-right" : "text-left"}>
             <span
-              style={{ color: "#c4a882", letterSpacing: "0.2em" }}
+              style={{ color: "#808080", letterSpacing: "0.2em" }}
               className="text-xs font-semibold uppercase mb-4 block"
             >
               {isRTL ? "محصولات ویژه" : "Featured Products"}

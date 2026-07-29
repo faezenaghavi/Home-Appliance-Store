@@ -1,4 +1,4 @@
-# Novira Store — Premium Home Appliances E-Commerce
+﻿# Novira Store — Premium Home Appliances E-Commerce
 
 A premium Next.js e-commerce website for electronic home appliances, inspired by the WEAVE air purifier brand design.
 
@@ -7,7 +7,7 @@ A premium Next.js e-commerce website for electronic home appliances, inspired by
 ### Color Palette
 - **Dark**: `#1a1a1a` — Primary dark backgrounds (hero, footer, specs section)
 - **Light/Cream**: `#f5f0eb` — Light section backgrounds
-- **Accent (Warm Beige)**: `#c4a882` — Primary accent for CTAs, highlights, badges
+- **Accent (Gray)**: `#808080` — Primary accent for CTAs, highlights, badges
 - **Muted**: `#8a8a8a` — Secondary text
 - **Border**: `#e5e0db` — Subtle borders
 

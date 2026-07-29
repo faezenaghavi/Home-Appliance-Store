@@ -1,15 +1,14 @@
-// app/sections/AboutPreviewSection.tsx
-"use client";
+﻿"use client";
 
-import { useI18n } from "@/app/i18n/Provider";
-import { useScrollAnimation } from "@/app/hooks/useScrollAnimation";
 import Link from "next/link";
-import { CheckCircle2, ArrowUpRight, Sparkles, ShieldCheck, Truck } from "lucide-react";
+import Image from "next/image";
+import { Sparkles, ShieldCheck, Truck, ArrowUpRight, ArrowUpLeft } from "lucide-react";
+import { useI18n } from "@/app/i18n/Provider";
 
 export default function AboutPreviewSection() {
   const { locale, direction } = useI18n();
   const isRTL = direction === "rtl";
-  const { ref, isVisible } = useScrollAnimation(0.15);
+  const Arrow = isRTL ? ArrowUpLeft : ArrowUpRight;
 
   const features = [
     { icon: Sparkles, text: isRTL ? "ضمانت اصالت و کیفیت کالا" : "Guaranteed authenticity & quality" },
@@ -17,69 +16,85 @@ export default function AboutPreviewSection() {
     { icon: Truck, text: isRTL ? "ارسال سریع و امن به سراسر کشور" : "Fast & secure delivery nationwide" },
   ];
 
+  const stats = [
+    { value: "+15", label: isRTL ? "سال تجربه" : "Years" },
+    { value: "+50K", label: isRTL ? "مشتری" : "Customers" },
+    { value: "4.9", label: isRTL ? "امتیاز" : "Rating" },
+  ];
+
   return (
-    <section className="py-24 md:py-32 bg-[#faf8f5] overflow-hidden">
-      <div ref={ref} className="px-6 sm:px-8 lg:px-16 xl:px-24 max-w-[1400px] mx-auto">
-        <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
-          
-          {/* Image Side with Floating Effect */}
-          <div className={`relative transition-all duration-1000 ${isVisible ? "opacity-100 translate-x-0" : isRTL ? "translate-x-20" : "-translate-x-20"}`}>
-            <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-2xl group">
-              <img 
-                src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80" 
-                alt="Novira Lifestyle" 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+    <section className="py-20 md:py-28 bg-[#faf8f5] overflow-hidden">
+      <div className="px-4 sm:px-6 lg:px-8 xl:px-12 max-w-7xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-10 lg:gap-16 items-center">
+          {/* Image */}
+          <div className="relative">
+            <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-xl">
+              <Image
+                src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80"
+                alt="Novira Lifestyle"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a1a]/30 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a1a]/30 to-transparent" />
             </div>
-            
-            {/* Floating Badge */}
-            <div className={`absolute bottom-10 ${isRTL ? "right-10" : "left-10"} bg-white p-6 rounded-2xl shadow-xl flex items-center gap-4 animate-bounce-slow`}>
-              <div className="w-12 h-12 rounded-xl bg-[#c4a882]/10 flex items-center justify-center">
-                <Sparkles className="w-6 h-6 text-[#c4a882]" />
+
+            <div
+              className={`absolute -bottom-5 ${isRTL ? "right-6" : "left-6"} bg-white px-5 py-4 rounded-2xl shadow-lg border border-[#1a1a1a]/5 flex items-center gap-3`}
+            >
+              <div className="w-10 h-10 rounded-xl bg-[#808080]/10 flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-[#808080]" />
               </div>
               <div>
-                <h4 className="text-xl font-bold text-[#1a1a1a]">+15</h4>
-                <p className="text-xs text-[#8a8577]">{isRTL ? "سال تجربه" : "Years Experience"}</p>
+                <p className="text-xl font-bold text-[#1a1a1a] leading-none">+15</p>
+                <p className="text-xs text-[#8a8577] mt-0.5">{isRTL ? "سال تجربه" : "Years Experience"}</p>
               </div>
             </div>
           </div>
 
-          {/* Content Side */}
-          <div className={`transition-all duration-1000 delay-300 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
-            <span style={{ color: "#c4a882", letterSpacing: "0.2em" }} className="text-xs font-semibold uppercase mb-4 block">
+          {/* Content */}
+          <div>
+            <span className="text-[#808080] text-xs font-semibold uppercase tracking-[0.2em] mb-3 block">
               {isRTL ? "داستان ما" : "Our Story"}
             </span>
-            <h2 className="text-4xl md:text-5xl font-bold text-[#1a1a1a] mb-6 leading-tight" style={{ fontFamily: "var(--font-display), 'Playfair Display', serif" }}>
+            <h2 className="text-3xl sm:text-4xl font-bold text-[#1a1a1a] mb-5 leading-tight font-display">
               {isRTL ? "زیبایی و کارایی در کنار هم" : "Where Beauty Meets Functionality"}
             </h2>
-            <p className="text-[#8a8577] text-base leading-relaxed mb-8">
-              {isRTL 
-                ? "ما در نوویرا باور داریم که لوازم خانگی فقط ابزار نیستند، بلکه بخشی از سبک زندگی شما هستند. ما بهترین برندهای جهانی را با طراحی‌های مدرن و تکنولوژی‌های روز گرد هم آورده‌ایم تا آرامش و لوکس بودن را به خانه شما هدیه دهیم."
-                : "At Novira, we believe home appliances are not just tools, but part of your lifestyle. We bring together the world's best brands with modern designs and latest technologies to gift your home peace and luxury."}
+            <p className="text-[#8a8577] text-base leading-relaxed mb-7">
+              {isRTL
+                ? "در نوویرا باور داریم لوازم خانگی بخشی از سبک زندگی شماست. بهترین برندهای جهان را با طراحی مدرن و تکنولوژی روز گرد هم آورده‌ایم تا آرامش و لوکس بودن را به خانه شما هدیه دهیم."
+                : "At Novira, home appliances are part of your lifestyle. We bring together the world's best brands with modern design and latest technology to gift your home peace and luxury."}
             </p>
 
-            {/* Features List */}
-            <div className="space-y-4 mb-10">
+            <div className="space-y-3 mb-8">
               {features.map((feat, i) => (
                 <div key={i} className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-[#1a1a1a] flex items-center justify-center shrink-0">
-                    <feat.icon className="w-4 h-4 text-[#c4a882]" />
+                    <feat.icon className="w-3.5 h-3.5 text-[#808080]" />
                   </div>
                   <span className="text-sm font-medium text-[#1a1a1a]">{feat.text}</span>
                 </div>
               ))}
             </div>
 
-            <Link 
-              href={`/${locale}/about`} 
-              className="inline-flex items-center gap-2 px-6 py-3 bg-[#1a1a1a] text-white rounded-full text-sm font-semibold hover:bg-[#c4a882] transition-colors group"
+            <div className="flex flex-wrap items-center gap-6 mb-8 pb-8 border-b border-[#1a1a1a]/5">
+              {stats.map((s, i) => (
+                <div key={i}>
+                  <p className="text-2xl font-bold text-[#808080]">{s.value}</p>
+                  <p className="text-xs text-[#8a8577]">{s.label}</p>
+                </div>
+              ))}
+            </div>
+
+            <Link
+              href={`/${locale}/about`}
+              prefetch
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#1a1a1a] text-white rounded-full text-sm font-semibold hover:bg-[#808080] transition-colors duration-200 active:scale-[0.98]"
             >
-              {isRTL ? "بیشتر درباره ما بدانید" : "Learn More About Us"}
-              <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              {isRTL ? "بیشتر درباره ما" : "Learn More About Us"}
+              <Arrow className="w-4 h-4" />
             </Link>
           </div>
-
         </div>
       </div>
     </section>

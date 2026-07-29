@@ -1,19 +1,24 @@
 // app/[locale]/products/[id]/page.tsx
 import ProductDetailContent from "./ProductDetailContent";
-import { appliances } from "@/app/data/appliances";
+import { getAllCatalogProducts } from "@/app/data/catalog";
 
 export function generateStaticParams() {
   const locales = ["en", "fa"];
   const params = [];
   
   for (const locale of locales) {
-    for (const product of appliances) {
+    for (const product of getAllCatalogProducts()) {
       params.push({ locale, id: product.id });
     }
   }
   return params;
 }
 
-export default function Page({ params }: { params: { locale: string; id: string } }) {
-  return <ProductDetailContent id={params.id} />;
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ locale: string; id: string }>;
+}) {
+  const { id } = await params;
+  return <ProductDetailContent id={id} />;
 }

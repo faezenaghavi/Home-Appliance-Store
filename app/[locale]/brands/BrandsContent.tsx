@@ -66,7 +66,7 @@ export default function BrandsContent() {
       style={{ backgroundColor: "#f5f0eb" }}
     >
       {/* Background Subtle Glow */}
-      <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#c4a882]/[0.05] rounded-full blur-[120px]" />
+      <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#808080]/[0.05] rounded-full blur-[120px]" />
 
       <div className="px-4 sm:px-6 lg:px-8 xl:px-12 max-w-[1400px] mx-auto relative z-10">
         {/* Breadcrumb */}
@@ -76,7 +76,7 @@ export default function BrandsContent() {
           transition={{ duration: 0.5 }}
           className="text-sm text-[#8a8577] flex items-center gap-2 mb-8 sm:mb-10"
         >
-          <Link href={`/${locale}`} scroll={true} className="hover:text-[#c4a882] transition-colors flex items-center gap-1.5">
+          <Link href={`/${locale}`} scroll={true} className="hover:text-[#808080] transition-colors flex items-center gap-1.5">
             <Home className="w-3.5 h-3.5" />
             {isRTL ? "خانه" : "Home"}
           </Link>
@@ -92,7 +92,7 @@ export default function BrandsContent() {
           className="text-center mb-12 sm:mb-16 md:mb-20"
         >
           <span 
-            style={{ color: "#c4a882", letterSpacing: "0.2em" }} 
+            style={{ color: "#808080", letterSpacing: "0.2em" }} 
             className="inline-block text-[11px] font-bold uppercase mb-5 block"
           >
             {isRTL ? "دسته‌بندی برندها" : "Brand Directory"}
@@ -108,7 +108,7 @@ export default function BrandsContent() {
               ? "با کیفیت‌ترین و معتبرترین برندهای دنیا را در یک مجموعه گرد آورده‌ایم تا بهترین انتخاب را داشته باشید."
               : "We have gathered the highest quality and most reputable global brands in one collection for the best choice."}
           </p>
-          <div className="w-16 sm:w-24 h-[2px] bg-gradient-to-r from-transparent via-[#c4a882] to-transparent mx-auto rounded-full mt-6 sm:mt-8" />
+          <div className="w-16 sm:w-24 h-[2px] bg-gradient-to-r from-transparent via-[#808080] to-transparent mx-auto rounded-full mt-6 sm:mt-8" />
         </motion.div>
 
         {/* Brands Grid — Horizontal Cards */}
@@ -130,26 +130,26 @@ export default function BrandsContent() {
                   href={`/${locale}/products?brand=${encodeURIComponent(brand.name)}`}
                   className="block"
                 >
-                  <div className="relative bg-white border border-[#e5dfd6] hover:border-[#c4a882]/40 rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-500 hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] flex flex-col sm:flex-row">
+                  <div className="relative bg-white border border-[#e5dfd6] hover:border-[#808080]/40 rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-500 hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] flex flex-col sm:flex-row">
 
                     {/* ─── Left: Brand Identity ─── */}
                     <div className={`relative ${isLarge ? "sm:w-2/5 lg:w-1/3" : "sm:w-2/5"} p-6 sm:p-8 flex flex-col justify-between min-h-[200px] sm:min-h-[260px]`}>
                       {/* Gradient bg */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#c4a882]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <div className="absolute inset-0 bg-gradient-to-br from-[#808080]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                       <div className="relative z-10">
                         {/* Logo */}
-                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#c4a882]/15 to-[#c4a882]/5 border border-[#c4a882]/20 flex items-center justify-center mb-4 group-hover:scale-105 group-hover:shadow-[0_0_30px_rgba(196,168,130,0.15)] transition-all duration-500">
-                          <span className="font-display text-2xl sm:text-3xl font-bold text-[#c4a882]">
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#808080]/15 to-[#808080]/5 border border-[#808080]/20 flex items-center justify-center mb-4 group-hover:scale-105 group-hover:shadow-[0_0_30px_rgba(128,128,128,0.15)] transition-all duration-500">
+                          <span className="font-display text-2xl sm:text-3xl font-bold text-[#808080]">
                             {isRTL ? brand.nameFa.charAt(0) : brand.name.charAt(0)}
                           </span>
                         </div>
 
-                        <h3 className="text-xl sm:text-2xl font-bold text-[#1a1a1a] mb-1 group-hover:text-[#c4a882] transition-colors duration-300">
+                        <h3 className="text-xl sm:text-2xl font-bold text-[#1a1a1a] mb-1 group-hover:text-[#808080] transition-colors duration-300">
                           {isRTL ? brand.nameFa : brand.name}
                         </h3>
                         <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-[#8a8577] uppercase tracking-wider">
-                          <MapPin className="w-3 h-3 text-[#c4a882]/80" />
+                          <MapPin className="w-3 h-3 text-[#808080]/80" />
                           <span>{isRTL ? (countryTranslations[brand.country] || brand.country) : brand.country}</span>
                         </div>
                       </div>
@@ -157,20 +157,20 @@ export default function BrandsContent() {
                       {/* Stats */}
                       <div className="relative z-10 flex items-center gap-3 sm:gap-4 mt-4 sm:mt-6 flex-wrap">
                         <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-[#8a8577]">
-                          <Package className="w-3.5 h-3.5 text-[#c4a882]" />
+                          <Package className="w-3.5 h-3.5 text-[#808080]" />
                           <span className="font-semibold text-[#1a1a1a]">{formatNumber(stats.total)}</span>
                           <span>{isRTL ? "محصول" : "products"}</span>
                         </div>
                         <div className="w-px h-4 bg-black/10" />
                         <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-[#8a8577]">
-                          <Star className="w-3.5 h-3.5 text-[#c4a882] fill-[#c4a882]" />
+                          <Star className="w-3.5 h-3.5 text-[#808080] fill-[#808080]" />
                           <span className="font-semibold text-[#1a1a1a]">{formatNumber(stats.avgRating)}</span>
                         </div>
                         {stats.bestsellerCount > 0 && (
                           <>
                             <div className="w-px h-4 bg-black/10" />
                             <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-[#8a8577]">
-                              <TrendingUp className="w-3.5 h-3.5 text-[#c4a882]" />
+                              <TrendingUp className="w-3.5 h-3.5 text-[#808080]" />
                               <span className="font-semibold text-[#1a1a1a]">{formatNumber(stats.bestsellerCount)}</span>
                               <span>{isRTL ? "پرفروش" : "bestsellers"}</span>
                             </div>
@@ -185,7 +185,7 @@ export default function BrandsContent() {
                         <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.15em] text-[#8a8577]/80 font-semibold">
                           {isRTL ? "محصولات برجسته" : "Featured Products"}
                         </span>
-                        <div className="flex items-center gap-1 text-[#c4a882] text-[11px] font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+                        <div className="flex items-center gap-1 text-[#808080] text-[11px] font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
                           {isRTL ? "مشاهده همه" : "View All"}
                           <ArrowUpRight className="w-3.5 h-3.5" />
                         </div>
@@ -196,7 +196,7 @@ export default function BrandsContent() {
                         {prods.map((product) => (
                           <div
                             key={product.id}
-                            className="flex items-center gap-3 p-2.5 sm:p-3 rounded-xl bg-white border border-[#e5dfd6] hover:border-[#c4a882]/40 hover:bg-[#faf8f5] transition-all duration-300 group/item"
+                            className="flex items-center gap-3 p-2.5 sm:p-3 rounded-xl bg-white border border-[#e5dfd6] hover:border-[#808080]/40 hover:bg-[#faf8f5] transition-all duration-300 group/item"
                           >
                             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg overflow-hidden bg-[#f5f0eb] shrink-0 ring-1 ring-black/[0.04] relative">
                               {product.images[0] ? (
@@ -214,13 +214,13 @@ export default function BrandsContent() {
                               )}
                             </div>
                             <div className="min-w-0 flex-1">
-                              <p className="text-[11px] sm:text-xs font-medium text-[#1a1a1a] truncate group-hover/item:text-[#c4a882] transition-colors">
+                              <p className="text-[11px] sm:text-xs font-medium text-[#1a1a1a] truncate group-hover/item:text-[#808080] transition-colors">
                                 {isRTL ? product.nameFa : product.name}
                               </p>
                               <div className="flex items-center gap-1.5 mt-1">
-                                <Star className="w-3 h-3 text-[#c4a882] fill-[#c4a882]" />
+                                <Star className="w-3 h-3 text-[#808080] fill-[#808080]" />
                                 <span className="text-[10px] text-[#8a8577]">{formatNumber(product.rating)}</span>
-                                <span className="text-[10px] text-[#c4a882] font-mono truncate">
+                                <span className="text-[10px] text-[#808080] font-mono truncate">
                                   {formatPrice(product.price)}
                                 </span>
                               </div>
@@ -242,7 +242,7 @@ export default function BrandsContent() {
                       {/* CTA for large cards */}
                       {isLarge && (
                         <div className="mt-4 sm:mt-6 flex justify-end">
-                          <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#c4a882]/10 border border-[#c4a882]/30 text-[#c4a882] text-xs font-semibold group-hover:bg-[#c4a882] group-hover:text-white transition-all duration-300">
+                          <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#808080]/10 border border-[#808080]/30 text-[#808080] text-xs font-semibold group-hover:bg-[#808080] group-hover:text-white transition-all duration-300">
                             {isRTL ? "مشاهده کل مجموعه" : "Browse Collection"}
                             <ArrowUpRight className="w-3.5 h-3.5" />
                           </span>
@@ -264,7 +264,7 @@ export default function BrandsContent() {
           className="mt-12 sm:mt-16 text-center"
         >
           <div className="inline-flex flex-col sm:flex-row items-center gap-4 p-6 sm:p-8 rounded-2xl sm:rounded-3xl bg-white border border-[#e5dfd6] backdrop-blur-sm">
-            <Award className="w-8 h-8 sm:w-10 sm:h-10 text-[#c4a882]" />
+            <Award className="w-8 h-8 sm:w-10 sm:h-10 text-[#808080]" />
             <div className="text-center sm:text-left">
               <h3 className="text-base sm:text-lg font-bold text-[#1a1a1a] mb-1">
                 {isRTL ? "به دنبال برند خاصی هستید؟" : "Looking for a specific brand?"}
@@ -277,7 +277,7 @@ export default function BrandsContent() {
             </div>
             <Link
               href={`/${locale}/contact`}
-              className="shrink-0 px-6 py-3 bg-[#c4a882] text-white rounded-xl text-xs font-bold hover:bg-[#d4b896] transition-all duration-300 hover:shadow-[0_0_30px_rgba(196,168,130,0.3)] active:scale-95"
+              className="shrink-0 px-6 py-3 bg-[#808080] text-white rounded-xl text-xs font-bold hover:bg-[#959595] transition-all duration-300 hover:shadow-[0_0_30px_rgba(128,128,128,0.3)] active:scale-95"
             >
               {isRTL ? "تماس با ما" : "Contact Us"}
             </Link>

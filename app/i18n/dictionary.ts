@@ -132,6 +132,32 @@ export interface Dictionary {
     empty: string;
     emptyDesc: string;
     moveAllToCart: string;
+    removeFromWishlist: string;
+  };
+  contact: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    infoTitle: string;
+    formTitle: string;
+    address: string;
+    phone: string;
+    email: string;
+    hours: string;
+    nameLabel: string;
+    namePlaceholder: string;
+    emailLabel: string;
+    emailPlaceholder: string;
+    phoneLabel: string;
+    phonePlaceholder: string;
+    subjectLabel: string;
+    subjectPlaceholder: string;
+    messageLabel: string;
+    messagePlaceholder: string;
+    submitButton: string;
+    successTitle: string;
+    successBody: string;
+    subjects: string[];
   };
   footer: {
     brandDesc: string;
@@ -311,6 +337,32 @@ const en: Dictionary = {
     empty: "Your wishlist is empty",
     emptyDesc: "Save pieces you're considering - they'll wait for you here.",
     moveAllToCart: "Add All to Cart",
+    removeFromWishlist: "Remove from wishlist",
+  },
+  contact: {
+    eyebrow: "Get in Touch",
+    title: "Contact Us",
+    subtitle: "We're here to help with orders, product questions, and support.",
+    infoTitle: "Contact Information",
+    formTitle: "Send a Message",
+    address: "123 Design District, Tehran, Iran",
+    phone: "+98 21 1234 5678",
+    email: "hello@novira.com",
+    hours: "Sat–Thu: 9:00 AM – 6:00 PM",
+    nameLabel: "Full Name",
+    namePlaceholder: "Your name",
+    emailLabel: "Email",
+    emailPlaceholder: "you@example.com",
+    phoneLabel: "Phone",
+    phonePlaceholder: "Optional",
+    subjectLabel: "Subject",
+    subjectPlaceholder: "Select a topic",
+    messageLabel: "Message",
+    messagePlaceholder: "How can we help?",
+    submitButton: "Send Message",
+    successTitle: "Message Sent",
+    successBody: "Thank you — we'll get back to you within one business day.",
+    subjects: ["Order Support", "Product Inquiry", "Warranty & Returns", "Partnership", "Other"],
   },
   footer: {
     brandDesc:
@@ -491,6 +543,32 @@ const fa: Dictionary = {
     empty: "لیست علاقه‌مندی‌های شما خالی است",
     emptyDesc: "قطعاتی که در نظر دارید را ذخیره کنید - اینجا منتظر شما هستند.",
     moveAllToCart: "افزودن همه به سبد",
+    removeFromWishlist: "حذف از علاقه‌مندی‌ها",
+  },
+  contact: {
+    eyebrow: "ارتباط با ما",
+    title: "تماس با ما",
+    subtitle: "برای سفارش، سوالات محصول و پشتیبانی در خدمت شما هستیم.",
+    infoTitle: "اطلاعات تماس",
+    formTitle: "ارسال پیام",
+    address: "تهران، خیابان ولیعصر، پلاک ۱۲۳",
+    phone: "۰۲۱-۱۲۳۴۵۶۷۸",
+    email: "hello@novira.com",
+    hours: "شنبه تا پنج‌شنبه: ۹ صبح تا ۶ عصر",
+    nameLabel: "نام و نام خانوادگی",
+    namePlaceholder: "نام شما",
+    emailLabel: "ایمیل",
+    emailPlaceholder: "you@example.com",
+    phoneLabel: "تلفن",
+    phonePlaceholder: "اختیاری",
+    subjectLabel: "موضوع",
+    subjectPlaceholder: "موضوع را انتخاب کنید",
+    messageLabel: "پیام",
+    messagePlaceholder: "چطور می‌توانیم کمک کنیم؟",
+    submitButton: "ارسال پیام",
+    successTitle: "پیام ارسال شد",
+    successBody: "متشکریم — ظرف یک روز کاری پاسخ می‌دهیم.",
+    subjects: ["پشتیبانی سفارش", "سؤال درباره محصول", "گارانتی و مرجوعی", "همکاری", "سایر"],
   },
   footer: {
     brandDesc:

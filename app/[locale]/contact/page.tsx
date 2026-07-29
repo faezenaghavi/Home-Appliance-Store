@@ -158,7 +158,7 @@ export default function ContactPage() {
           transition: all 0.2s;
         }
         .input-base:focus {
-          border-color: var(--color-accent, #c4a882);
+          border-color: var(--color-accent, #808080);
         }
       `}</style>
     </main>

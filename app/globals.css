@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 :root {
-  --font-display: 'Playfair Display', serif;
-  --font-body: 'Inter', sans-serif;
+  --font-display: var(--font-playfair), 'Georgia', serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
   
   --color-dark: #1a1a1a;
   --color-light: #f5f0eb;
-  --color-accent: #c4a882;
-  --color-accent-dark: #a88c66; /* اضافه شد برای hover ها */
-  --color-accent-light: #d4c4a8;
+  --color-accent: #808080;
+  --color-accent-dark: #666666;
+  --color-accent-light: #a8a8a8;
   --color-cream: #faf8f5;
   --color-muted: #8a8577; /* اضافه شد برای متن‌های خاکستری */
 }
@@ -22,6 +22,27 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  html.splash-pending,
+  html.splash-pending body {
+    background-color: #3a3a3a !important;
+    overflow: hidden;
+  }
+
+  html.splash-pending .splash-app-shell {
+    visibility: hidden !important;
+    pointer-events: none;
+  }
+
+  html[dir="rtl"] {
+    --font-display: var(--font-vazir), 'Tahoma', 'Arial', sans-serif;
+    --font-body: var(--font-vazir), 'Tahoma', 'Arial', sans-serif;
+  }
+
+  html[dir="ltr"] {
+    --font-display: var(--font-playfair), 'Georgia', serif;
+    --font-body: var(--font-inter), system-ui, sans-serif;
+  }
+
   body {
     font-family: var(--font-body);
     color: var(--color-dark);
@@ -31,8 +52,18 @@
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    font-weight: 600;
-    letter-spacing: -0.02em;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  html[dir="rtl"] h1,
+  html[dir="rtl"] h2,
+  html[dir="rtl"] h3,
+  html[dir="rtl"] h4,
+  html[dir="rtl"] h5,
+  html[dir="rtl"] h6 {
+    letter-spacing: 0;
+    font-weight: 800;
   }
 
   ::selection {

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -46,7 +46,7 @@ export default function BrandShowcase() {
       className="py-24 md:py-32 relative overflow-hidden"
     >
       {/* Background Subtle Glow */}
-      <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#c4a882]/[0.05] rounded-full blur-[120px]" />
+      <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#808080]/[0.05] rounded-full blur-[120px]" />
 
       <div className="px-4 sm:px-6 lg:px-8 xl:px-12 max-w-[1400px] mx-auto relative z-10">
         {/* Header */}
@@ -58,7 +58,7 @@ export default function BrandShowcase() {
         >
           <div className={`text-center sm:text-${isRTL ? "right" : "left"}`}>
             <span 
-              style={{ color: "#c4a882", letterSpacing: "0.2em" }} 
+              style={{ color: "#808080", letterSpacing: "0.2em" }} 
               className="text-[11px] sm:text-xs font-semibold uppercase mb-3 sm:mb-4 block"
             >
               {isRTL ? "برندهای معتبر" : "Trusted Brands"}
@@ -73,7 +73,7 @@ export default function BrandShowcase() {
 
           <Link
             href={`/${locale}/brands`}
-            className="group flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-[#c4a882]/10 border border-[#c4a882]/30 text-[#c4a882] rounded-xl text-xs sm:text-sm font-semibold hover:bg-[#c4a882] hover:text-white transition-all duration-300 hover:shadow-[0_0_30px_rgba(196,168,130,0.2)] active:scale-95"
+            className="group flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-[#808080]/10 border border-[#808080]/30 text-[#808080] rounded-xl text-xs sm:text-sm font-semibold hover:bg-[#808080] hover:text-white transition-all duration-300 hover:shadow-[0_0_30px_rgba(128,128,128,0.2)] active:scale-95"
           >
             {isRTL ? "مشاهده همه برندها" : "View All Brands"}
             <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -98,23 +98,23 @@ export default function BrandShowcase() {
                   href={`/${locale}/brands`} 
                   className="group block"
                 >
-                  <div className="relative bg-white border border-[#e5dfd6] hover:border-[#c4a882]/40 rounded-2xl overflow-hidden transition-all duration-500 hover:shadow-[0_15px_50px_rgba(0,0,0,0.08)] flex flex-row items-center p-4 sm:p-5 gap-4">
+                  <div className="relative bg-white border border-[#e5dfd6] hover:border-[#808080]/40 rounded-2xl overflow-hidden transition-all duration-500 hover:shadow-[0_15px_50px_rgba(0,0,0,0.08)] flex flex-row items-center p-4 sm:p-5 gap-4">
 
                     {/* Brand Logo */}
-                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-gradient-to-br from-[#c4a882]/15 to-[#c4a882]/5 border border-[#c4a882]/20 flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(196,168,130,0.15)] transition-all duration-500">
-                      <span className="font-display text-xl sm:text-2xl font-bold text-[#c4a882]">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-gradient-to-br from-[#808080]/15 to-[#808080]/5 border border-[#808080]/20 flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(128,128,128,0.15)] transition-all duration-500">
+                      <span className="font-display text-xl sm:text-2xl font-bold text-[#808080]">
                         {brand.name.charAt(0)}
                       </span>
                     </div>
 
                     {/* Info */}
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-sm sm:text-base font-bold text-[#1a1a1a] truncate group-hover:text-[#c4a882] transition-colors duration-300">
+                      <h3 className="text-sm sm:text-base font-bold text-[#1a1a1a] truncate group-hover:text-[#808080] transition-colors duration-300">
                         {isRTL ? brand.nameFa : brand.name}
                       </h3>
                       <div className="flex items-center gap-2 mt-1.5">
                         <div className="flex items-center gap-1 text-[10px] sm:text-[11px] text-[#8a8577]">
-                          <Package className="w-3 h-3 text-[#c4a882]" />
+                          <Package className="w-3 h-3 text-[#808080]" />
                           <span className="font-semibold text-[#1a1a1a]">{count}</span>
                           <span>{isRTL ? "محصول" : "products"}</span>
                         </div>
@@ -122,7 +122,7 @@ export default function BrandShowcase() {
                           <>
                             <span className="w-px h-3 bg-black/10" />
                             <div className="flex items-center gap-0.5 text-[10px] sm:text-[11px] text-[#8a8577]">
-                              <Star className="w-3 h-3 text-[#c4a882] fill-[#c4a882]" />
+                              <Star className="w-3 h-3 text-[#808080] fill-[#808080]" />
                               <span className="font-semibold text-[#1a1a1a]">{avgRating}</span>
                             </div>
                           </>
@@ -131,7 +131,7 @@ export default function BrandShowcase() {
                     </div>
 
                     {/* Arrow */}
-                    <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 text-[#8a8577]/40 group-hover:text-[#c4a882] transition-all duration-300 shrink-0 opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0" />
+                    <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 text-[#8a8577]/40 group-hover:text-[#808080] transition-all duration-300 shrink-0 opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0" />
                   </div>
                 </Link>
               </motion.div>

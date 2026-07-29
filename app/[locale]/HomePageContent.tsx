@@ -1,15 +1,17 @@
 // app/[locale]/HomePageContent.tsx
 "use client";
 
+import dynamic from "next/dynamic";
 import HeroSection from "@/app/sections/HeroSection";
-import CategorySection from "@/app/sections/CategoriesSection";
-import FeaturedProducts from "@/app/sections/FeaturesSection";
-import BestSellers from "@/app/sections/BestSellers";
-import NewArrivals from "@/app/sections/NewArrivals";
-import SpecialOffers from "@/app/sections/SpecialOffers";
-import BrandShowcase from "@/app/sections/BrandShowcase";
-import TestimonialsSection from "@/app/sections/TestimonialsSection";
-import AboutPreviewSection from "@/app/sections/AboutPreviewSection";
+
+const CategorySection = dynamic(() => import("@/app/sections/CategoriesSection"));
+const FeaturedProducts = dynamic(() => import("@/app/sections/FeaturesSection"));
+const AboutPreviewSection = dynamic(() => import("@/app/sections/AboutPreviewSection"));
+const BestSellers = dynamic(() => import("@/app/sections/BestSellers"));
+const NewArrivals = dynamic(() => import("@/app/sections/NewArrivals"));
+const SpecialOffers = dynamic(() => import("@/app/sections/SpecialOffers"));
+const BrandShowcase = dynamic(() => import("@/app/sections/BrandShowcase"));
+const TestimonialsSection = dynamic(() => import("@/app/sections/TestimonialsSection"));
 
 export default function HomePageContent() {
   return (
@@ -17,7 +19,7 @@ export default function HomePageContent() {
       <HeroSection />
       <CategorySection />
       <FeaturedProducts />
-        <AboutPreviewSection />
+      <AboutPreviewSection />
       <BestSellers />
       <NewArrivals />
       <SpecialOffers />

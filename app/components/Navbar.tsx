@@ -1,12 +1,12 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef, useCallback, memo } from "react";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Menu, X, ArrowUpRight, Search, ShoppingBag, Heart, User,
   ChevronDown, Globe, LogOut, Package, Settings, Tag, Sparkles,
-  Grid3X3, Info, Newspaper, Phone, MapPin, Home
+  Grid3X3, Info, Newspaper, Home,
 } from "lucide-react";
 import { useI18n } from "@/app/i18n/Provider";
 import { Locale, localeLabels } from "@/app/i18n/config";
@@ -14,35 +14,65 @@ import { applianceCategories } from "@/app/data/appliances";
 import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
 
-// Memoized dropdown item برای جلوگیری از re-render
-const CategoryItem = memo(({ cat, locale, basePath, onClose }: any) => (
-  <Link 
-    href={`${basePath}/products?category=${cat.id}`} 
+type NavLinkItem = {
+  key: string;
+  labelFa: string;
+  labelEn: string;
+  href: string;
+  icon: typeof Home;
+  hasDropdown?: boolean;
+};
+
+const navLinks: NavLinkItem[] = [
+  { key: "nav.home", labelFa: "خانه", labelEn: "Home", href: "", icon: Home },
+  { key: "nav.offers", labelFa: "تخفیف‌دارها", labelEn: "Special Offers", href: "/products?offers=true", icon: Tag },
+  { key: "nav.featured", labelFa: "محصولات ویژه", labelEn: "Featured", href: "/featured", icon: Sparkles },
+  { key: "nav.categories", labelFa: "دسته‌بندی", labelEn: "Categories", href: "/products", hasDropdown: true, icon: Grid3X3 },
+  { key: "nav.about", labelFa: "درباره ما", labelEn: "About Us", href: "/about", icon: Info },
+  { key: "nav.blog", labelFa: "بلاگ", labelEn: "Blog", href: "/blog", icon: Newspaper },
+];
+
+const userMenuItems = [
+  { icon: User, labelFa: "حساب کاربری", labelEn: "My Account", href: "/account", descFa: "مشاهده و ویرایش پروفایل", descEn: "View & edit profile" },
+  { icon: Package, labelFa: "سفارشات من", labelEn: "My Orders", href: "/account?tab=orders", descFa: "پیگیری خریدهای شما", descEn: "Track your purchases" },
+  { icon: Heart, labelFa: "علاقه‌مندی‌ها", labelEn: "Wishlist", href: "/wishlist", descFa: "محصولات ذخیره‌شده", descEn: "Saved items" },
+  { icon: Settings, labelFa: "تنظیمات", labelEn: "Settings", href: "/account?tab=settings", descFa: "تنظیمات حساب", descEn: "Account settings" },
+] as const;
+
+const CategoryItem = memo(({ cat, locale, basePath, onClose }: {
+  cat: (typeof applianceCategories)[0];
+  locale: string;
+  basePath: string;
+  onClose: () => void;
+}) => (
+  <Link
+    href={`${basePath}/products?category=${cat.id}`}
+    prefetch
     onClick={onClose}
-    className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/5 transition-all duration-200 group"
+    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5 transition-colors duration-150 group"
   >
-    <div className="w-10 h-10 rounded-lg bg-[#c4a882]/10 flex items-center justify-center shrink-0 group-hover:bg-[#c4a882]/20 transition-colors">
-      <span className="text-[#c4a882] text-xs font-bold">{cat.name.charAt(0)}</span>
+    <div className="w-9 h-9 rounded-lg bg-[#808080]/10 flex items-center justify-center shrink-0 group-hover:bg-[#808080]/20 transition-colors">
+      <span className="text-[#808080] text-xs font-bold">{cat.name.charAt(0)}</span>
     </div>
     <div className="flex-1 min-w-0">
       <p className="text-white text-[13px] font-medium truncate">
         {locale === "fa" && cat.nameFa ? cat.nameFa : cat.name}
       </p>
-      <p className="text-white/40 text-[11px] mt-0.5">{cat.productCount} {locale === "fa" ? "محصول" : "products"}</p>
+      <p className="text-white/40 text-[11px] mt-0.5">
+        {cat.productCount} {locale === "fa" ? "محصول" : "products"}
+      </p>
     </div>
-    <ArrowUpRight className="w-3.5 h-3.5 text-white/30 group-hover:text-[#c4a882] transition-colors opacity-0 group-hover:opacity-100 transform translate-x-[-4px] group-hover:translate-x-0" />
+    <ArrowUpRight className="w-3.5 h-3.5 text-white/30 group-hover:text-[#808080] opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
   </Link>
 ));
 CategoryItem.displayName = "CategoryItem";
 
 export default function Navbar() {
-  const { locale, direction, setLocale, t } = useI18n();
+  const { locale, direction } = useI18n();
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const isRTL = direction === "rtl";
 
-  // دریافت تعداد محصولات از Context ها
   const { itemCount: cartCount } = useCart();
   const { itemCount: wishlistCount } = useWishlist();
 
@@ -52,26 +82,47 @@ export default function Navbar() {
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isUserOpen, setIsUserOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [hoveredLink, setHoveredLink] = useState<string | null>(null);
+  const [currentSearch, setCurrentSearch] = useState("");
 
   const categoryRef = useRef<HTMLDivElement>(null);
   const langRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
-  const scrollTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const basePath = `/${locale}`;
 
-  // فرمت کردن اعداد برای نمایش در بج (فارسی یا انگلیسی)
-  const formatBadgeCount = (count: number) => {
-    return count.toLocaleString(isRTL ? "fa-IR" : "en-US");
-  };
+  const formatBadgeCount = (count: number) =>
+    count.toLocaleString(isRTL ? "fa-IR" : "en-US");
+
+  const getLabel = useCallback(
+    (item: { labelFa: string; labelEn: string }) =>
+      locale === "fa" ? item.labelFa : item.labelEn,
+    [locale]
+  );
 
   useEffect(() => {
+    setCurrentSearch(typeof window !== "undefined" ? window.location.search : "");
+  }, [pathname]);
+
+  useEffect(() => {
+    const routes = [
+      basePath,
+      ...navLinks.map((link) => (link.href ? `${basePath}${link.href}` : basePath)),
+      ...userMenuItems.map((item) => `${basePath}${item.href}`),
+      `${basePath}/cart`,
+      `${basePath}/wishlist`,
+    ];
+    routes.forEach((route) => router.prefetch(route));
+  }, [basePath, router]);
+
+  useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      if (scrollTimeout.current !== undefined) clearTimeout(scrollTimeout.current);
-      scrollTimeout.current = setTimeout(() => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
         setIsScrolled(window.scrollY > 40);
-      }, 16);
+        ticking = false;
+      });
     };
 
     const handleClickOutside = (e: MouseEvent) => {
@@ -82,7 +133,7 @@ export default function Navbar() {
     };
 
     const handleResize = () => {
-      if (window.innerWidth >= 1024 && isMobileMenuOpen) setIsMobileMenuOpen(false);
+      if (window.innerWidth >= 1024) setIsMobileMenuOpen(false);
     };
 
     const handleEscape = (e: KeyboardEvent) => {
@@ -94,6 +145,7 @@ export default function Navbar() {
       }
     };
 
+    handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     document.addEventListener("mousedown", handleClickOutside);
     window.addEventListener("resize", handleResize);
@@ -104,167 +156,156 @@ export default function Navbar() {
       document.removeEventListener("mousedown", handleClickOutside);
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("keydown", handleEscape);
-      if (scrollTimeout.current !== undefined) clearTimeout(scrollTimeout.current);
     };
-  }, [isMobileMenuOpen]);
+  }, []);
 
   useEffect(() => {
-    if (!isMobileMenuOpen) {
-      document.body.style.overflow = "";
-      return;
-    }
-    const original = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = original; };
+    document.body.style.overflow = isMobileMenuOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
   }, [isMobileMenuOpen]);
 
-  const navLinks = [
-    { key: "nav.home", labelFa: "خانه", labelEn: "Home", href: basePath, icon: Home },
-    { key: "nav.offers", labelFa: "تخفیف‌دارها", labelEn: "Special Offers", href: `${basePath}/products?offers=true`, icon: Tag },
-    { key: "nav.featured", labelFa: "محصولات ویژه", labelEn: "Featured", href: `${basePath}/products?featured=true`, icon: Sparkles },
-    { key: "nav.categories", labelFa: "دسته‌بندی", labelEn: "Categories", href: `${basePath}/products`, hasDropdown: true, icon: Grid3X3 },
-    { key: "nav.about", labelFa: "درباره ما", labelEn: "About Us", href: `${basePath}/about`, icon: Info },
-    { key: "nav.blog", labelFa: "بلاگ", labelEn: "Blog", href: `${basePath}/blog`, icon: Newspaper },
-  ];
+  const isActive = useCallback(
+    (href: string) => {
+      const fullHref = href ? `${basePath}${href}` : basePath;
+      const [path, query] = fullHref.split("?");
+      const currentPath = pathname.replace(/\/$/, "") || basePath;
+      const normalizedPath = path.replace(/\/$/, "") || basePath;
 
-  const userMenuItems = [
-    { icon: User, labelFa: "حساب کاربری", labelEn: "My Account", href: `${basePath}/account`, descFa: "مشاهده و ویرایش پروفایل", descEn: "View & edit profile" },
-    { icon: Package, labelFa: "سفارشات من", labelEn: "My Orders", href: `${basePath}/account?tab=orders`, descFa: "پیگیری خریدهای شما", descEn: "Track your purchases" },
-    { icon: Heart, labelFa: "علاقه‌مندی‌ها", labelEn: "Wishlist", href: `${basePath}/wishlist`, descFa: "محصولات ذخیره‌شده", descEn: "Saved items" },
-    { icon: Settings, labelFa: "تنظیمات", labelEn: "Settings", href: `${basePath}/account?tab=settings`, descFa: "تنظیمات حساب", descEn: "Account settings" },
-  ];
-
-  const getLabel = useCallback((item: { labelFa: string; labelEn: string }) =>
-    locale === "fa" ? item.labelFa : item.labelEn, [locale]);
-
-  const isActive = useCallback((href: string) => {
-    const [path, query] = href.split("?");
-    const currentPath = pathname === `${basePath}/` ? basePath : pathname;
-    if (path !== currentPath) return false;
-    if (!query) {
-      if (path === `${basePath}/products`) {
-        return !searchParams.get("offers") && !searchParams.get("featured") && !searchParams.get("category") && !searchParams.get("search");
+      if (normalizedPath !== currentPath) return false;
+      if (!query) {
+        if (normalizedPath === `${basePath}/products`) {
+          return currentSearch === "";
+        }
+        return true;
+      }
+      const params = new URLSearchParams(query);
+      const current = new URLSearchParams(currentSearch.replace(/^\?/, ""));
+      for (const [key, value] of params.entries()) {
+        if (current.get(key) !== value) return false;
       }
       return true;
-    }
-    const params = new URLSearchParams(query);
-    for (const [key, value] of params.entries()) {
-      if (searchParams.get(key) !== value) return false;
-    }
-    return true;
-  }, [pathname, searchParams, basePath]);
+    },
+    [pathname, currentSearch, basePath]
+  );
 
-  const handleSearch = useCallback((e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`${basePath}/products?search=${encodeURIComponent(searchQuery.trim())}`);
+  const handleSearch = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      const q = searchQuery.trim();
+      if (!q) return;
+      router.push(`${basePath}/products?search=${encodeURIComponent(q)}`);
       setSearchQuery("");
       setIsMobileMenuOpen(false);
-    }
-  }, [searchQuery, router, basePath]);
+    },
+    [searchQuery, router, basePath]
+  );
 
-  const switchLocale = useCallback((newLocale: Locale) => {
-    const newPath = pathname.replace(`/${locale}`, `/${newLocale}`);
-    setLocale(newLocale);
-    router.push(newPath);
-    setIsLangOpen(false);
-  }, [pathname, locale, router, setLocale]);
+  const switchLocale = useCallback(
+    (newLocale: Locale) => {
+      setIsLangOpen(false);
+      setIsMobileMenuOpen(false);
+      const newPath = pathname.replace(`/${locale}`, `/${newLocale}`);
+      router.push(newPath);
+    },
+    [pathname, locale, router]
+  );
 
-  const handleNavClick = useCallback((e: React.MouseEvent, link: typeof navLinks[0]) => {
-    if (link.hasDropdown) {
-      e.preventDefault();
-      setIsCategoryOpen(prev => !prev);
-      return;
-    }
-    setIsMobileMenuOpen(false);
-    if (link.href === basePath && (pathname === basePath || pathname === `${basePath}/`)) {
-      e.preventDefault();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }, [pathname, basePath]);
+  const handleNavClick = useCallback(
+    (e: React.MouseEvent, link: NavLinkItem) => {
+      if (link.hasDropdown && window.innerWidth >= 1024) {
+        e.preventDefault();
+        setIsCategoryOpen((prev) => !prev);
+        return;
+      }
+
+      setIsMobileMenuOpen(false);
+      setIsCategoryOpen(false);
+
+      const fullHref = link.href ? `${basePath}${link.href}` : basePath;
+      if (!link.href && (pathname === basePath || pathname === `${basePath}/`)) {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else if (fullHref === pathname) {
+        e.preventDefault();
+      }
+    },
+    [pathname, basePath]
+  );
+
+  const iconBtn =
+    "relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center border bg-white/5 border-white/10 hover:border-[#808080]/40 hover:bg-[#808080]/10 active:scale-95 transition-[transform,background-color,border-color] duration-150";
 
   return (
     <>
       <nav
         dir={direction}
-        className={`fixed top-0 left-0 right-0 transition-all duration-500 z-50 will-change-transform ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-[background-color,padding,box-shadow,backdrop-filter] duration-200 ${
           isScrolled
-            ? "bg-[#1a1a1a]/90 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.3)] py-2 sm:py-3"
-            : "bg-[#1a1a1a]/60 backdrop-blur-md py-3 sm:py-5"
+            ? "bg-[#1a1a1a]/75 backdrop-blur-2xl backdrop-saturate-150 shadow-[0_4px_24px_rgba(0,0,0,0.25)] py-2 sm:py-3"
+            : "bg-[#1a1a1a]/92 py-3 sm:py-4"
         }`}
       >
         <div className="px-4 sm:px-6 lg:px-8 xl:px-12 max-w-[1440px] mx-auto">
           <div className="flex items-center justify-between gap-2 sm:gap-4">
-            
-            <Link href={basePath} scroll={true} className="flex items-center gap-2 sm:gap-3 shrink-0 group">
-              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center border transition-all duration-500 bg-white/5 border-white/10 group-hover:border-[#c4a882]/60 group-hover:bg-[#c4a882]/15 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(196,168,130,0.2)]">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#c4a882] transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
+            <Link href={basePath} prefetch className="flex items-center gap-2 sm:gap-3 shrink-0 group">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center border bg-white/5 border-white/10 group-hover:border-[#808080]/50 group-hover:bg-[#808080]/10 transition-colors duration-150">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#808080]">
                   <path d="M12 2L2 7l10 5 10-5-10-5z" />
                   <path d="M2 17l10 5 10-5" />
                   <path d="M2 12l10 5 10-5" />
                 </svg>
               </div>
               <div className="flex flex-col">
-                <span className="font-display text-lg sm:text-xl font-bold tracking-tight transition-colors leading-none text-white group-hover:text-[#c4a882]">
+                <span className="font-display text-lg sm:text-xl font-bold tracking-tight text-white group-hover:text-[#808080] transition-colors duration-150 leading-none">
                   NOVIRA
                 </span>
-                <span className="text-[8px] sm:text-[9px] tracking-[0.2em] sm:tracking-[0.25em] uppercase transition-colors mt-0.5 text-white/50">
+                <span className="text-[8px] sm:text-[9px] tracking-[0.2em] uppercase text-white/50 mt-0.5">
                   {locale === "fa" ? "لوازم خانگی لوکس" : "Luxury Appliances"}
                 </span>
               </div>
             </Link>
 
-            <div className="hidden lg:flex items-center gap-0.5 p-1 rounded-full bg-white/[0.03] border border-white/10 backdrop-blur-sm">
+            <div className="hidden lg:flex items-center gap-0.5 p-1 rounded-full bg-white/[0.04] border border-white/10">
               {navLinks.map((link) => {
+                const href = link.href ? `${basePath}${link.href}` : basePath;
                 const active = isActive(link.href);
-                const isHovered = hoveredLink === link.key;
+
                 return (
                   <div key={link.key} ref={link.hasDropdown ? categoryRef : undefined} className="relative">
                     <Link
-                      href={link.href}
-                      scroll={true}
+                      href={href}
+                      prefetch
+                      scroll
                       onClick={(e) => handleNavClick(e, link)}
-                      onMouseEnter={() => setHoveredLink(link.key)}
-                      onMouseLeave={() => setHoveredLink(null)}
-                      className={`relative flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-medium tracking-wide transition-all duration-300 z-10 ${
-                        active 
-                          ? "text-[#1a1a1a] bg-[#c4a882] shadow-[0_0_20px_rgba(196,168,130,0.4)]" 
-                          : "text-white/70 hover:text-white hover:bg-white/10"
+                      className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[13px] font-medium transition-colors duration-100 active:scale-[0.98] ${
+                        active
+                          ? "text-[#1a1a1a] bg-[#808080]"
+                          : "text-white/75 hover:text-white hover:bg-white/10"
                       }`}
                     >
-                      <span className="relative z-10 flex items-center gap-1.5">
-                        {getLabel(link)}
-                        {link.hasDropdown && (
-                          <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${isCategoryOpen ? "rotate-180" : ""}`} />
-                        )}
-                      </span>
+                      {getLabel(link)}
+                      {link.hasDropdown && (
+                        <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-150 ${isCategoryOpen ? "rotate-180" : ""}`} />
+                      )}
                     </Link>
 
                     {link.hasDropdown && isCategoryOpen && (
-                      <div 
-                        className={`absolute top-full mt-3 w-[420px] bg-[#1a1a1a]/95 backdrop-blur-2xl rounded-2xl shadow-[0_25px_80px_rgba(0,0,0,0.6)] border border-white/10 overflow-hidden animate-dropdown ${isRTL ? "right-0" : "left-0"}`}
-                        style={{ 
-                          animation: "dropdownSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-                          transformOrigin: "top center"
-                        }}
-                      >
-                        <div className="p-1">
-                          <div className="px-4 pt-3 pb-2">
-                            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">
-                              {locale === "fa" ? "دسته‌بندی محصولات" : "Product Categories"}
-                            </p>
-                          </div>
-                          <div className="grid grid-cols-2 gap-1 p-1">
-                            {applianceCategories.map((cat) => (
-                              <CategoryItem 
-                                key={cat.id} 
-                                cat={cat} 
-                                locale={locale} 
-                                basePath={basePath} 
-                                onClose={() => setIsCategoryOpen(false)} 
-                              />
-                            ))}
-                          </div>
+                      <div className={`absolute top-full mt-2 w-[400px] bg-[#1c1c1c] rounded-2xl shadow-[0_16px_48px_rgba(0,0,0,0.5)] border border-white/[0.08] overflow-hidden ${isRTL ? "right-0" : "left-0"}`}>
+                        <div className="px-4 pt-3 pb-2 border-b border-white/[0.06]">
+                          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#808080]">
+                            {locale === "fa" ? "دسته‌بندی محصولات" : "Product Categories"}
+                          </p>
+                        </div>
+                        <div className="grid grid-cols-2 gap-0.5 p-1.5 pb-2">
+                          {applianceCategories.map((cat) => (
+                            <CategoryItem
+                              key={cat.id}
+                              cat={cat}
+                              locale={locale}
+                              basePath={basePath}
+                              onClose={() => setIsCategoryOpen(false)}
+                            />
+                          ))}
                         </div>
                       </div>
                     )}
@@ -274,218 +315,179 @@ export default function Navbar() {
             </div>
 
             <div className="flex items-center gap-1.5 sm:gap-2">
-              
-              <form onSubmit={handleSearch} className="hidden md:flex items-center h-9 sm:h-10 rounded-full px-4 border transition-all duration-500 w-[140px] sm:w-[160px] xl:w-[200px] bg-white/5 border-white/10 focus-within:border-[#c4a882]/50 focus-within:bg-[#c4a882]/5 focus-within:w-[180px] sm:focus-within:w-[200px] xl:focus-within:w-[260px] focus-within:shadow-[0_0_20px_rgba(196,168,130,0.1)]">
-                <Search className="w-3.5 h-3.5 shrink-0 transition-colors text-white/40" />
-                <input 
-                  type="text" 
-                  value={searchQuery} 
-                  onChange={(e) => setSearchQuery(e.target.value)} 
-                  placeholder={locale === "fa" ? "جستجو..." : "Search..."} 
-                  className={`bg-transparent border-none outline-none text-[12px] w-full transition-all ${isRTL ? "pr-2.5" : "pl-2.5"} text-white placeholder:text-white/40`} 
+              <form
+                onSubmit={handleSearch}
+                className="hidden md:flex items-center h-9 rounded-full px-3.5 border bg-white/5 border-white/10 focus-within:border-[#808080]/40 w-[140px] xl:w-[180px] focus-within:w-[200px] xl:focus-within:w-[240px] transition-[width,border-color] duration-200"
+              >
+                <Search className="w-3.5 h-3.5 shrink-0 text-white/40" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={locale === "fa" ? "جستجو..." : "Search..."}
+                  className={`bg-transparent border-none outline-none text-[12px] w-full text-white placeholder:text-white/40 ${isRTL ? "pr-2" : "pl-2"}`}
                 />
               </form>
 
-              <span className="hidden md:inline w-px h-5 sm:h-6 transition-colors bg-white/10" />
+              <span className="hidden md:inline w-px h-5 bg-white/10" />
 
-              {/* Wishlist با badge زنده */}
-              <Link href={`${basePath}/wishlist`} className="group relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center border transition-all duration-300 bg-white/5 border-white/10 hover:border-[#c4a882]/40 hover:bg-[#c4a882]/10 hover:scale-105 hover:shadow-[0_0_15px_rgba(196,168,130,0.15)]">
-                <Heart className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] transition-all duration-300 text-white/70 group-hover:text-[#c4a882] group-hover:scale-110" />
+              <Link href={`${basePath}/wishlist`} prefetch className={`${iconBtn} group`}>
+                <Heart className="w-[17px] h-[17px] text-white/70 group-hover:text-[#808080] transition-colors duration-150" />
                 {wishlistCount > 0 && (
-                  <span className={`absolute -top-1.5 w-[18px] h-[18px] bg-[#c4a882] text-[#1a1a1a] text-[9px] font-bold rounded-full flex items-center justify-center shadow-sm border-2 border-[#1a1a1a] animate-badge ${isRTL ? "-left-1.5" : "-right-1.5"}`}>
+                  <span className={`absolute -top-1.5 min-w-[18px] h-[18px] px-0.5 bg-[#808080] text-[#1a1a1a] text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-[#1a1a1a] ${isRTL ? "-left-1.5" : "-right-1.5"}`}>
                     {formatBadgeCount(wishlistCount)}
                   </span>
                 )}
               </Link>
 
-              {/* Cart با badge زنده */}
-              <Link href={`${basePath}/cart`} className="group relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center border transition-all duration-300 bg-white/5 border-white/10 hover:border-[#c4a882]/40 hover:bg-[#c4a882]/10 hover:scale-105 hover:shadow-[0_0_15px_rgba(196,168,130,0.15)]">
-                <ShoppingBag className="w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] transition-all duration-300 text-white/70 group-hover:text-[#c4a882] group-hover:scale-110" />
+              <Link href={`${basePath}/cart`} prefetch className={`${iconBtn} group`}>
+                <ShoppingBag className="w-[17px] h-[17px] text-white/70 group-hover:text-[#808080] transition-colors duration-150" />
                 {cartCount > 0 && (
-                  <span className={`absolute -top-1.5 w-[18px] h-[18px] bg-[#c4a882] text-[#1a1a1a] text-[9px] font-bold rounded-full flex items-center justify-center shadow-sm border-2 border-[#1a1a1a] animate-badge ${isRTL ? "-left-1.5" : "-right-1.5"}`}>
+                  <span className={`absolute -top-1.5 min-w-[18px] h-[18px] px-0.5 bg-[#808080] text-[#1a1a1a] text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-[#1a1a1a] ${isRTL ? "-left-1.5" : "-right-1.5"}`}>
                     {formatBadgeCount(cartCount)}
                   </span>
                 )}
               </Link>
 
               <div ref={langRef} className="relative hidden lg:block">
-                <button 
-                  onClick={() => setIsLangOpen(!isLangOpen)} 
-                  className={`group w-10 h-10 rounded-xl flex items-center justify-center border transition-all duration-300 ${isLangOpen ? "bg-[#c4a882]/10 border-[#c4a882]/40 text-[#c4a882] scale-105" : "bg-white/5 border-white/10 hover:border-[#c4a882]/40 hover:bg-[#c4a882]/10 hover:scale-105"}`}
+                <button
+                  type="button"
+                  onClick={() => setIsLangOpen((v) => !v)}
+                  className={`${iconBtn} ${isLangOpen ? "bg-[#808080]/10 border-[#808080]/40" : ""}`}
                 >
-                  <Globe className="w-[18px] h-[18px] transition-all duration-300 text-white/70 group-hover:text-[#c4a882]" />
+                  <Globe className="w-[17px] h-[17px] text-white/70" />
                 </button>
                 {isLangOpen && (
-                  <div 
-                    className={`absolute top-full mt-2 w-40 bg-[#1a1a1a]/95 backdrop-blur-2xl rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.5)] border border-white/10 overflow-hidden animate-dropdown ${isRTL ? "left-0" : "right-0"}`}
-                    style={{ animation: "dropdownSlide 0.25s cubic-bezier(0.16, 1, 0.3, 1)" }}
-                  >
-                    <div className="p-1.5">
-                      {(["fa", "en"] as Locale[]).map((l) => (
-                        <button 
-                          key={l} 
-                          onClick={() => switchLocale(l)} 
-                          className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13px] transition-all duration-200 ${locale === l ? "bg-[#c4a882]/10 text-[#c4a882] font-semibold" : "text-white hover:bg-white/5"}`}
-                        >
-                          <span className={`w-2 h-2 rounded-full transition-all ${locale === l ? "bg-[#c4a882] scale-110" : "bg-white/20"}`} />
-                          {localeLabels[l]}
-                        </button>
-                      ))}
-                    </div>
+                  <div className={`absolute top-full mt-1.5 w-36 bg-[#1c1c1c] rounded-xl shadow-xl border border-white/[0.08] overflow-hidden ${isRTL ? "left-0" : "right-0"}`}>
+                    {(["fa", "en"] as Locale[]).map((l) => (
+                      <button
+                        key={l}
+                        type="button"
+                        onClick={() => switchLocale(l)}
+                        className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 text-[13px] transition-colors duration-150 active:scale-[0.98] ${
+                          locale === l ? "bg-[#808080]/10 text-[#808080] font-semibold" : "text-white hover:bg-white/5"
+                        }`}
+                      >
+                        <span className={`w-1.5 h-1.5 rounded-full ${locale === l ? "bg-[#808080]" : "bg-white/25"}`} />
+                        {localeLabels[l]}
+                      </button>
+                    ))}
                   </div>
                 )}
               </div>
 
               <div ref={userRef} className="relative hidden lg:block">
-                <button 
-                  onClick={() => setIsUserOpen(!isUserOpen)} 
-                  className={`group w-10 h-10 rounded-xl flex items-center justify-center border transition-all duration-300 ${isUserOpen ? "bg-[#c4a882]/10 border-[#c4a882]/40 text-[#c4a882] scale-105" : "bg-white/5 border-white/10 hover:border-[#c4a882]/40 hover:bg-[#c4a882]/10 hover:scale-105"}`}
+                <button
+                  type="button"
+                  onClick={() => setIsUserOpen((v) => !v)}
+                  className={`${iconBtn} ${isUserOpen ? "bg-[#808080]/10 border-[#808080]/40" : ""}`}
                 >
-                  <User className="w-[18px] h-[18px] transition-all duration-300 text-white/70 group-hover:text-[#c4a882]" />
+                  <User className="w-[17px] h-[17px] text-white/70" />
                 </button>
                 {isUserOpen && (
-                  <div 
-                    className={`absolute top-full mt-2 w-64 bg-[#1a1a1a]/95 backdrop-blur-2xl rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.5)] border border-white/10 overflow-hidden animate-dropdown ${isRTL ? "left-0" : "right-0"}`}
-                    style={{ animation: "dropdownSlide 0.25s cubic-bezier(0.16, 1, 0.3, 1)" }}
-                  >
-                    <div className="p-2">
-                      <div className="px-3 pt-2 pb-1">
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">
-                          {locale === "fa" ? "حساب کاربری" : "My Account"}
-                        </p>
-                      </div>
+                  <div className={`absolute top-full mt-1.5 w-60 bg-[#1c1c1c] rounded-xl shadow-xl border border-white/[0.08] overflow-hidden ${isRTL ? "left-0" : "right-0"}`}>
+                    <div className="p-1.5">
                       {userMenuItems.map((item) => (
-                        <Link 
-                          key={item.labelFa} 
-                          href={item.href} 
-                          onClick={() => setIsUserOpen(false)} 
-                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] text-white hover:bg-white/5 transition-all group"
+                        <Link
+                          key={item.labelFa}
+                          href={`${basePath}${item.href}`}
+                          prefetch
+                          onClick={() => setIsUserOpen(false)}
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] text-white hover:bg-white/5 transition-colors duration-150"
                         >
-                          <div className="w-8 h-8 rounded-lg bg-[#c4a882]/10 flex items-center justify-center shrink-0 group-hover:bg-[#c4a882]/20 transition-colors">
-                            <item.icon className="w-3.5 h-3.5 text-[#c4a882]" />
+                          <div className="w-8 h-8 rounded-lg bg-[#808080]/10 flex items-center justify-center shrink-0">
+                            <item.icon className="w-3.5 h-3.5 text-[#808080]" />
                           </div>
-                          <div className="flex-1">
+                          <div>
                             <p className="font-medium">{getLabel(item)}</p>
-                            <p className="text-[11px] text-white/40 mt-0.5">{locale === "fa" ? item.descFa : item.descEn}</p>
+                            <p className="text-[11px] text-white/40">{locale === "fa" ? item.descFa : item.descEn}</p>
                           </div>
                         </Link>
                       ))}
-                      <div className="border-t border-white/10 mt-1 pt-1">
-                        <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] text-red-400 hover:bg-red-500/10 transition-colors">
-                          <LogOut className="w-3.5 h-3.5" />
-                          {locale === "fa" ? "خروج از حساب" : "Sign Out"}
-                        </button>
-                      </div>
                     </div>
                   </div>
                 )}
               </div>
 
-              <button 
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
-                className="lg:hidden w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center border transition-all duration-300 bg-white/5 border-white/10 hover:bg-white/10 active:scale-95"
+              <button
+                type="button"
+                onClick={() => setIsMobileMenuOpen((v) => !v)}
+                className={`lg:hidden ${iconBtn}`}
+                aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
               >
-                {isMobileMenuOpen ? <X className="w-4 h-4 sm:w-5 sm:h-5 transition-colors text-white" /> : <Menu className="w-4 h-4 sm:w-5 sm:h-5 transition-colors text-white" />}
+                {isMobileMenuOpen ? <X className="w-4 h-4 text-white" /> : <Menu className="w-4 h-4 text-white" />}
               </button>
             </div>
           </div>
         </div>
       </nav>
 
-      <div 
-        dir={direction} 
-        className={`fixed inset-0 z-[60] lg:hidden transition-all duration-500 ${isMobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"}`}
+      {/* Mobile menu */}
+      <div
+        dir={direction}
+        className={`fixed inset-0 z-[60] lg:hidden transition-opacity duration-150 ${
+          isMobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
+        }`}
       >
-        <div 
-          className="absolute inset-0 bg-[#1a1a1a]/80 backdrop-blur-xl transition-opacity duration-500" 
-          onClick={() => setIsMobileMenuOpen(false)} 
-          style={{ opacity: isMobileMenuOpen ? 1 : 0 }}
-        />
-        <div 
-          className={`absolute top-0 h-full w-[85vw] max-w-[380px] bg-[#1a1a1a] shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-            isMobileMenuOpen ? (isRTL ? "translate-x-0 right-0" : "translate-x-0 left-0") : (isRTL ? "translate-x-full right-0" : "-translate-x-full left-0")
-          }`}
+        <div className="absolute inset-0 bg-black/60" onClick={() => setIsMobileMenuOpen(false)} />
+        <div
+          className={`absolute top-0 h-full w-[88vw] max-w-[360px] bg-[#1a1a1a] shadow-2xl transition-transform duration-150 ease-out ${
+            isMobileMenuOpen
+              ? "translate-x-0"
+              : isRTL
+                ? "translate-x-full"
+                : "-translate-x-full"
+          } ${isRTL ? "right-0" : "left-0"}`}
         >
           <div className="flex flex-col h-full text-white">
-            <div className="flex items-center justify-between p-4 sm:p-5 border-b border-white/10 shrink-0">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#c4a882]">
-                    <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                    <path d="M2 17l10 5 10-5" />
-                    <path d="M2 12l10 5 10-5" />
-                  </svg>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-display text-lg font-bold leading-none">NOVIRA</span>
-                  <span className="text-[8px] sm:text-[9px] tracking-[0.2em] uppercase text-white/50 mt-0.5">
-                    {locale === "fa" ? "لوازم خانگی لوکس" : "Luxury Appliances"}
-                  </span>
-                </div>
-              </div>
-              <button 
-                onClick={() => setIsMobileMenuOpen(false)} 
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/5 flex items-center justify-center text-white hover:bg-[#c4a882]/10 transition-colors active:scale-95"
-              >
+            <div className="flex items-center justify-between p-4 border-b border-white/10">
+              <span className="font-display text-lg font-bold">NOVIRA</span>
+              <button type="button" onClick={() => setIsMobileMenuOpen(false)} className={iconBtn}>
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="p-4 border-b border-white/10 shrink-0">
-              <form onSubmit={handleSearch} className="relative flex items-center h-11 sm:h-12 bg-white/5 rounded-xl px-4 border border-white/10 focus-within:border-[#c4a882]/30 transition-colors">
-                <Search className="w-4 h-4 text-white/40 absolute right-4" />
+            <form onSubmit={handleSearch} className="p-4 border-b border-white/10">
+              <div className="flex items-center h-11 bg-white/5 rounded-xl px-4 border border-white/10">
+                <Search className="w-4 h-4 text-white/40 shrink-0" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={locale === "fa" ? "جستجو در محصولات..." : "Search products..."}
-                  className="bg-transparent w-full text-sm text-white placeholder:text-white/40 outline-none pr-10"
+                  placeholder={locale === "fa" ? "جستجو..." : "Search..."}
+                  className={`bg-transparent w-full text-sm text-white placeholder:text-white/40 outline-none ${isRTL ? "pr-3" : "pl-3"}`}
                 />
-              </form>
-            </div>
-
-            <div className="flex-1 overflow-y-auto py-2 overscroll-contain">
-              <div className="px-4 pt-2 pb-1">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">
-                  {locale === "fa" ? "منوی اصلی" : "Main Menu"}
-                </p>
               </div>
-              {navLinks.map((link, idx) => {
+            </form>
+
+            <div className="flex-1 overflow-y-auto py-2">
+              {navLinks.map((link) => {
+                const href = link.href ? `${basePath}${link.href}` : basePath;
                 const active = isActive(link.href);
+
                 return (
-                  <div 
-                    key={link.key} 
-                    className="animate-slide-in"
-                    style={{ animationDelay: `${idx * 50}ms`, animationFillMode: "both" }}
-                  >
+                  <div key={link.key}>
                     <Link
-                      href={link.href}
-                      scroll={true}
+                      href={href}
+                      prefetch
                       onClick={(e) => handleNavClick(e, link)}
-                      className={`flex items-center justify-between mx-2 px-4 py-3.5 rounded-xl text-[14px] font-medium transition-all duration-300 ${
-                        active
-                          ? "bg-[#c4a882]/10 text-[#c4a882]"
-                          : "text-white hover:bg-white/5"
+                      className={`flex items-center gap-3 mx-2 px-4 py-3 rounded-xl text-[14px] font-medium transition-colors duration-150 active:bg-white/10 ${
+                        active ? "bg-[#808080]/10 text-[#808080]" : "text-white hover:bg-white/5"
                       }`}
                     >
-                      <span className="flex items-center gap-3">
-                        <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${active ? "bg-[#c4a882]/15" : "bg-white/5"}`}>
-                          <link.icon className={`w-4 h-4 ${active ? "text-[#c4a882]" : "text-white/60"}`} />
-                        </div>
-                        {getLabel(link)}
-                      </span>
-                      {link.hasDropdown && <ChevronDown className="w-4 h-4 text-white/40" />}
+                      <link.icon className="w-4 h-4 shrink-0" />
+                      {getLabel(link)}
                     </Link>
                     {link.hasDropdown && (
-                      <div className="px-6 pb-2">
+                      <div className="px-4 pb-2">
                         {applianceCategories.map((cat) => (
                           <Link
                             key={cat.id}
                             href={`${basePath}/products?category=${cat.id}`}
+                            prefetch
                             onClick={() => setIsMobileMenuOpen(false)}
-                            className="flex items-center gap-3 py-2.5 text-white/60 text-[13px] hover:text-[#c4a882] transition-colors"
+                            className="block py-2 ps-8 text-white/60 text-[13px] hover:text-[#808080] transition-colors duration-150"
                           >
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#c4a882]/40" />
                             {locale === "fa" && cat.nameFa ? cat.nameFa : cat.name}
                           </Link>
                         ))}
@@ -495,89 +497,42 @@ export default function Navbar() {
                 );
               })}
 
-              <div className="border-t border-white/10 mt-3 pt-3 mx-2">
-                <div className="px-3 pt-1 pb-2">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">
-                    {locale === "fa" ? "حساب کاربری" : "Account"}
-                  </p>
-                </div>
-                {userMenuItems.map((item, idx) => (
-                  <Link 
-                    key={item.labelFa} 
-                    href={item.href} 
-                    onClick={() => setIsMobileMenuOpen(false)} 
-                    className="flex items-center gap-3 px-4 py-3 text-white text-[14px] hover:bg-white/5 rounded-xl transition-colors"
-                    style={{ animationDelay: `${(navLinks.length + idx) * 50}ms` }}
+              <div className="border-t border-white/10 mt-2 pt-2 mx-2">
+                {userMenuItems.map((item) => (
+                  <Link
+                    key={item.labelFa}
+                    href={`${basePath}${item.href}`}
+                    prefetch
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 text-[14px] hover:bg-white/5 rounded-xl transition-colors duration-150"
                   >
-                    <div className="w-9 h-9 rounded-lg bg-[#c4a882]/10 flex items-center justify-center">
-                      <item.icon className="w-4 h-4 text-[#c4a882]" />
-                    </div>
-                    <div>
-                      <p className="font-medium">{getLabel(item)}</p>
-                      <p className="text-[11px] text-white/40 mt-0.5">{locale === "fa" ? item.descFa : item.descEn}</p>
-                    </div>
+                    <item.icon className="w-4 h-4 text-[#808080]" />
+                    {getLabel(item)}
                   </Link>
                 ))}
-                <button className="w-full flex items-center gap-3 px-4 py-3 mt-1 text-[14px] text-red-400 hover:bg-red-500/10 rounded-xl transition-colors">
-                  <LogOut className="w-4 h-4" />
-                  {locale === "fa" ? "خروج از حساب" : "Sign Out"}
-                </button>
               </div>
             </div>
 
-            <div className="p-4 sm:p-5 border-t border-white/10 space-y-4 shrink-0 bg-[#1a1a1a]">
-              <div className="flex items-center justify-between">
-                <span className="text-white/60 text-[13px] font-medium">{locale === "fa" ? "زبان" : "Language"}</span>
-                <div className="flex gap-2">
-                  {(["fa", "en"] as Locale[]).map((l) => (
-                    <button
-                      key={l}
-                      onClick={() => { switchLocale(l); setIsMobileMenuOpen(false); }}
-                      className={`px-4 py-2 rounded-full text-[12px] font-semibold transition-all duration-300 ${
-                        locale === l
-                          ? "bg-[#c4a882] text-[#1a1a1a] shadow-[0_0_15px_rgba(196,168,130,0.3)]"
-                          : "bg-white/5 text-white hover:bg-white/10"
-                      }`}
-                    >
-                      {localeLabels[l]}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="flex items-center justify-center gap-4 text-[11px] text-white/50">
-                <span className="flex items-center gap-1">
-                  <Phone className="w-3 h-3" />
-                  ۰۲۱-۸۸۷۷۶۶۵۵
-                </span>
-                <span className="w-px h-3 bg-white/10" />
-                <span className="flex items-center gap-1">
-                  <MapPin className="w-3 h-3" />
-                  {locale === "fa" ? "تهران، سعادت‌آباد" : "Tehran, Saadat Abad"}
-                </span>
+            <div className="p-4 border-t border-white/10 flex items-center justify-between">
+              <span className="text-white/60 text-[13px]">{locale === "fa" ? "زبان" : "Language"}</span>
+              <div className="flex gap-2">
+                {(["fa", "en"] as Locale[]).map((l) => (
+                  <button
+                    key={l}
+                    type="button"
+                    onClick={() => switchLocale(l)}
+                    className={`px-3.5 py-1.5 rounded-full text-[12px] font-semibold transition-colors duration-150 active:scale-95 ${
+                      locale === l ? "bg-[#808080] text-[#1a1a1a]" : "bg-white/5 text-white"
+                    }`}
+                  >
+                    {localeLabels[l]}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <style jsx global>{`
-        @keyframes dropdownSlide {
-          from { opacity: 0; transform: translateY(-10px) scale(0.96); }
-          to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes badge-pop {
-          0% { transform: scale(0); }
-          50% { transform: scale(1.2); }
-          100% { transform: scale(1); }
-        }
-        @keyframes slide-in {
-          from { opacity: 0; transform: translateX(${isRTL ? "20px" : "-20px"}); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-        .animate-dropdown { animation: dropdownSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-        .animate-badge { animation: badge-pop 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-        .animate-slide-in { animation: slide-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
-      `}</style>
     </>
   );
 }

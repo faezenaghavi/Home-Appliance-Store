@@ -1,4 +1,4 @@
-import { Product, Category, FAQ, Testimonial } from "@/app/types";
+﻿import { Product, Category, FAQ, Testimonial } from "@/app/types";
 
 export const categories: Category[] = [
   {
@@ -405,7 +405,7 @@ export const products: Product[] = [
     images: ["/images/vacuum-dyson-1.jpg", "/images/vacuum-dyson-2.jpg"],
     colors: [
       { name: "Nickel/Blue", nameFa: "نیکل/آبی", hex: "#7a9cc6" },
-      { name: "Gold", nameFa: "طلایی", hex: "#c4a882" },
+      { name: "Silver", nameFa: "طوسی", hex: "#808080" },
     ],
     rating: 4.9,
     reviews: 2156,

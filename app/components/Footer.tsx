@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   Instagram, Twitter, Youtube, Send, MapPin, Phone, Mail,
@@ -12,8 +12,8 @@ export default function Footer() {
   const isRTL = locale === "fa";
 
   const quickLinks = [
-    { labelFa: "درباره نویرا", labelEn: "About Novira", href: "#about" },
-    { labelFa: "محصولات ویژه", labelEn: "Featured Products", href: "#featured" },
+    { labelFa: "درباره نویرا", labelEn: "About Novira", href: `/${locale}/about` },
+    { labelFa: "محصولات ویژه", labelEn: "Featured Products", href: `/${locale}/featured` },
     { labelFa: "تخفیف‌دارها", labelEn: "Special Offers", href: "#offers" },
     { labelFa: "جدیدترین‌ها", labelEn: "New Arrivals", href: "#new" },
     { labelFa: "بلاگ", labelEn: "Blog", href: "#blog" },
@@ -51,17 +51,17 @@ export default function Footer() {
       {/* ─── Background matching Hero ─── */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] via-[#141210] to-[#1a1815]" />
 
-      {/* Subtle gold texture overlay */}
+      {/* Subtle gray texture overlay */}
       <div
         className="absolute inset-0 opacity-[0.02]"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c4a882' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23808080' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
         }}
       />
 
       {/* Accent glows */}
-      <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#c4a882]/4 rounded-full blur-[120px]" />
-      <div className="absolute -bottom-32 -right-32 w-80 h-80 bg-[#c4a882]/2 rounded-full blur-[100px]" />
+      <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#808080]/4 rounded-full blur-[120px]" />
+      <div className="absolute -bottom-32 -right-32 w-80 h-80 bg-[#808080]/2 rounded-full blur-[100px]" />
 
       <div className="px-4 sm:px-6 lg:px-12 xl:px-24 max-w-[1400px] mx-auto relative z-10">
 
@@ -71,7 +71,7 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-4">
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center bg-[#c4a882] transition-all duration-300 hover:shadow-[0_0_20px_rgba(196,168,130,0.3)]">
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center bg-[#808080] transition-all duration-300 hover:shadow-[0_0_20px_rgba(128,128,128,0.3)]">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 2L2 7l10 5 10-5-10-5z" />
                   <path d="M2 17l10 5 10-5" />
@@ -99,7 +99,7 @@ export default function Footer() {
                   key={social.label}
                   href={social.href}
                   aria-label={social.label}
-                  className="w-9 h-9 rounded-lg flex items-center justify-center border border-white/[0.06] text-[#a8a095]/50 transition-all duration-300 hover:scale-110 hover:border-[#c4a882]/30 hover:text-[#c4a882] hover:bg-[#c4a882]/8 active:scale-95"
+                  className="w-9 h-9 rounded-lg flex items-center justify-center border border-white/[0.06] text-[#a8a095]/50 transition-all duration-300 hover:scale-110 hover:border-[#808080]/30 hover:text-[#808080] hover:bg-[#808080]/8 active:scale-95"
                 >
                   <social.icon className="w-3.5 h-3.5" />
                 </a>
@@ -109,7 +109,7 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div className="lg:col-span-2">
-            <h4 className="text-[12px] sm:text-[13px] font-bold uppercase tracking-[0.15em] mb-4 sm:mb-5 text-[#c4a882]">
+            <h4 className="text-[12px] sm:text-[13px] font-bold uppercase tracking-[0.15em] mb-4 sm:mb-5 text-[#808080]">
               {isRTL ? "دسترسی سریع" : "Quick Links"}
             </h4>
             <ul className="space-y-2.5 sm:space-y-3">
@@ -117,7 +117,7 @@ export default function Footer() {
                 <li key={link.labelFa}>
                   <a
                     href={link.href}
-                    className="group flex items-center gap-1.5 text-[12px] sm:text-[13px] text-[#a8a095]/60 hover:text-[#c4a882] transition-colors duration-300"
+                    className="group flex items-center gap-1.5 text-[12px] sm:text-[13px] text-[#a8a095]/60 hover:text-[#808080] transition-colors duration-300"
                   >
                     {getLabel(link)}
                     <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
@@ -129,7 +129,7 @@ export default function Footer() {
 
           {/* Categories */}
           <div className="lg:col-span-3">
-            <h4 className="text-[12px] sm:text-[13px] font-bold uppercase tracking-[0.15em] mb-4 sm:mb-5 text-[#c4a882]">
+            <h4 className="text-[12px] sm:text-[13px] font-bold uppercase tracking-[0.15em] mb-4 sm:mb-5 text-[#808080]">
               {isRTL ? "دسته‌بندی محصولات" : "Product Categories"}
             </h4>
             <ul className="space-y-2.5 sm:space-y-3">
@@ -137,7 +137,7 @@ export default function Footer() {
                 <li key={cat.labelFa}>
                   <a
                     href={cat.href}
-                    className="group flex items-center gap-1.5 text-[12px] sm:text-[13px] text-[#a8a095]/60 hover:text-[#c4a882] transition-colors duration-300"
+                    className="group flex items-center gap-1.5 text-[12px] sm:text-[13px] text-[#a8a095]/60 hover:text-[#808080] transition-colors duration-300"
                   >
                     {getLabel(cat)}
                     <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
@@ -149,7 +149,7 @@ export default function Footer() {
 
           {/* Support */}
           <div className="lg:col-span-3">
-            <h4 className="text-[12px] sm:text-[13px] font-bold uppercase tracking-[0.15em] mb-4 sm:mb-5 text-[#c4a882]">
+            <h4 className="text-[12px] sm:text-[13px] font-bold uppercase tracking-[0.15em] mb-4 sm:mb-5 text-[#808080]">
               {isRTL ? "پشتیبانی و تماس" : "Support & Contact"}
             </h4>
             <ul className="space-y-2.5 sm:space-y-3">
@@ -157,7 +157,7 @@ export default function Footer() {
                 <li key={item.labelFa}>
                   <a
                     href={item.href}
-                    className="group flex items-center gap-1.5 text-[12px] sm:text-[13px] text-[#a8a095]/60 hover:text-[#c4a882] transition-colors duration-300"
+                    className="group flex items-center gap-1.5 text-[12px] sm:text-[13px] text-[#a8a095]/60 hover:text-[#808080] transition-colors duration-300"
                   >
                     {getLabel(item)}
                     <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
@@ -169,12 +169,12 @@ export default function Footer() {
         </div>
 
         {/* ─── Contact Details Card ─── */}
-        <div className="rounded-2xl p-4 sm:p-6 border border-white/[0.04] bg-[#141210]/60 backdrop-blur-sm mb-10 md:mb-12 hover:border-[#c4a882]/10 transition-all duration-500">
+        <div className="rounded-2xl p-4 sm:p-6 border border-white/[0.04] bg-[#141210]/60 backdrop-blur-sm mb-10 md:mb-12 hover:border-[#808080]/10 transition-all duration-500">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
 
             <a href="tel:02188776655" className="flex items-center gap-3 group">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#c4a882]/10 transition-colors group-hover:bg-[#c4a882]/20">
-                <Phone className="w-3.5 h-3.5 text-[#c4a882]" />
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#808080]/10 transition-colors group-hover:bg-[#808080]/20">
+                <Phone className="w-3.5 h-3.5 text-[#808080]" />
               </div>
               <div>
                 <p className="text-[10px] sm:text-[11px] text-[#a8a095]/40">{isRTL ? "تلفن پشتیبانی" : "Support Hotline"}</p>
@@ -183,8 +183,8 @@ export default function Footer() {
             </a>
 
             <a href="mailto:support@novira.ir" className="flex items-center gap-3 group">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#c4a882]/10 transition-colors group-hover:bg-[#c4a882]/20">
-                <Mail className="w-3.5 h-3.5 text-[#c4a882]" />
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#808080]/10 transition-colors group-hover:bg-[#808080]/20">
+                <Mail className="w-3.5 h-3.5 text-[#808080]" />
               </div>
               <div>
                 <p className="text-[10px] sm:text-[11px] text-[#a8a095]/40">{isRTL ? "ایمیل" : "Email"}</p>
@@ -193,8 +193,8 @@ export default function Footer() {
             </a>
 
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#c4a882]/10">
-                <Clock className="w-3.5 h-3.5 text-[#c4a882]" />
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#808080]/10">
+                <Clock className="w-3.5 h-3.5 text-[#808080]" />
               </div>
               <div>
                 <p className="text-[10px] sm:text-[11px] text-[#a8a095]/40">{isRTL ? "ساعات پاسخگویی" : "Working Hours"}</p>
@@ -205,8 +205,8 @@ export default function Footer() {
             </div>
 
             <div className="flex items-start gap-3 sm:col-span-2 lg:col-span-1">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 bg-[#c4a882]/10">
-                <MapPin className="w-3.5 h-3.5 text-[#c4a882]" />
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 bg-[#808080]/10">
+                <MapPin className="w-3.5 h-3.5 text-[#808080]" />
               </div>
               <div>
                 <p className="text-[10px] sm:text-[11px] text-[#a8a095]/40">{isRTL ? "آدرس فروشگاه" : "Store Address"}</p>
@@ -229,20 +229,20 @@ export default function Footer() {
             </p>
             <span className="w-1 h-1 rounded-full bg-[#a8a095]/20" />
             <div className="flex items-center gap-1">
-              <BadgeCheck className="w-3 h-3 text-[#c4a882]" />
+              <BadgeCheck className="w-3 h-3 text-[#808080]" />
               <span className="text-[10px] sm:text-[11px] text-[#a8a095]/30">
                 {isRTL ? "نماد اعتماد الکترونیک" : "E-Trust Badge"}
               </span>
             </div>
           </div>
           <div className="flex items-center gap-4 sm:gap-5">
-            <a href="#" className="text-[10px] sm:text-[11px] text-[#a8a095]/30 hover:text-[#c4a882] transition-colors duration-300">
+            <a href="#" className="text-[10px] sm:text-[11px] text-[#a8a095]/30 hover:text-[#808080] transition-colors duration-300">
               {isRTL ? "حریم خصوصی" : "Privacy"}
             </a>
-            <a href="#" className="text-[10px] sm:text-[11px] text-[#a8a095]/30 hover:text-[#c4a882] transition-colors duration-300">
+            <a href="#" className="text-[10px] sm:text-[11px] text-[#a8a095]/30 hover:text-[#808080] transition-colors duration-300">
               {isRTL ? "شرایط استفاده" : "Terms"}
             </a>
-            <a href="#" className="text-[10px] sm:text-[11px] text-[#a8a095]/30 hover:text-[#c4a882] transition-colors duration-300">
+            <a href="#" className="text-[10px] sm:text-[11px] text-[#a8a095]/30 hover:text-[#808080] transition-colors duration-300">
               {isRTL ? "کوکی‌ها" : "Cookies"}
             </a>
           </div>

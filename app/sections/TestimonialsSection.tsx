@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
@@ -177,7 +177,7 @@ export default function TestimonialsSection() {
         <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-10 md:mb-14 gap-6 lg:gap-10">
           <ScrollReveal animation="fade-right" duration={800}>
             <div className={isRTL ? "text-right" : "text-left"}>
-              <span className="text-[#c4a882] text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] mb-3 sm:mb-4 block">
+              <span className="text-[#808080] text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] mb-3 sm:mb-4 block">
                 {isRTL ? "نظرات واقعی مشتریان" : "Real Customer Reviews"}
               </span>
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-[#1a1a1a] leading-tight"
@@ -201,7 +201,7 @@ export default function TestimonialsSection() {
               ].map((stat, i) => (
                 <div key={i} className="text-center flex-1 sm:flex-none">
                   <div className="flex items-center justify-center gap-1 mb-1">
-                    {stat.icon && <Star className="w-4 h-4 sm:w-5 sm:h-5 fill-[#c4a882] text-[#c4a882]" />}
+                    {stat.icon && <Star className="w-4 h-4 sm:w-5 sm:h-5 fill-[#808080] text-[#808080]" />}
                     <span className="text-xl sm:text-2xl font-bold text-[#1a1a1a]">{stat.value}</span>
                   </div>
                   <p className="text-[10px] sm:text-[11px] text-[#8a8577]">{stat.label}</p>
@@ -251,7 +251,7 @@ export default function TestimonialsSection() {
                 >
                   {/* Tags */}
                   <div className="flex items-center gap-2 mb-4 sm:mb-6 flex-wrap">
-                    <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-[11px] font-semibold bg-[#c4a882]/10 text-[#c4a882]">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-[11px] font-semibold bg-[#808080]/10 text-[#808080]">
                       <Package className="w-3 h-3" />
                       <span className="truncate max-w-[180px] sm:max-w-none">
                         {isRTL ? current.product : current.productEn}
@@ -265,7 +265,7 @@ export default function TestimonialsSection() {
                     )}
                   </div>
 
-                  <Quote className="w-6 h-6 sm:w-8 sm:h-8 mb-3 sm:mb-4 text-[#c4a882]" strokeWidth={1.5} />
+                  <Quote className="w-6 h-6 sm:w-8 sm:h-8 mb-3 sm:mb-4 text-[#808080]" strokeWidth={1.5} />
 
                   <p className="text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed sm:leading-relaxed mb-6 sm:mb-8 text-[#1a1a1a]"
                     style={{ fontFamily: "var(--font-display), 'Vazirmatn', 'Tahoma', serif" }}>
@@ -277,8 +277,8 @@ export default function TestimonialsSection() {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     {/* Author */}
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden ring-2 ring-[#c4a882]/30 bg-[#f5f0e8] flex items-center justify-center shrink-0">
-                        <User className="w-5 h-5 sm:w-6 sm:h-6 text-[#c4a882]" />
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden ring-2 ring-[#808080]/30 bg-[#f5f0e8] flex items-center justify-center shrink-0">
+                        <User className="w-5 h-5 sm:w-6 sm:h-6 text-[#808080]" />
                       </div>
                       <div className="min-w-0">
                         <span className="text-sm font-bold block text-[#1a1a1a] truncate">
@@ -298,8 +298,8 @@ export default function TestimonialsSection() {
                             key={i}
                             className="w-3.5 h-3.5 sm:w-4 sm:h-4"
                             style={{
-                              color: i < current.rating ? "#c4a882" : "rgba(26,26,26,0.1)",
-                              fill: i < current.rating ? "#c4a882" : "none",
+                              color: i < current.rating ? "#808080" : "rgba(26,26,26,0.1)",
+                              fill: i < current.rating ? "#808080" : "none",
                             }}
                           />
                         ))}
@@ -314,9 +314,9 @@ export default function TestimonialsSection() {
                         onClick={() => toggleLike(current.id)}
                         className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-[12px] font-medium transition-all duration-300 active:scale-95"
                         style={{
-                          backgroundColor: liked.has(current.id) ? "rgba(196,168,130,0.1)" : "rgba(26,26,26,0.04)",
-                          color: liked.has(current.id) ? "#c4a882" : "#8a8577",
-                          border: liked.has(current.id) ? "1px solid rgba(196,168,130,0.3)" : "1px solid transparent",
+                          backgroundColor: liked.has(current.id) ? "rgba(128,128,128,0.1)" : "rgba(26,26,26,0.04)",
+                          color: liked.has(current.id) ? "#808080" : "#8a8577",
+                          border: liked.has(current.id) ? "1px solid rgba(128,128,128,0.3)" : "1px solid transparent",
                         }}
                       >
                         <ThumbsUp className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
@@ -350,17 +350,17 @@ export default function TestimonialsSection() {
                   w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-full overflow-hidden transition-all duration-300
                   flex items-center justify-center bg-[#f5f0e8] ring-2
                   ${active === index 
-                    ? "ring-[#c4a882] scale-110 shadow-md" 
+                    ? "ring-[#808080] scale-110 shadow-md" 
                     : "ring-transparent opacity-50 hover:opacity-80"
                   }
                 `}
               >
-                <User className="w-4 h-4 sm:w-5 sm:h-5 text-[#c4a882]" />
+                <User className="w-4 h-4 sm:w-5 sm:h-5 text-[#808080]" />
               </div>
               {active === index && (
                 <motion.div
                   layoutId="activeThumb"
-                  className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#c4a882]"
+                  className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#808080]"
                 />
               )}
             </button>
@@ -371,7 +371,7 @@ export default function TestimonialsSection() {
         <div className="flex items-center justify-center gap-3 sm:gap-4 mt-5 sm:mt-6">
           <button
             onClick={prev}
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#1a1a1a]/10 flex items-center justify-center transition-all duration-300 text-[#1a1a1a] hover:border-[#c4a882] hover:text-[#c4a882] hover:scale-105 active:scale-95"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#1a1a1a]/10 flex items-center justify-center transition-all duration-300 text-[#1a1a1a] hover:border-[#808080] hover:text-[#808080] hover:scale-105 active:scale-95"
             aria-label="Previous review"
           >
             {isRTL ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
@@ -385,7 +385,7 @@ export default function TestimonialsSection() {
                 className="h-1.5 rounded-full transition-all duration-500 focus:outline-none"
                 style={{
                   width: active === i ? 24 : 6,
-                  backgroundColor: active === i ? "#c4a882" : "rgba(26,26,26,0.1)",
+                  backgroundColor: active === i ? "#808080" : "rgba(26,26,26,0.1)",
                 }}
                 aria-label={`Go to review ${i + 1}`}
               />
@@ -394,7 +394,7 @@ export default function TestimonialsSection() {
 
           <button
             onClick={next}
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#1a1a1a]/10 flex items-center justify-center transition-all duration-300 text-[#1a1a1a] hover:border-[#c4a882] hover:text-[#c4a882] hover:scale-105 active:scale-95"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-[#1a1a1a]/10 flex items-center justify-center transition-all duration-300 text-[#1a1a1a] hover:border-[#808080] hover:text-[#808080] hover:scale-105 active:scale-95"
             aria-label="Next review"
           >
             {isRTL ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}

@@ -1,27 +1,47 @@
 // app/sections/NewArrivals.tsx
 "use client";
 
-import { ArrowRight, Heart, Star, Zap } from "lucide-react";
+import { ArrowRight, Heart, Star, Zap, ShoppingBag } from "lucide-react";
 import { appliances } from "@/app/data/appliances";
 import { useI18n } from "@/app/i18n/Provider";
 import { useScrollAnimation } from "@/app/hooks/useScrollAnimation";
-import { useState } from "react";
 import Link from "next/link";
+import { useCart } from "@/app/context/CartContext";
+import { useWishlist } from "@/app/context/WishlistContext";
+import { useToast } from "@/app/context/Toastcontext";
 
 export default function NewArrivals() {
-  const { t, locale } = useI18n();
-  const isRTL = locale === "fa";
+  const { t, locale, direction } = useI18n();
+  const isRTL = direction === "rtl";
   const { ref, isVisible } = useScrollAnimation(0.1);
-  const [likedProducts, setLikedProducts] = useState<Set<string>>(new Set());
+  const { addItem } = useCart();
+  const { toggleWishlist, isWishlisted } = useWishlist();
+  const { showToast } = useToast();
 
   const newProducts = appliances.filter((p) => p.isNew).slice(0, 4);
 
-  const toggleLike = (id: string) => {
-    setLikedProducts((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
+  const handleAddToCart = (e: React.MouseEvent, product: (typeof appliances)[0]) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const color = product.colors[0] || { name: "Default", nameFa: "پیش‌فرض", hex: "#808080" };
+    addItem(product, color, 1);
+    showToast({
+      title: t("common.addedToCart") as string,
+      description: isRTL && product.nameFa ? product.nameFa : product.name,
+      variant: "cart",
+    });
+  };
+
+  const handleWishlist = (e: React.MouseEvent, product: (typeof appliances)[0]) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const isAdded = toggleWishlist(product);
+    showToast({
+      title: isAdded
+        ? (t("common.addedToWishlist") as string)
+        : (t("common.removedFromWishlist") as string),
+      description: isRTL && product.nameFa ? product.nameFa : product.name,
+      variant: isAdded ? "wishlist" : "info",
     });
   };
 
@@ -53,7 +73,7 @@ export default function NewArrivals() {
           </div>
           {/* Was: <a href="#new-arrivals"> (dead anchor). Now routes to the products page,
               pre-filtered to featured/new items (isNew is included in the isFeatured filter). */}
-          <Link href={`/${locale}/products?featured=true`} className="btn-outline text-xs">
+          <Link href={`/${locale}/featured`} className="btn-outline text-xs">
             {t("common.seeAll")}
             <ArrowRight className={`w-4 h-4 ${isRTL ? "rotate-180" : ""}`} />
           </Link>
@@ -84,15 +104,12 @@ export default function NewArrivals() {
                     </span>
                   </div>
                   <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      toggleLike(product.id);
-                    }}
+                    type="button"
+                    onClick={(e) => handleWishlist(e, product)}
                     className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-soft hover:scale-110 transition-transform"
                   >
                     <Heart
-                      className={`w-4 h-4 ${likedProducts.has(product.id) ? "fill-red-500 text-red-500" : "text-weave-dark"}`}
+                      className={`w-4 h-4 ${isWishlisted(product.id) ? "fill-red-500 text-red-500" : "text-weave-dark"}`}
                     />
                   </button>
                 </Link>
@@ -147,12 +164,14 @@ export default function NewArrivals() {
                     </div>
                   </div>
 
-                  <Link
-                    href={`/${locale}/products/${product.id}`}
-                    className="mt-4 w-full py-3 bg-weave-dark text-white rounded-xl text-xs font-semibold hover:bg-weave-accent transition-colors text-center"
+                  <button
+                    type="button"
+                    onClick={(e) => handleAddToCart(e, product)}
+                    className="mt-4 w-full py-3 bg-weave-dark text-white rounded-xl text-xs font-semibold hover:bg-weave-accent transition-colors text-center flex items-center justify-center gap-2"
                   >
+                    <ShoppingBag className="w-3.5 h-3.5" />
                     {t("products.addToCart")}
-                  </Link>
+                  </button>
                 </div>
               </div>
             </div>

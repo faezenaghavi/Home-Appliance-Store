@@ -4,6 +4,8 @@ import { getDictionary } from "@/app/i18n/dictionary";
 import { defaultLocale, Locale } from "@/app/i18n/config"; // اضافه کردن نوع Locale
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
+import ScrollToTop from "@/app/components/ScrollToTop";
+import AppLoader from "@/app/components/AppLoader";
 
 export function generateStaticParams() {
   return [
@@ -12,28 +14,31 @@ export function generateStaticParams() {
   ];
 }
 
-export const dynamicParams = false;
+export const dynamicParams = true;
 
 export default async function LocaleLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
-  // تبدیل نوع string به Locale
-  const locale = (params.locale || defaultLocale) as Locale;
+  const { locale: localeParam } = await params;
+  const locale = (localeParam || defaultLocale) as Locale;
   
   const dictionary = await getDictionary(locale);
 
   return (
     // حالا locale از نوع Locale است و ارور نمی‌دهد
     <I18nProvider initialLocale={locale} initialDictionary={dictionary}>
-      <Navbar cartCount={0} wishlistCount={0} />
-      <main className=" min-h-screen bg-[#faf8f5]">
-        {children}
-      </main>
-      <Footer />
+      <AppLoader>
+        <Navbar />
+        <main className=" min-h-screen bg-[#faf8f5]">
+          {children}
+        </main>
+        <Footer />
+        <ScrollToTop />
+      </AppLoader>
     </I18nProvider>
   );
 }
