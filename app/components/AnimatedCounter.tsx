@@ -1,6 +1,6 @@
 "use client";
 
-import { useCountUp } from "@/app/hooks/useCountUp"; // مسیر ایمپورت اصلاح شد
+import { useCountUp } from "@/app/hooks/useCountUp";
 
 interface AnimatedCounterProps {
   end: number;

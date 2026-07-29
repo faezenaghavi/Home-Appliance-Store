@@ -6,6 +6,7 @@ import { appliances } from "@/app/data/appliances";
 import { useI18n } from "@/app/i18n/Provider";
 import { useScrollAnimation } from "@/app/hooks/useScrollAnimation";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function NewArrivals() {
   const { t, locale } = useI18n();
@@ -50,10 +51,12 @@ export default function NewArrivals() {
               {t("products.newArrivals")}
             </h2>
           </div>
-          <a href="#new-arrivals" className="btn-outline text-xs">
+          {/* Was: <a href="#new-arrivals"> (dead anchor). Now routes to the products page,
+              pre-filtered to featured/new items (isNew is included in the isFeatured filter). */}
+          <Link href={`/${locale}/products?featured=true`} className="btn-outline text-xs">
             {t("common.seeAll")}
             <ArrowRight className={`w-4 h-4 ${isRTL ? "rotate-180" : ""}`} />
-          </a>
+          </Link>
         </div>
 
         {/* Products Grid - Large Cards */}
@@ -66,7 +69,10 @@ export default function NewArrivals() {
             >
               <div className={`flex flex-col sm:flex-row ${isRTL ? "sm:flex-row-reverse" : ""}`}>
                 {/* Image Side */}
-                <div className="relative sm:w-1/2 aspect-square overflow-hidden">
+                <Link
+                  href={`/${locale}/products/${product.id}`}
+                  className="relative sm:w-1/2 aspect-square overflow-hidden block"
+                >
                   <img
                     src={product.images[0]}
                     alt={locale === "fa" && product.nameFa ? product.nameFa : product.name}
@@ -78,23 +84,29 @@ export default function NewArrivals() {
                     </span>
                   </div>
                   <button
-                    onClick={() => toggleLike(product.id)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      toggleLike(product.id);
+                    }}
                     className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-soft hover:scale-110 transition-transform"
                   >
                     <Heart
                       className={`w-4 h-4 ${likedProducts.has(product.id) ? "fill-red-500 text-red-500" : "text-weave-dark"}`}
                     />
                   </button>
-                </div>
+                </Link>
 
                 {/* Content Side */}
                 <div className="sm:w-1/2 p-6 flex flex-col justify-center">
                   <p className="text-weave-muted text-[10px] font-medium uppercase tracking-wider mb-2">
                     {locale === "fa" && product.categoryFa ? product.categoryFa : product.category}
                   </p>
-                  <h3 className="font-display text-lg font-semibold text-weave-dark mb-3 line-clamp-2">
-                    {locale === "fa" && product.nameFa ? product.nameFa : product.name}
-                  </h3>
+                  <Link href={`/${locale}/products/${product.id}`}>
+                    <h3 className="font-display text-lg font-semibold text-weave-dark mb-3 line-clamp-2 hover:text-weave-accent transition-colors">
+                      {locale === "fa" && product.nameFa ? product.nameFa : product.name}
+                    </h3>
+                  </Link>
 
                   {/* Features Preview */}
                   <div className="space-y-1.5 mb-4">
@@ -135,9 +147,12 @@ export default function NewArrivals() {
                     </div>
                   </div>
 
-                  <button className="mt-4 w-full py-3 bg-weave-dark text-white rounded-xl text-xs font-semibold hover:bg-weave-accent transition-colors">
+                  <Link
+                    href={`/${locale}/products/${product.id}`}
+                    className="mt-4 w-full py-3 bg-weave-dark text-white rounded-xl text-xs font-semibold hover:bg-weave-accent transition-colors text-center"
+                  >
                     {t("products.addToCart")}
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>

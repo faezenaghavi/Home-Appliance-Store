@@ -5,24 +5,61 @@ import { Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/app/i18n/Provider";
 import { useScrollAnimation } from "@/app/hooks/useScrollAnimation";
-import { appliances } from "@/app/data/appliances"; // ایمپورت دیتابیس اصلی
+import { appliances } from "@/app/data/appliances"; 
+import { useCart } from "@/app/context/CartContext";
+import { useWishlist } from "@/app/context/WishlistContext";
+import { useToast } from "@/app/context/Toastcontext";
 
 function ProductCardItem({ product, index = 0 }: { product: typeof appliances[0]; index?: number }) {
-  const [isLiked, setIsLiked] = useState(false);
   const { locale, direction } = useI18n();
   const isRTL = direction === "rtl";
   const router = useRouter();
   const { ref, isVisible } = useScrollAnimation(0.1);
+
+  // دریافت توابع از کانتکست‌ها
+  const { addItem } = useCart();
+  const { toggleWishlist, isWishlisted } = useWishlist();
+  const { showToast } = useToast();
 
   const formatPrice = (price: number) => {
     return price.toLocaleString(isRTL ? "fa-IR" : "en-US");
   };
 
   const productName = isRTL ? (product.nameFa || product.name) : product.name;
-  const productDesc = isRTL ? (product.descriptionFa || product.description) : product.description;
+  const productImage = Array.isArray(product.images) ? product.images[0] : "";
+
+  const liked = isWishlisted(product.id);
 
   const goToProduct = () => {
     router.push(`/${locale}/products/${product.id}`);
+  };
+
+  // اکشن افزودن به سبد خرید
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // انتخاب رنگ پیش‌فرض (اولین رنگ) برای افزودن سریع به سبد
+    const defaultColor = product.colors[0] || { name: "Default", nameFa: "پیش‌فرض", hex: "#000000" };
+    addItem(product, defaultColor, 1);
+    
+    showToast({
+      title: isRTL ? "به سبد خرید اضافه شد" : "Added to Cart",
+      description: productName,
+      variant: "cart"
+    });
+  };
+
+  // اکشن افزودن به علاقه‌مندی‌ها
+  const handleToggleWishlist = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const isAdded = toggleWishlist(product);
+    
+    showToast({
+      title: isAdded 
+        ? (isRTL ? "به علاقه‌مندی‌ها اضافه شد" : "Added to Wishlist") 
+        : (isRTL ? "از علاقه‌مندی‌ها حذف شد" : "Removed from Wishlist"),
+      description: productName,
+      variant: isAdded ? "wishlist" : "info"
+    });
   };
 
   return (
@@ -44,7 +81,7 @@ function ProductCardItem({ product, index = 0 }: { product: typeof appliances[0]
         }}
       >
         <img
-          src={product.images?.[0] || product.images}
+          src={productImage} 
           alt={productName}
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           loading="lazy"
@@ -59,101 +96,47 @@ function ProductCardItem({ product, index = 0 }: { product: typeof appliances[0]
         />
 
         {product.isNew && (
-          <div
-            className="absolute top-4 right-4 z-10"
-            style={{
-              backgroundColor: "rgba(255,255,255,0.95)",
-              borderRadius: 999,
-              padding: "6px 14px",
-            }}
-          >
-            <span
-              style={{
-                color: "#1a1a1a",
-                fontSize: 11,
-                fontWeight: 600,
-                letterSpacing: 0.5,
-              }}
-            >
+          <div className="absolute top-4 right-4 z-10 bg-white/95 rounded-full py-1.5 px-3.5">
+            <span className="text-[#1a1a1a] text-[11px] font-semibold tracking-wide">
               {isRTL ? "محصول جدید" : "New"}
             </span>
           </div>
         )}
         {product.isBestseller && (
-          <div
-            className="absolute top-4 right-4 z-10"
-            style={{
-              backgroundColor: "rgba(255,255,255,0.95)",
-              borderRadius: 999,
-              padding: "6px 14px",
-            }}
-          >
-            <span
-              style={{
-                color: "#1a1a1a",
-                fontSize: 11,
-                fontWeight: 600,
-                letterSpacing: 0.5,
-              }}
-            >
+          <div className="absolute top-4 right-4 z-10 bg-white/95 rounded-full py-1.5 px-3.5">
+            <span className="text-[#1a1a1a] text-[11px] font-semibold tracking-wide">
               {isRTL ? "پرفروش" : "Bestseller"}
             </span>
           </div>
         )}
 
+        {/* دکمه علاقه‌مندی با قابلیت Toast و اتصال به Context */}
         <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsLiked(!isLiked);
-          }}
-          className="absolute top-4 left-4 z-10 flex items-center justify-center transition-all hover:scale-110"
-          style={{
-            width: 36,
-            height: 36,
-            borderRadius: 999,
-            backgroundColor: "rgba(255,255,255,0.15)",
-            backdropFilter: "blur(8px)",
-            border: "none",
-            cursor: "pointer",
-          }}
+          onClick={handleToggleWishlist}
+          className="absolute top-4 left-4 z-10 flex items-center justify-center transition-all hover:scale-110 w-9 h-9 rounded-full bg-white/15 backdrop-blur-sm border-none cursor-pointer"
         >
           <Heart
             className="w-4 h-4 transition-colors"
             style={{
-              color: isLiked ? "#ef4444" : "#ffffff",
-              fill: isLiked ? "#ef4444" : "none",
+              color: liked ? "#ef4444" : "#ffffff",
+              fill: liked ? "#ef4444" : "none",
             }}
           />
         </button>
 
-        <div
-          className="absolute bottom-0 left-0 right-0 p-5 z-10"
-          style={{ direction: direction }}
-        >
+        <div className="absolute bottom-0 left-0 right-0 p-5 z-10" style={{ direction }}>
           <h3
             style={{
               color: "#ffffff",
               fontSize: 17,
               fontWeight: 700,
               lineHeight: 1.4,
-              marginBottom: 8,
+              marginBottom: 24,
               fontFamily: "var(--font-display), 'Vazirmatn', 'Tahoma', sans-serif",
             }}
           >
             {productName}
           </h3>
-
-          <p
-            style={{
-              color: "rgba(255,255,255,0.75)",
-              fontSize: 12,
-              lineHeight: 1.7,
-              marginBottom: 16,
-              fontFamily: "var(--font-body), 'Vazirmatn', 'Tahoma', sans-serif",
-            }}
-          >
-            {productDesc}
-          </p>
 
           <div className="flex items-center justify-between">
             <div className="flex items-baseline gap-1.5">
@@ -167,13 +150,7 @@ function ProductCardItem({ product, index = 0 }: { product: typeof appliances[0]
               >
                 {formatPrice(product.price)}
               </span>
-              <span
-                style={{
-                  color: "rgba(255,255,255,0.7)",
-                  fontSize: 11,
-                  fontWeight: 500,
-                }}
-              >
+              <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 11, fontWeight: 500 }}>
                 {isRTL ? "تومان" : "IRR"}
               </span>
               {product.originalPrice && (
@@ -191,11 +168,9 @@ function ProductCardItem({ product, index = 0 }: { product: typeof appliances[0]
               )}
             </div>
 
+            {/* دکمه افزودن به سبد خرید با قابلیت Toast */}
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                goToProduct();
-              }}
+              onClick={handleAddToCart}
               className="cta-btn"
               style={{
                 border: "1.5px solid rgba(255,255,255,0.6)",
@@ -211,19 +186,17 @@ function ProductCardItem({ product, index = 0 }: { product: typeof appliances[0]
                 transition: "all 0.25s ease",
               }}
               onMouseEnter={(e) => {
-                const btn = e.currentTarget;
-                btn.style.backgroundColor = "#ffffff";
-                btn.style.color = "#1a1a1a";
-                btn.style.borderColor = "#ffffff";
+                e.currentTarget.style.backgroundColor = "#ffffff";
+                e.currentTarget.style.color = "#1a1a1a";
+                e.currentTarget.style.borderColor = "#ffffff";
               }}
               onMouseLeave={(e) => {
-                const btn = e.currentTarget;
-                btn.style.backgroundColor = "transparent";
-                btn.style.color = "#ffffff";
-                btn.style.borderColor = "rgba(255,255,255,0.6)";
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "#ffffff";
+                e.currentTarget.style.borderColor = "rgba(255,255,255,0.6)";
               }}
             >
-              {isRTL ? "مشاهده و خرید" : "View & Buy"}
+              {isRTL ? "افزودن به سبد" : "Add to Cart"}
             </button>
           </div>
         </div>
@@ -237,7 +210,6 @@ export default function FeaturedProducts() {
   const isRTL = direction === "rtl";
   const { ref, isVisible } = useScrollAnimation(0.1);
 
-  // انتخاب 4 محصول اول از دیتابیس اصلی
   const featuredItems = appliances.slice(0, 4);
 
   return (
@@ -271,10 +243,7 @@ export default function FeaturedProducts() {
               {isRTL ? "جدیدترین لوازم خانگی" : "Latest Home Appliances"}
             </h2>
           </div>
-          <p
-            style={{ color: "#8a8577" }}
-            className="text-sm max-w-md leading-relaxed"
-          >
+          <p style={{ color: "#8a8577" }} className="text-sm max-w-md leading-relaxed">
             {isRTL
               ? "مجموعه‌ای از بهترین و جدیدترین لوازم خانگی با کیفیت بالا و گارانتی معتبر"
               : "A curated collection of the best and newest home appliances with high quality and valid warranty"}
@@ -287,6 +256,17 @@ export default function FeaturedProducts() {
           ))}
         </div>
       </div>
+
+      {/* انیمیشن Toast در صورت عدم وجود در گلوبال css */}
+      <style jsx global>{`
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeUp {
+          animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+      `}</style>
     </section>
   );
 }

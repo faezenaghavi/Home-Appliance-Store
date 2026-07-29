@@ -5,7 +5,7 @@ import { useI18n } from "@/app/i18n/Provider";
 import { appliances, applianceCategories } from "@/app/data/appliances";
 import ProductCard from "@/app/components/ProductCard";
 import { useMemo } from "react";
-import { X, ChevronRight, ChevronLeft, Home, Tag, Sparkles, Award } from "lucide-react";
+import { X, ChevronRight, ChevronLeft, Home } from "lucide-react";
 import Link from "next/link";
 
 export default function ProductsContent() {
@@ -55,100 +55,136 @@ export default function ProductsContent() {
     return products;
   }, [category, brand, isOffers, isFeatured, searchQuery]);
 
-  // تابع رندر هدر صفحه
+  // استخراج نام فارسی و انگلیسی برای نمایش در هدر و برد کرامب
+  const currentBrandFa = isRTL && brand ? appliances.find(p => p.brand?.toLowerCase() === brand.toLowerCase())?.brandFa || brand : brand;
+  const currentCategoryObj = category ? applianceCategories.find(c => c.id === category) : null;
+  const currentCategoryName = currentCategoryObj ? (isRTL ? currentCategoryObj.nameFa : currentCategoryObj.name) : "";
+
   const renderHeader = () => {
     if (isOffers) {
       return (
-        <div className="mb-10 text-center">
-          <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-red-500/10 text-red-500 text-xs font-bold uppercase tracking-widest rounded-full mb-5 mx-auto">
-            <Tag className="w-3.5 h-3.5" />
-            {t("products.specialOffers")}
+        <div className="mb-12 text-center">
+          <span style={{ color: "#dc2626", letterSpacing: "0.2em" }} className="text-xs font-semibold uppercase mb-4 block">
+            {isRTL ? "تخفیف‌ها" : "Special Offers"}
           </span>
-          <h1 className="text-4xl sm:text-5xl font-bold text-[#1a1a1a] leading-tight mb-4">{t("products.specialOffers")}</h1>
-          <p className="text-[#8a8577] text-base max-w-xl mx-auto leading-relaxed mb-8">{t("products.specialOffersSubtitle")}</p>
-          <div className="w-24 h-1 bg-red-500 mx-auto rounded-full"></div>
+          <h1 style={{ color: "#1a1a1a", fontFamily: "var(--font-display), 'Playfair Display', serif" }} className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
+            {isRTL ? "تخفیف‌های ویژه" : "Special Offers"}
+          </h1>
+          <p style={{ color: "#8a8577" }} className="text-sm max-w-md mx-auto leading-relaxed mb-8">
+            {isRTL ? "بهترین فرصت‌ها برای خرید لوازم خانگی با بالاترین تخفیف" : "Best opportunities to buy home appliances with the highest discount"}
+          </p>
+          <div className="w-16 sm:w-24 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent mx-auto rounded-full" />
         </div>
       );
     }
     if (isFeatured) {
       return (
-        <div className="mb-10 text-center">
-          <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#c4a882]/10 text-[#c4a882] text-xs font-bold uppercase tracking-widest rounded-full mb-5 mx-auto">
-            <Sparkles className="w-3.5 h-3.5" />
-            {t("products.featured")}
+        <div className="mb-12 text-center">
+          <span style={{ color: "#c4a882", letterSpacing: "0.2em" }} className="text-xs font-semibold uppercase mb-4 block">
+            {isRTL ? "محصولات ویژه" : "Featured"}
           </span>
-          <h1 className="text-4xl sm:text-5xl font-bold text-[#1a1a1a] leading-tight mb-4">{t("products.bestsellers")}</h1>
-          <p className="text-[#8a8577] text-base max-w-xl mx-auto leading-relaxed mb-8">{t("products.bestsellersSubtitle")}</p>
-          <div className="w-24 h-1 bg-[#c4a882] mx-auto rounded-full"></div>
+          <h1 style={{ color: "#1a1a1a", fontFamily: "var(--font-display), 'Playfair Display', serif" }} className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
+            {isRTL ? "پرفروش‌ترین‌ها و جدیدترین‌ها" : "Bestsellers & New Arrivals"}
+          </h1>
+          <p style={{ color: "#8a8577" }} className="text-sm max-w-md mx-auto leading-relaxed mb-8">
+            {isRTL ? "محبوب‌ترین محصولات از نگاه مشتریان ما را کشف کنید" : "Discover the most popular products chosen by our customers"}
+          </p>
+          <div className="w-16 sm:w-24 h-[2px] bg-gradient-to-r from-transparent via-[#c4a882] to-transparent mx-auto rounded-full" />
         </div>
       );
     }
     if (brand) {
       return (
-        <div className="mb-10 text-center">
-          <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#c4a882]/10 text-[#c4a882] text-xs font-bold uppercase tracking-widest rounded-full mb-5 mx-auto">
-            <Award className="w-3.5 h-3.5" />
+        <div className="mb-12 text-center">
+          <span style={{ color: "#c4a882", letterSpacing: "0.2em" }} className="text-xs font-semibold uppercase mb-4 block">
             {isRTL ? "برند" : "Brand"}
           </span>
-          <h1 className="text-4xl sm:text-5xl font-bold text-[#1a1a1a] leading-tight mb-4">{brand}</h1>
-          <p className="text-[#8a8577] text-base max-w-xl mx-auto leading-relaxed mb-8">
-            {isRTL ? `مشاهده تمام محصولات مربوط به برند ${brand}` : `Browse all products from ${brand}`}
+          <h1 style={{ color: "#1a1a1a", fontFamily: "var(--font-display), 'Playfair Display', serif" }} className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
+            {currentBrandFa}
+          </h1>
+          <p style={{ color: "#8a8577" }} className="text-sm max-w-md mx-auto leading-relaxed mb-8">
+            {isRTL ? `مشاهده تمام محصولات مربوط به برند ${currentBrandFa}` : `Browse all products from ${currentBrandFa}`}
           </p>
-          <div className="w-24 h-1 bg-[#c4a882] mx-auto rounded-full"></div>
+          <div className="w-16 sm:w-24 h-[2px] bg-gradient-to-r from-transparent via-[#c4a882] to-transparent mx-auto rounded-full" />
+        </div>
+      );
+    }
+    if (category) {
+      return (
+        <div className="mb-12 text-center">
+          <span style={{ color: "#c4a882", letterSpacing: "0.2em" }} className="text-xs font-semibold uppercase mb-4 block">
+            {isRTL ? "دسته‌بندی" : "Category"}
+          </span>
+          <h1 style={{ color: "#1a1a1a", fontFamily: "var(--font-display), 'Playfair Display', serif" }} className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
+            {currentCategoryName}
+          </h1>
+          <p style={{ color: "#8a8577" }} className="text-sm max-w-md mx-auto leading-relaxed mb-8">
+            {currentCategoryObj ? (isRTL ? currentCategoryObj.descriptionFa : currentCategoryObj.description) : ""}
+          </p>
+          <div className="w-16 sm:w-24 h-[2px] bg-gradient-to-r from-transparent via-[#c4a882] to-transparent mx-auto rounded-full" />
         </div>
       );
     }
     return (
-      <div className="mb-10 text-center">
-        <span className="inline-block px-4 py-1.5 bg-[#c4a882]/10 text-[#c4a882] text-xs font-bold uppercase tracking-widest rounded-full mb-5">
-          {t("categories.title")}
+      <div className="mb-12 text-center">
+        <span style={{ color: "#c4a882", letterSpacing: "0.2em" }} className="text-xs font-semibold uppercase mb-4 block">
+          {isRTL ? "محصولات" : "Products"}
         </span>
-        <h1 className="text-4xl sm:text-5xl font-bold text-[#1a1a1a] leading-tight mb-4">{t("products.title")}</h1>
-        <p className="text-[#8a8577] text-base max-w-xl mx-auto leading-relaxed mb-8">{t("products.subtitle")}</p>
-        <div className="w-24 h-1 bg-[#c4a882] mx-auto rounded-full"></div>
+        <h1 style={{ color: "#1a1a1a", fontFamily: "var(--font-display), 'Playfair Display', serif" }} className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
+          {isRTL ? "همه لوازم خانگی" : "All Home Appliances"}
+        </h1>
+        <p style={{ color: "#8a8577" }} className="text-sm max-w-md mx-auto leading-relaxed mb-8">
+          {isRTL ? "مجموعه کاملی از لوازم خانگی مدرن و باکیفیت" : "A complete collection of modern and high-quality home appliances"}
+        </p>
+        <div className="w-16 sm:w-24 h-[2px] bg-gradient-to-r from-transparent via-[#c4a882] to-transparent mx-auto rounded-full" />
       </div>
     );
   };
 
   return (
-    <div dir={direction} className="min-h-screen bg-[#faf8f5] py-12">
-      <div className="px-4 sm:px-6 lg:px-8 xl:px-12 max-w-7xl mx-auto">
+    <div 
+      dir={direction} 
+      className="min-h-screen relative overflow-hidden py-24 md:py-32"
+      style={{ backgroundColor: "#f5f0eb" }}
+    >
+      {/* Background Subtle Glow */}
+      <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#c4a882]/[0.05] rounded-full blur-[120px]" />
+
+      <div className="px-4 sm:px-6 lg:px-8 xl:px-12 max-w-[1400px] mx-auto relative z-10">
         
         {/* Breadcrumb یکپارچه شده */}
-        <div className="mb-8 text-sm text-[#8a8577] flex items-center gap-2 flex-wrap">
+        <div className="mb-12 text-sm text-[#8a8577] flex items-center gap-2 flex-wrap">
           <Link href={`/${locale}`} scroll={true} className="hover:text-[#c4a882] transition-colors flex items-center gap-1.5">
             <Home className="w-3.5 h-3.5" />
             {isRTL ? "خانه" : "Home"}
           </Link>
           {isRTL ? <ChevronLeft className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
           <Link href={`/${locale}/products`} className="hover:text-[#c4a882] transition-colors">
-            {t("products.title")}
+            {isRTL ? "محصولات" : "Products"}
           </Link>
           
           {isOffers && (
             <>
               {isRTL ? <ChevronLeft className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
-              <span className="text-[#1a1a1a] font-medium">{t("products.specialOffers")}</span>
+              <span className="text-[#1a1a1a] font-medium">{isRTL ? "تخفیف‌های ویژه" : "Special Offers"}</span>
             </>
           )}
           {isFeatured && (
             <>
               {isRTL ? <ChevronLeft className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
-              <span className="text-[#1a1a1a] font-medium">{t("products.featured")}</span>
+              <span className="text-[#1a1a1a] font-medium">{isRTL ? "محصولات ویژه" : "Featured"}</span>
             </>
           )}
           {brand && (
             <>
               {isRTL ? <ChevronLeft className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
-              <span className="text-[#1a1a1a] font-medium">{brand}</span>
+              <span className="text-[#1a1a1a] font-medium">{currentBrandFa}</span>
             </>
           )}
           {category && (
             <>
               {isRTL ? <ChevronLeft className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
-              <span className="text-[#1a1a1a] font-medium">
-                {applianceCategories.find(c => c.id === category) ? (isRTL ? applianceCategories.find(c => c.id === category)?.nameFa : applianceCategories.find(c => c.id === category)?.name) : ""}
-              </span>
+              <span className="text-[#1a1a1a] font-medium">{currentCategoryName}</span>
             </>
           )}
         </div>
@@ -157,8 +193,8 @@ export default function ProductsContent() {
         {renderHeader()}
 
         {/* Results Count */}
-        <p className="text-[#8a8577] text-sm text-center mb-10">
-          {filteredProducts.length} {t("products.resultsCount")}
+        <p style={{ color: "#8a8577" }} className="text-sm text-center mb-10">
+          {filteredProducts.length} {isRTL ? "محصول یافت شد" : "products found"}
         </p>
 
         {/* Products Grid */}
@@ -171,8 +207,8 @@ export default function ProductsContent() {
         ) : (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <X className="w-16 h-16 text-[#1a1a1a]/10 mb-4" />
-            <h3 className="text-xl font-semibold text-[#1a1a1a]">{t("products.noResults")}</h3>
-            <p className="text-[#8a8577] mt-2 text-sm">{t("products.noResultsDesc")}</p>
+            <h3 style={{ color: "#1a1a1a" }} className="text-xl font-semibold">{t("products.noResults")}</h3>
+            <p style={{ color: "#8a8577" }} className="mt-2 text-sm">{t("products.noResultsDesc")}</p>
           </div>
         )}
       </div>

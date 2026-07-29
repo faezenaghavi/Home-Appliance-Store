@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Heart, ShoppingBag, ArrowLeft, TrendingUp, Star, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import ScrollReveal from "@/app/components/ScrollReveal";
-import { useI18n } from "@/app/i18n/Provider"; // ایمپورت هوک زبان
+import { useI18n } from "@/app/i18n/Provider";
 
 const bestsellers = [
   {
@@ -76,10 +77,10 @@ function ProductCard({ product, index, onCardClick }: { product: Product; index:
   const [liked, setLiked] = useState(false);
   const { locale, direction } = useI18n();
   const isRTL = direction === "rtl";
-  
+
   const formatPrice = (price: number) => price.toLocaleString(isRTL ? "fa-IR" : "en-US");
   const isEven = index % 2 === 0;
-  
+
   const name = isRTL ? product.nameFa : product.name;
   const desc = isRTL ? product.descriptionFa : product.description;
 
@@ -87,13 +88,8 @@ function ProductCard({ product, index, onCardClick }: { product: Product; index:
     <ScrollReveal animation="fade-up" delay={index * 150} duration={700}>
       <div
         onClick={onCardClick}
-        className="group relative flex flex-col md:flex-row overflow-hidden transition-all duration-500 hover:shadow-2xl cursor-pointer"
-        style={{
-          borderRadius: 24,
-          backgroundColor: "rgba(255,255,255,0.04)",
-          border: "1px solid rgba(255,255,255,0.08)",
-          minHeight: 280,
-        }}
+        className="group relative flex flex-col md:flex-row overflow-hidden transition-all duration-500 hover:shadow-[0_20px_60px_rgba(0,0,0,0.5)] cursor-pointer border border-white/[0.06] hover:border-[#c4a882]/20 bg-[#141210]/80 backdrop-blur-sm"
+        style={{ borderRadius: 24, minHeight: 280 }}
         dir={direction}
       >
         {/* Rank Number */}
@@ -101,7 +97,7 @@ function ProductCard({ product, index, onCardClick }: { product: Product; index:
           className="absolute top-4 right-6 z-20 font-bold select-none pointer-events-none"
           style={{
             fontSize: 72,
-            color: "rgba(196,168,130,0.08)",
+            color: "rgba(196,168,130,0.06)",
             lineHeight: 1,
             fontFamily: "var(--font-display), 'Playfair Display', serif",
           }}
@@ -124,8 +120,8 @@ function ProductCard({ product, index, onCardClick }: { product: Product; index:
             className="absolute inset-0"
             style={{
               background: isEven
-                ? "linear-gradient(to left, rgba(26,26,26,0.6) 0%, transparent 60%)"
-                : "linear-gradient(to right, rgba(26,26,26,0.6) 0%, transparent 60%)",
+                ? "linear-gradient(to left, rgba(20,18,16,0.85) 0%, transparent 60%)"
+                : "linear-gradient(to right, rgba(20,18,16,0.85) 0%, transparent 60%)",
             }}
           />
 
@@ -135,14 +131,14 @@ function ProductCard({ product, index, onCardClick }: { product: Product; index:
               e.stopPropagation();
               setLiked(!liked);
             }}
-            className="absolute top-4 left-4 z-10 flex items-center justify-center transition-all hover:scale-110"
+            className="absolute top-4 left-4 z-10 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
             style={{
               width: 36,
               height: 36,
               borderRadius: 999,
-              backgroundColor: "rgba(255,255,255,0.12)",
+              backgroundColor: "rgba(255,255,255,0.08)",
               backdropFilter: "blur(8px)",
-              border: "none",
+              border: "1px solid rgba(255,255,255,0.06)",
               cursor: "pointer",
             }}
           >
@@ -158,7 +154,7 @@ function ProductCard({ product, index, onCardClick }: { product: Product; index:
           {/* Trending Badge */}
           <div
             className="absolute bottom-4 left-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-            style={{ backgroundColor: "rgba(196,168,130,0.2)", backdropFilter: "blur(8px)" }}
+            style={{ backgroundColor: "rgba(196,168,130,0.15)", backdropFilter: "blur(8px)", border: "1px solid rgba(196,168,130,0.1)" }}
           >
             <TrendingUp className="w-3 h-3" style={{ color: "#c4a882" }} />
             <span style={{ color: "#c4a882", fontSize: 10, fontWeight: 600 }}>
@@ -179,13 +175,13 @@ function ProductCard({ product, index, onCardClick }: { product: Product; index:
                   key={i}
                   className="w-3.5 h-3.5"
                   style={{
-                    color: i < Math.floor(product.rating) ? "#c4a882" : "rgba(255,255,255,0.15)",
+                    color: i < Math.floor(product.rating) ? "#c4a882" : "rgba(255,255,255,0.1)",
                     fill: i < Math.floor(product.rating) ? "#c4a882" : "none",
                   }}
                 />
               ))}
             </div>
-            <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>
+            <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>
               {product.rating} ({product.reviews.toLocaleString(isRTL ? "fa-IR" : "en-US")} {isRTL ? "نظر" : "reviews"})
             </span>
           </div>
@@ -194,7 +190,7 @@ function ProductCard({ product, index, onCardClick }: { product: Product; index:
           <h3
             className="text-lg md:text-xl font-bold mb-3 leading-relaxed"
             style={{
-              color: "#ffffff",
+              color: "#f5f0e8",
               fontFamily: "var(--font-display), 'Vazirmatn', 'Tahoma', sans-serif",
             }}
           >
@@ -204,7 +200,7 @@ function ProductCard({ product, index, onCardClick }: { product: Product; index:
           {/* Description */}
           <p
             className="text-sm leading-relaxed mb-6 line-clamp-2"
-            style={{ color: "rgba(255,255,255,0.55)" }}
+            style={{ color: "rgba(245,240,232,0.45)" }}
           >
             {desc}
           </p>
@@ -221,13 +217,13 @@ function ProductCard({ product, index, onCardClick }: { product: Product; index:
               >
                 {formatPrice(product.price)}
               </span>
-              <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>
+              <span style={{ color: "rgba(245,240,232,0.4)", fontSize: 12 }}>
                 {isRTL ? "تومان" : "IRR"}
               </span>
               {product.originalPrice && (
                 <span
                   className="text-sm mr-2"
-                  style={{ color: "rgba(255,255,255,0.3)", textDecoration: "line-through" }}
+                  style={{ color: "rgba(245,240,232,0.25)", textDecoration: "line-through" }}
                 >
                   {formatPrice(product.originalPrice)}
                 </span>
@@ -239,7 +235,7 @@ function ProductCard({ product, index, onCardClick }: { product: Product; index:
                 e.stopPropagation();
                 alert(`${name} ${isRTL ? "به سبد اضافه شد!" : "added to cart!"}`);
               }}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-semibold transition-all hover:scale-105 active:scale-95"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-semibold transition-all hover:scale-105 active:scale-95 hover:shadow-[0_0_20px_rgba(196,168,130,0.3)]"
               style={{
                 backgroundColor: "#c4a882",
                 color: "#1a1a1a",
@@ -274,34 +270,35 @@ export default function BestSellers() {
     <>
       <section
         dir={direction}
-        style={{ backgroundColor: "#1a1a1a" }}
-        className="py-24 md:py-32 relative overflow-hidden"
+        className="py-16 sm:py-20 md:py-28 lg:py-32 relative overflow-hidden bg-[#0f0f0f]"
       >
-        {/* Background accent */}
-        <div
-          className="absolute top-0 right-0 w-1/2 h-full pointer-events-none"
+        {/* ─── Background matching Hero ─── */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] via-[#141210] to-[#1a1815]" />
+
+        {/* Subtle gold texture overlay */}
+        <div 
+          className="absolute inset-0 opacity-[0.025]"
           style={{
-            background: "linear-gradient(to left, rgba(196,168,130,0.06) 0%, transparent 100%)",
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c4a882' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }}
         />
 
-        <div className="px-6 sm:px-8 lg:px-16 xl:px-24 max-w-[1400px] mx-auto relative z-10">
+        {/* Accent glows */}
+        <div className="absolute -top-32 -right-32 w-96 h-96 bg-[#c4a882]/5 rounded-full blur-[120px]" />
+        <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-[#c4a882]/3 rounded-full blur-[100px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#c4a882]/[0.02] rounded-full blur-[150px]" />
+
+        <div className="px-4 sm:px-6 lg:px-12 xl:px-24 max-w-[1400px] mx-auto relative z-10">
           {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-4">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 md:mb-16 gap-4 md:gap-6">
             <ScrollReveal animation="fade-right" duration={800}>
-              <div className={`text-${isRTL ? "right" : "left"}`}>
-                <span
-                  style={{ color: "#c4a882", letterSpacing: "0.2em" }}
-                  className="text-xs font-semibold uppercase mb-4 block"
-                >
+              <div className={isRTL ? "text-right" : "text-left"}>
+                <span className="text-[#c4a882] text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] mb-3 sm:mb-4 block">
                   {isRTL ? "پرفروش‌ترین‌ها" : "Bestsellers"}
                 </span>
                 <h2
-                  className="text-4xl md:text-5xl font-bold"
-                  style={{
-                    color: "#ffffff",
-                    fontFamily: "var(--font-display), 'Playfair Display', serif",
-                  }}
+                  className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#f5f0e8] leading-tight"
+                  style={{ fontFamily: "var(--font-display), 'Playfair Display', serif" }}
                 >
                   {isRTL ? "محبوب‌ترین انتخاب‌ها" : "Most Popular Choices"}
                 </h2>
@@ -309,10 +306,7 @@ export default function BestSellers() {
             </ScrollReveal>
 
             <ScrollReveal animation="fade-left" delay={200} duration={800}>
-              <p
-                style={{ color: "rgba(255,255,255,0.5)" }}
-                className={`text-sm max-w-md leading-relaxed text-${isRTL ? "right" : "left"}`}
-              >
+              <p className="text-[#a8a095] text-sm max-w-md leading-relaxed text-right md:text-left">
                 {isRTL 
                   ? "محصولاتی که بیشترین خرید را داشته‌اند و رضایت مشتریان را جلب کرده‌اند" 
                   : "Products with the highest sales and customer satisfaction"}
@@ -321,7 +315,7 @@ export default function BestSellers() {
           </div>
 
           {/* Cards */}
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-5 sm:gap-6">
             {bestsellers.map((product, index) => (
               <ProductCard 
                 key={product.id} 
@@ -331,124 +325,118 @@ export default function BestSellers() {
               />
             ))}
           </div>
-
-          {/* View All */}
-          <ScrollReveal animation="fade-up" delay={600} duration={700}>
-            <div className="text-center mt-14">
-              <a
-                href="#bestsellers"
-                className="inline-flex items-center gap-2 text-sm font-medium transition-all hover:gap-3"
-                style={{ color: "#c4a882" }}
-              >
-                <span>{isRTL ? "مشاهده همه پرفروش‌ترین‌ها" : "View All Bestsellers"}</span>
-                {isRTL ? <ArrowLeft className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4 rotate-180" />}
-              </a>
-            </div>
-          </ScrollReveal>
         </div>
       </section>
 
-      {/* Quick View Modal */}
-      {selectedProduct && (
-        <div 
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 transition-opacity duration-300"
-          dir={direction}
-          onClick={() => setSelectedProduct(null)}
-        >
-          {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
-          
-          {/* Modal Content */}
-          <div 
-            className="relative bg-[#1a1a1a] border border-white/10 rounded-3xl max-w-3xl w-full overflow-hidden shadow-2xl flex flex-col md:flex-row max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
+      {/* ─── Quick View Modal ─── */}
+      <AnimatePresence>
+        {selectedProduct && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+            dir={direction}
+            onClick={() => setSelectedProduct(null)}
           >
-            {/* Close Button */}
-            <button 
-              onClick={() => setSelectedProduct(null)}
-              className="absolute top-4 left-4 z-30 w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+            {/* Backdrop */}
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
+
+            {/* Modal Content */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              className="relative bg-[#141210] border border-white/[0.06] rounded-2xl sm:rounded-3xl max-w-3xl w-full overflow-hidden shadow-2xl flex flex-col md:flex-row max-h-[90vh] md:max-h-none overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
             >
-              <X className="w-5 h-5" />
-            </button>
-
-            {/* Image Side */}
-            <div className="relative md:w-1/2 aspect-square md:aspect-auto overflow-hidden bg-[#111]">
-              <img
-                src={selectedProduct.image}
-                alt={isRTL ? selectedProduct.nameFa : selectedProduct.name}
-                className="w-full h-full object-cover"
-              />
-              {selectedProduct.originalPrice && (
-                <div className="absolute top-4 right-4 px-3 py-1 bg-red-500 text-white text-xs font-bold rounded-full">
-                  {isRTL ? "تخفیف ویژه" : "Special Offer"}
-                </div>
-              )}
-            </div>
-
-            {/* Content Side */}
-            <div className="md:w-1/2 p-6 md:p-8 flex flex-col">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="flex items-center gap-0.5">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-4 h-4"
-                      style={{
-                        color: i < Math.floor(selectedProduct.rating) ? "#c4a882" : "rgba(255,255,255,0.15)",
-                        fill: i < Math.floor(selectedProduct.rating) ? "#c4a882" : "none",
-                      }}
-                    />
-                  ))}
-                </div>
-                <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>
-                  {selectedProduct.rating} ({selectedProduct.reviews.toLocaleString(isRTL ? "fa-IR" : "en-US")} {isRTL ? "نظر" : "reviews"})
-                </span>
-              </div>
-
-              <h3
-                className="text-2xl font-bold mb-4 leading-relaxed"
-                style={{ color: "#ffffff", fontFamily: "var(--font-display), 'Vazirmatn', sans-serif" }}
+              {/* Close Button */}
+              <button 
+                onClick={() => setSelectedProduct(null)}
+                className="absolute top-3 left-3 sm:top-4 sm:left-4 z-30 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/5 backdrop-blur-md flex items-center justify-center text-white/70 hover:bg-white/10 hover:text-white transition-all border border-white/10 active:scale-95"
               >
-                {isRTL ? selectedProduct.nameFa : selectedProduct.name}
-              </h3>
+                <X className="w-4 h-4 sm:w-5 sm:h-5" />
+              </button>
 
-              <p className="text-sm leading-relaxed mb-6" style={{ color: "rgba(255,255,255,0.6)" }}>
-                {isRTL ? selectedProduct.descriptionFa : selectedProduct.description}
-              </p>
+              {/* Image Side */}
+              <div className="relative md:w-1/2 aspect-square md:aspect-auto overflow-hidden bg-[#0f0f0f]">
+                <img
+                  src={selectedProduct.image}
+                  alt={isRTL ? selectedProduct.nameFa : selectedProduct.name}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#141210]/60 to-transparent" />
+                {selectedProduct.originalPrice && (
+                  <div className="absolute top-4 right-4 px-3 py-1.5 bg-red-500/90 text-white text-[10px] sm:text-xs font-bold rounded-full backdrop-blur-sm">
+                    {isRTL ? "تخفیف ویژه" : "Special Offer"}
+                  </div>
+                )}
+              </div>
 
-              <div className="mt-auto pt-4 border-t border-white/10">
-                <div className="flex items-baseline gap-2 mb-6">
-                  <span
-                    className="text-3xl font-bold"
-                    style={{ color: "#c4a882", fontFamily: "var(--font-display), sans-serif" }}
-                  >
-                    {selectedProduct.price.toLocaleString(isRTL ? "fa-IR" : "en-US")}
+              {/* Content Side */}
+              <div className="md:w-1/2 p-5 sm:p-6 md:p-8 flex flex-col">
+                <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                  <div className="flex items-center gap-0.5">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className="w-3.5 h-3.5 sm:w-4 sm:h-4"
+                        style={{
+                          color: i < Math.floor(selectedProduct.rating) ? "#c4a882" : "rgba(255,255,255,0.1)",
+                          fill: i < Math.floor(selectedProduct.rating) ? "#c4a882" : "none",
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-white/40 text-[11px] sm:text-xs">
+                    {selectedProduct.rating} ({selectedProduct.reviews.toLocaleString(isRTL ? "fa-IR" : "en-US")} {isRTL ? "نظر" : "reviews"})
                   </span>
-                  <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 14 }}>
-                    {isRTL ? "تومان" : "IRR"}
-                  </span>
-                  {selectedProduct.originalPrice && (
-                    <span
-                      className="text-sm mr-2"
-                      style={{ color: "rgba(255,255,255,0.3)", textDecoration: "line-through" }}
-                    >
-                      {selectedProduct.originalPrice.toLocaleString(isRTL ? "fa-IR" : "en-US")}
-                    </span>
-                  )}
                 </div>
 
-                <button
-                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-semibold transition-all hover:scale-[1.02] active:scale-95"
-                  style={{ backgroundColor: "#c4a882", color: "#1a1a1a" }}
+                <h3
+                  className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 leading-relaxed text-[#f5f0e8]"
+                  style={{ fontFamily: "var(--font-display), 'Vazirmatn', sans-serif" }}
                 >
-                  <ShoppingBag className="w-4 h-4" />
-                  {isRTL ? "افزودن به سبد خرید" : "Add to Cart"}
-                </button>
+                  {isRTL ? selectedProduct.nameFa : selectedProduct.name}
+                </h3>
+
+                <p className="text-sm leading-relaxed mb-5 sm:mb-6 text-[#a8a095]">
+                  {isRTL ? selectedProduct.descriptionFa : selectedProduct.description}
+                </p>
+
+                <div className="mt-auto pt-4 sm:pt-5 border-t border-white/[0.06]">
+                  <div className="flex items-baseline gap-2 mb-5 sm:mb-6">
+                    <span
+                      className="text-2xl sm:text-3xl font-bold text-[#c4a882]"
+                      style={{ fontFamily: "var(--font-display), sans-serif" }}
+                    >
+                      {selectedProduct.price.toLocaleString(isRTL ? "fa-IR" : "en-US")}
+                    </span>
+                    <span className="text-[#a8a095]/60 text-sm">
+                      {isRTL ? "تومان" : "IRR"}
+                    </span>
+                    {selectedProduct.originalPrice && (
+                      <span className="text-sm text-white/20 line-through">
+                        {selectedProduct.originalPrice.toLocaleString(isRTL ? "fa-IR" : "en-US")}
+                      </span>
+                    )}
+                  </div>
+
+                  <button
+                    className="w-full flex items-center justify-center gap-2 py-3 sm:py-3.5 rounded-xl text-sm font-semibold transition-all hover:scale-[1.02] active:scale-95 hover:shadow-[0_0_30px_rgba(196,168,130,0.2)]"
+                    style={{ backgroundColor: "#c4a882", color: "#1a1a1a" }}
+                  >
+                    <ShoppingBag className="w-4 h-4" />
+                    {isRTL ? "افزودن به سبد خرید" : "Add to Cart"}
+                  </button>
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

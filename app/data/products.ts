@@ -8,8 +8,8 @@ export const categories: Category[] = [
     description: "Smart TVs, OLED, QLED, soundbars and home theater systems",
     descriptionFa: "تلویزیون‌های هوشمند، OLED، QLED، ساندبار و سینمای خانگی",
     image: "/images/cat-tv.jpg",
-    productCount: 2, // تعداد تلویزیون‌ها در دیتای محصولات
-    icon: "Monitor", // آیکون lucide
+    productCount: 2, 
+    icon: "Monitor", 
   },
   {
     id: "refrigerator",

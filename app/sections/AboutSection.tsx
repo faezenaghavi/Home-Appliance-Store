@@ -19,7 +19,7 @@ export default function AboutSection() {
             }`}
           >
             <span className="text-weave-accent text-xs font-semibold uppercase tracking-widest mb-4 block">
-              About WEAVE
+              About novira
             </span>
             <h2 className="font-display text-4xl md:text-5xl font-bold text-weave-dark mb-6 leading-tight">
               Cleaner Living<br />Environment
