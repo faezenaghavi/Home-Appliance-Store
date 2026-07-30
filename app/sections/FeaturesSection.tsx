@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useI18n } from "@/app/i18n/Provider";
 import { useScrollAnimation } from "@/app/hooks/useScrollAnimation";
 import { appliances } from "@/app/data/appliances"; 
+import { getProductDisplayImage } from "@/app/lib/categoryImages";
 import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
 import { useToast } from "@/app/context/Toastcontext";
@@ -26,7 +27,7 @@ function ProductCardItem({ product, index = 0 }: { product: typeof appliances[0]
   };
 
   const productName = isRTL ? (product.nameFa || product.name) : product.name;
-  const productImage = Array.isArray(product.images) ? product.images[0] : "";
+  const productImage = getProductDisplayImage(product);
 
   const liked = isWishlisted(product.id);
 

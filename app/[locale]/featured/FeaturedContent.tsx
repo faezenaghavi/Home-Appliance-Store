@@ -21,6 +21,7 @@ import { useToast } from "@/app/context/Toastcontext";
 import Breadcrumb from "@/app/components/Breadcrumb";
 import { brands, appliances } from "@/app/data/appliances";
 import type { ApplianceProduct } from "@/app/data/appliances";
+import { getProductDisplayImage } from "@/app/lib/categoryImages";
 
 const PRODUCTS_PER_BRAND = 5;
 
@@ -55,7 +56,7 @@ function FeaturedCard({
   const name = isRTL && product.nameFa ? product.nameFa : product.name;
   const category = isRTL && product.categoryFa ? product.categoryFa : product.category;
   const liked = isWishlisted(product.id);
-  const image = product.images?.[0];
+  const image = getProductDisplayImage(product);
   const defaultColor = product.colors?.[0] ?? {
     name: "Default",
     nameFa: "پیش‌فرض",

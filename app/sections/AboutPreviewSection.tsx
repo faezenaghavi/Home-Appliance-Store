@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Sparkles, ShieldCheck, Truck, ArrowUpRight, ArrowUpLeft } from "lucide-react";
 import { useI18n } from "@/app/i18n/Provider";
+import { ABOUT_PREVIEW_IMAGE } from "@/app/lib/categoryImages";
 
 export default function AboutPreviewSection() {
   const { locale, direction } = useI18n();
@@ -30,7 +31,7 @@ export default function AboutPreviewSection() {
           <div className="relative">
             <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-xl">
               <Image
-                src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80"
+                src={ABOUT_PREVIEW_IMAGE}
                 alt="Novira Lifestyle"
                 fill
                 className="object-cover"

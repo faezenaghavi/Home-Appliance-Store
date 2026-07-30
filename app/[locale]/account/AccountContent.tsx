@@ -376,11 +376,11 @@ export default function AccountContent() {
 
   if (!isLoggedIn) {
     return (
-      <main dir={direction} className="relative min-h-screen overflow-hidden">
+      <main dir={direction} className="relative h-screen overflow-hidden">
         <AccountWaveBackground />
 
-        <div className="relative z-10 min-h-screen flex flex-col justify-center px-4 sm:px-6 pt-24 sm:pt-28 pb-16">
-          <div className="w-full max-w-5xl mx-auto">
+        <div className="relative z-10 h-full flex flex-col justify-center px-4 sm:px-6 pt-20 sm:pt-24 pb-8 overflow-hidden">
+          <div className="w-full max-w-5xl mx-auto h-full max-h-full flex flex-col justify-center">
             <div className="lg:hidden mb-6">
               <Breadcrumb items={[{ label: isRTL ? "حساب کاربری" : "My Account" }]} />
             </div>
@@ -416,9 +416,9 @@ export default function AccountContent() {
               </div>
             </div>
 
-            <div className="w-full max-w-md mx-auto lg:max-w-none">
-              <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/70 p-6 sm:p-8 shadow-[0_24px_80px_rgba(26,26,26,0.1)]">
-                <div className="flex items-center gap-3 mb-6">
+            <div className="w-full max-w-md mx-auto lg:max-w-none lg:self-center">
+              <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/70 p-6 sm:p-8 shadow-[0_24px_80px_rgba(26,26,26,0.1)] flex flex-col max-h-[calc(100vh-7rem)] sm:max-h-[calc(100vh-8rem)]">
+                <div className="flex items-center gap-3 mb-5 shrink-0">
                   <div className="w-11 h-11 rounded-2xl bg-[#808080]/15 border border-[#808080]/25 flex items-center justify-center">
                     {authMode === "login" ? (
                       <LogIn className="w-5 h-5 text-[#808080]" />
@@ -444,7 +444,7 @@ export default function AccountContent() {
                   </div>
                 </div>
 
-                <div className="flex gap-2 mb-6 p-1 bg-[#faf8f5]/80 rounded-xl border border-[#1a1a1a]/5">
+                <div className="flex gap-2 mb-5 p-1 bg-[#faf8f5]/80 rounded-xl border border-[#1a1a1a]/5 shrink-0">
                   <button
                     type="button"
                     onClick={() => setAuthMode("login")}
@@ -469,15 +469,16 @@ export default function AccountContent() {
                   </button>
                 </div>
 
+                <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain pr-0.5 -mr-0.5">
                 {authMode === "login" ? (
-                  <form onSubmit={handleLogin} className="space-y-4">
+                  <form onSubmit={handleLogin} className="space-y-3.5 min-h-[280px] flex flex-col justify-center">
                     <Field label={isRTL ? "ایمیل" : "Email"}>
                       <input
                         type="email"
                         required
                         value={authForm.email}
                         onChange={(e) => setAuthForm((f) => ({ ...f, email: e.target.value }))}
-                        className={inputClass}
+                        className={inputClassCompact}
                         placeholder="demo@novira.com"
                       />
                     </Field>
@@ -487,14 +488,14 @@ export default function AccountContent() {
                         required
                         value={authForm.password}
                         onChange={(e) => setAuthForm((f) => ({ ...f, password: e.target.value }))}
-                        className={inputClass}
+                        className={inputClassCompact}
                         placeholder="••••••"
                       />
                     </Field>
                     <button
                       type="submit"
                       disabled={saving}
-                      className="w-full py-3.5 bg-[#1a1a1a] text-white rounded-xl text-sm font-semibold hover:bg-[#808080] transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+                      className="w-full py-3 bg-[#1a1a1a] text-white rounded-xl text-sm font-semibold hover:bg-[#808080] transition-colors disabled:opacity-60 flex items-center justify-center gap-2 mt-auto"
                     >
                       {saving ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -507,13 +508,13 @@ export default function AccountContent() {
                     </button>
                   </form>
                 ) : (
-                  <form onSubmit={handleRegister} className="space-y-4">
+                  <form onSubmit={handleRegister} className="space-y-3 min-h-[280px]">
                     <Field label={isRTL ? "نام و نام خانوادگی" : "Full Name"}>
                       <input
                         required
                         value={authForm.name}
                         onChange={(e) => setAuthForm((f) => ({ ...f, name: e.target.value }))}
-                        className={inputClass}
+                        className={inputClassCompact}
                       />
                     </Field>
                     <Field label={isRTL ? "ایمیل" : "Email"}>
@@ -522,14 +523,14 @@ export default function AccountContent() {
                         required
                         value={authForm.email}
                         onChange={(e) => setAuthForm((f) => ({ ...f, email: e.target.value }))}
-                        className={inputClass}
+                        className={inputClassCompact}
                       />
                     </Field>
                     <Field label={isRTL ? "شماره موبایل" : "Phone"}>
                       <input
                         value={authForm.phone}
                         onChange={(e) => setAuthForm((f) => ({ ...f, phone: e.target.value }))}
-                        className={inputClass}
+                        className={inputClassCompact}
                       />
                     </Field>
                     <Field label={isRTL ? "رمز عبور" : "Password"}>
@@ -539,7 +540,7 @@ export default function AccountContent() {
                         minLength={6}
                         value={authForm.password}
                         onChange={(e) => setAuthForm((f) => ({ ...f, password: e.target.value }))}
-                        className={inputClass}
+                        className={inputClassCompact}
                       />
                     </Field>
                     <Field label={isRTL ? "تکرار رمز عبور" : "Confirm Password"}>
@@ -550,13 +551,13 @@ export default function AccountContent() {
                         onChange={(e) =>
                           setAuthForm((f) => ({ ...f, confirmPassword: e.target.value }))
                         }
-                        className={inputClass}
+                        className={inputClassCompact}
                       />
                     </Field>
                     <button
                       type="submit"
                       disabled={saving}
-                      className="w-full py-3.5 bg-[#1a1a1a] text-white rounded-xl text-sm font-semibold hover:bg-[#808080] transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+                      className="w-full py-3 bg-[#1a1a1a] text-white rounded-xl text-sm font-semibold hover:bg-[#808080] transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
                     >
                       {saving ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -569,18 +570,9 @@ export default function AccountContent() {
                     </button>
                   </form>
                 )}
-
-                <div className="relative my-6">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-[#1a1a1a]/10" />
-                  </div>
-                  <div className="relative flex justify-center">
-                    <span className="px-3 bg-white/80 text-[11px] text-[#8a8577] uppercase tracking-wider">
-                      {isRTL ? "یا تست سریع" : "Or quick test"}
-                    </span>
-                  </div>
                 </div>
 
+                <div className="shrink-0 pt-4 mt-4 border-t border-[#1a1a1a]/5">
                 <button
                   type="button"
                   disabled={saving}
@@ -597,11 +589,12 @@ export default function AccountContent() {
                       : "Demo register (no form)"}
                 </button>
 
-                <p className="mt-4 text-center text-[11px] text-[#8a8577] leading-relaxed">
+                <p className="mt-3 text-center text-[11px] text-[#8a8577] leading-relaxed">
                   {isRTL ? "حساب تست:" : "Test account:"}{" "}
                   <span className="font-mono text-[#1a1a1a]">{DEMO_EMAIL}</span> /{" "}
                   <span className="font-mono text-[#1a1a1a]">{DEMO_PASSWORD}</span>
                 </p>
+                </div>
               </div>
             </div>
             </div>
@@ -1064,6 +1057,9 @@ export default function AccountContent() {
 
 const inputClass =
   "w-full px-4 py-3 bg-[#faf8f5] border border-[#1a1a1a]/10 rounded-xl text-sm text-[#1a1a1a] focus:outline-none focus:ring-2 focus:ring-[#808080]/20";
+
+const inputClassCompact =
+  "w-full px-3.5 py-2.5 bg-[#faf8f5] border border-[#1a1a1a]/10 rounded-xl text-sm text-[#1a1a1a] focus:outline-none focus:ring-2 focus:ring-[#808080]/20";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (

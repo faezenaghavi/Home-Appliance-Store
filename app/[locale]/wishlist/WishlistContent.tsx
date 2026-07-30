@@ -7,6 +7,8 @@ import { useToast } from "@/app/context/Toastcontext";
 import { Heart, Trash2, ArrowUpRight, ArrowUpLeft, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import Breadcrumb from "@/app/components/Breadcrumb";
+import AccountWaveBackground from "@/app/components/account/AccountWaveBackground";
+import { getProductDisplayImage } from "@/app/lib/categoryImages";
 
 export default function WishlistContent() {
   const { locale, direction, t } = useI18n();
@@ -34,13 +36,15 @@ export default function WishlistContent() {
   };
 
   return (
-    <main dir={direction} className="min-h-screen bg-[#faf8f5]">
-      <div className="px-4 sm:px-6 lg:px-8 xl:px-12 max-w-7xl mx-auto pt-24 sm:pt-28 pb-16">
+    <main dir={direction} className="relative min-h-screen overflow-hidden">
+      <AccountWaveBackground />
+
+      <div className="relative z-10 px-4 sm:px-6 lg:px-8 xl:px-12 max-w-7xl mx-auto pt-24 sm:pt-28 pb-16">
         <Breadcrumb items={[{ label: t("wishlist.title") as string }]} className="mb-8" />
 
         <div className="mb-10">
-          <span className="inline-block px-4 py-1.5 bg-[#808080]/10 text-[#808080] text-xs font-bold uppercase tracking-widest rounded-full mb-5">
-            <Heart className="w-3.5 h-3.5 inline mr-1.5" />
+          <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#808080]/10 text-[#808080] text-xs font-bold uppercase tracking-widest rounded-full mb-5">
+            <Heart className="w-3.5 h-3.5" />
             {t("wishlist.title")}
           </span>
           <h1 className="text-3xl sm:text-4xl font-bold text-[#1a1a1a] mb-4">
@@ -57,7 +61,7 @@ export default function WishlistContent() {
         </div>
 
         {items.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-2xl border border-[#1a1a1a]/5">
+          <div className="text-center py-20 bg-white/80 backdrop-blur-xl rounded-2xl border border-white/70 shadow-[0_16px_48px_rgba(26,26,26,0.06)]">
             <Heart className="w-16 h-16 text-[#808080]/20 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-[#1a1a1a]">{t("wishlist.empty")}</h3>
             <p className="text-[#8a8577] mt-2 text-sm mb-6">{t("wishlist.emptyDesc")}</p>
@@ -73,36 +77,31 @@ export default function WishlistContent() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {items.map((product) => {
               const productName = isRTL && product.nameFa ? product.nameFa : product.name;
-              const imageSrc = product.images?.[0];
+              const imageSrc = getProductDisplayImage(product);
 
               return (
                 <div
                   key={product.id}
-                  className="group relative bg-white rounded-2xl border border-[#1a1a1a]/5 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col"
+                  className="group relative bg-white/85 backdrop-blur-sm rounded-2xl border border-white/70 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col"
                 >
                   <Link
                     href={`/${locale}/products/${product.id}`}
                     className="relative aspect-square bg-[#faf8f5] overflow-hidden flex items-center justify-center"
                   >
-                    {imageSrc ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={imageSrc}
-                        alt={productName}
-                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    ) : (
-                      <span className="text-[#808080] text-5xl font-bold opacity-20">
-                        {productName.charAt(0)}
-                      </span>
-                    )}
+                    <img
+                      src={imageSrc}
+                      alt={productName}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
                   </Link>
 
                   <button
                     onClick={() => removeItem(product.id)}
                     className="absolute top-3 right-3 z-10 w-8 h-8 rounded-lg bg-white/80 backdrop-blur-sm flex items-center justify-center text-red-400 hover:bg-red-50 hover:text-red-500 transition-colors shadow-sm"
                     aria-label={t("wishlist.removeFromWishlist") as string}
-                  />
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
 
                   <div className="p-4 flex flex-col flex-1">
                     <Link href={`/${locale}/products/${product.id}`}>

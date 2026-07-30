@@ -11,6 +11,7 @@ const BestSellers = dynamic(() => import("@/app/sections/BestSellers"));
 const NewArrivals = dynamic(() => import("@/app/sections/NewArrivals"));
 const SpecialOffers = dynamic(() => import("@/app/sections/SpecialOffers"));
 const BrandShowcase = dynamic(() => import("@/app/sections/BrandShowcase"));
+const PromoBannersSection = dynamic(() => import("@/app/sections/PromoBannersSection"));
 const TestimonialsSection = dynamic(() => import("@/app/sections/TestimonialsSection"));
 
 export default function HomePageContent() {
@@ -18,12 +19,14 @@ export default function HomePageContent() {
     <>
       <HeroSection />
       <CategorySection />
+      <PromoBannersSection variant="top" />
       <FeaturedProducts />
       <AboutPreviewSection />
       <BestSellers />
-      <NewArrivals />
       <SpecialOffers />
       <BrandShowcase />
+      <PromoBannersSection variant="default" />
+      <NewArrivals />
       <TestimonialsSection />
     </>
   );

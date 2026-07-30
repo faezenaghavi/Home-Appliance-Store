@@ -26,6 +26,7 @@ import { useToast } from "@/app/context/Toastcontext";
 import Breadcrumb from "@/app/components/Breadcrumb";
 import ProductCard from "@/app/components/ProductCard";
 import { getProductById, getAllCatalogProducts } from "@/app/data/catalog";
+import { getProductDisplayImages } from "@/app/lib/categoryImages";
 
 type Tab = "desc" | "specs" | "features";
 
@@ -73,10 +74,7 @@ export default function ProductDetailContent({ id }: { id: string }) {
   const specs = isRTL && product.specsFa ? product.specsFa : product.specs;
   const liked = isWishlisted(product.id);
 
-  const images =
-    product.images?.length > 0
-      ? product.images
-      : [""];
+  const images = getProductDisplayImages(product);
 
   const formatPrice = (price: number) =>
     price.toLocaleString(isRTL ? "fa-IR" : "en-US");

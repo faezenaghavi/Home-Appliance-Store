@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
 import { useToast } from "@/app/context/Toastcontext";
+import { getProductDisplayImage } from "@/app/lib/categoryImages";
 
 export default function NewArrivals() {
   const { t, locale, direction } = useI18n();
@@ -94,7 +95,7 @@ export default function NewArrivals() {
                   className="relative sm:w-1/2 aspect-square overflow-hidden block"
                 >
                   <img
-                    src={product.images[0]}
+                    src={getProductDisplayImage(product)}
                     alt={locale === "fa" && product.nameFa ? product.nameFa : product.name}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />

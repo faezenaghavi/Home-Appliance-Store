@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
 import { useToast } from "@/app/context/Toastcontext";
+import { getProductDisplayImage } from "@/app/lib/categoryImages";
 
 // ─── Optimized Countdown (isolated, no full re-renders) ───
 const CountdownTimer = memo(function CountdownTimer({ locale }: { locale: string }) {
@@ -126,7 +127,7 @@ const OfferCard = memo(function OfferCard({
       {/* Image — now links to the product detail page */}
       <Link href={`/${locale}/products/${product.id}`} className="relative aspect-[4/3] overflow-hidden block">
         <img
-          src={product.images[0]}
+          src={getProductDisplayImage(product)}
           alt={isRTL && product.nameFa ? product.nameFa : product.name}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           loading={index === 0 ? "eager" : "lazy"}

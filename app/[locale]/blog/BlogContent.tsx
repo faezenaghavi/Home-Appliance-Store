@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useI18n } from "@/app/i18n/Provider";
 import Breadcrumb from "@/app/components/Breadcrumb";
+import { getBlogImage } from "@/app/lib/categoryImages";
 
 interface BlogPost {
   id: string;
@@ -43,7 +44,7 @@ export default function BlogContent() {
           category: "تکنولوژی",
           date: "۱۲ اسفند ۱۴۰۴",
           readTime: 5,
-          image: "/images/blog-1.jpg",
+          image: getBlogImage(0),
           featured: true,
         },
         {
@@ -53,7 +54,7 @@ export default function BlogContent() {
           category: "طراحی",
           date: "۵ بهمن ۱۴۰۴",
           readTime: 3,
-          image: "/images/blog-2.jpg",
+          image: getBlogImage(1),
         },
         {
           id: "3",
@@ -62,7 +63,7 @@ export default function BlogContent() {
           category: "نگهداری",
           date: "۲۰ دی ۱۴۰۴",
           readTime: 4,
-          image: "/images/blog-3.jpg",
+          image: getBlogImage(2),
         },
         {
           id: "4",
@@ -71,7 +72,7 @@ export default function BlogContent() {
           category: "راهنمای خرید",
           date: "۸ دی ۱۴۰۴",
           readTime: 6,
-          image: "/images/blog-4.jpg",
+          image: getBlogImage(3),
         },
         {
           id: "5",
@@ -80,7 +81,7 @@ export default function BlogContent() {
           category: "تکنولوژی",
           date: "۱ دی ۱۴۰۴",
           readTime: 4,
-          image: "/images/blog-5.jpg",
+          image: getBlogImage(4),
         },
         {
           id: "6",
@@ -89,7 +90,7 @@ export default function BlogContent() {
           category: "طراحی",
           date: "۲۵ آذر ۱۴۰۴",
           readTime: 3,
-          image: "/images/blog-6.jpg",
+          image: getBlogImage(5),
         },
       ];
     }
@@ -103,7 +104,7 @@ export default function BlogContent() {
         category: "Technology",
         date: "Mar 2, 2026",
         readTime: 5,
-        image: "/images/blog-1.jpg",
+        image: getBlogImage(0),
         featured: true,
       },
       {
@@ -113,7 +114,7 @@ export default function BlogContent() {
         category: "Design",
         date: "Jan 25, 2026",
         readTime: 3,
-        image: "/images/blog-2.jpg",
+        image: getBlogImage(1),
       },
       {
         id: "3",
@@ -122,7 +123,7 @@ export default function BlogContent() {
         category: "Care",
         date: "Jan 10, 2026",
         readTime: 4,
-        image: "/images/blog-3.jpg",
+        image: getBlogImage(2),
       },
       {
         id: "4",
@@ -131,7 +132,7 @@ export default function BlogContent() {
         category: "Buying Guide",
         date: "Jan 3, 2026",
         readTime: 6,
-        image: "/images/blog-4.jpg",
+        image: getBlogImage(3),
       },
       {
         id: "5",
@@ -140,7 +141,7 @@ export default function BlogContent() {
         category: "Technology",
         date: "Jan 1, 2026",
         readTime: 4,
-        image: "/images/blog-5.jpg",
+        image: getBlogImage(4),
       },
       {
         id: "6",
@@ -149,7 +150,7 @@ export default function BlogContent() {
         category: "Design",
         date: "Dec 15, 2025",
         readTime: 3,
-        image: "/images/blog-6.jpg",
+        image: getBlogImage(5),
       },
     ];
   }, [locale]);

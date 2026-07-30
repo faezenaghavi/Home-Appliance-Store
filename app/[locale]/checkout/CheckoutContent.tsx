@@ -8,6 +8,7 @@ import { useAccount } from "@/app/context/AccountContext";
 import { useToast } from "@/app/context/Toastcontext";
 import { Home, ChevronRight, ChevronLeft, Lock, CreditCard, Truck, Wallet, Banknote, MapPin, User, Phone, Building2 } from "lucide-react";
 import Link from "next/link";
+import { getProductDisplayImage } from "@/app/lib/categoryImages";
 
 export default function CheckoutContent() {
   const { locale, direction, t } = useI18n();
@@ -301,7 +302,7 @@ export default function CheckoutContent() {
                 {items.map((item) => (
                   <div key={item.product.id} className="flex items-center gap-3">
                     <div className="w-16 h-16 rounded-xl bg-white/5 overflow-hidden flex-shrink-0">
-                      <img src={Array.isArray(item.product.images) ? item.product.images[0] : (item.product.images ?? "")} alt="" className="w-full h-full object-cover" />
+                      <img src={getProductDisplayImage(item.product)} alt="" className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <span className="text-sm text-white/80 block truncate">{isRTL && item.product.nameFa ? item.product.nameFa : item.product.name}</span>

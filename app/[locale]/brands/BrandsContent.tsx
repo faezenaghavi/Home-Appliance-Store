@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useI18n } from "@/app/i18n/Provider";
 import { brands, appliances } from "@/app/data/appliances";
+import { getProductDisplayImage } from "@/app/lib/categoryImages";
 
 export default function BrandsContent() {
   const { locale, direction } = useI18n();
@@ -199,19 +200,13 @@ export default function BrandsContent() {
                             className="flex items-center gap-3 p-2.5 sm:p-3 rounded-xl bg-white border border-[#e5dfd6] hover:border-[#808080]/40 hover:bg-[#faf8f5] transition-all duration-300 group/item"
                           >
                             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg overflow-hidden bg-[#f5f0eb] shrink-0 ring-1 ring-black/[0.04] relative">
-                              {product.images[0] ? (
-                                <Image
-                                  src={product.images[0]}
-                                  alt={isRTL ? product.nameFa : product.name}
-                                  fill
-                                  sizes="56px"
-                                  className="object-cover group-hover/item:scale-110 transition-transform duration-500"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center">
-                                  <Package className="w-4 h-4 text-[#8a8577]/30" />
-                                </div>
-                              )}
+                              <Image
+                                src={getProductDisplayImage(product)}
+                                alt={isRTL ? product.nameFa : product.name}
+                                fill
+                                sizes="56px"
+                                className="object-cover group-hover/item:scale-110 transition-transform duration-500"
+                              />
                             </div>
                             <div className="min-w-0 flex-1">
                               <p className="text-[11px] sm:text-xs font-medium text-[#1a1a1a] truncate group-hover/item:text-[#808080] transition-colors">

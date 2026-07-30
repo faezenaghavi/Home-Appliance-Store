@@ -2,6 +2,7 @@
 
 import { ArrowRight } from "lucide-react";
 import { products } from "@/app/data/products";
+import { getProductDisplayImage } from "@/app/lib/categoryImages";
 import { useScrollAnimation } from "@/app/hooks/useScrollAnimation";
 import { useState } from "react";
 
@@ -86,7 +87,7 @@ export default function SpecsSection() {
             <div className="relative aspect-square">
               <div className="absolute inset-0 bg-gradient-to-b from-weave-accent/10 to-transparent rounded-full blur-2xl" />
               <img
-                src={mainProduct.images[selectedColor]}
+                src={getProductDisplayImage(mainProduct, selectedColor)}
                 alt={mainProduct.name}
                 className="relative z-10 w-full h-full object-contain drop-shadow-2xl"
               />

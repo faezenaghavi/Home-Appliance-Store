@@ -45,7 +45,7 @@ export const applianceCategories: ApplianceCategory[] = [
     nameFa: "تلویزیون و سرگرمی",
     description: "Smart TVs, OLED, QLED, soundbars and home theater systems",
     descriptionFa: "تلویزیون‌های هوشمند، OLED، QLED، ساندبار و سینمای خانگی",
-    image: "/images/cat-tv-entertainment.jpg",
+    image: "/images/7_Redefining_premium_Meet_the_new_ROG.png",
     productCount: 52,
     icon: "Monitor"
   },
@@ -55,7 +55,7 @@ export const applianceCategories: ApplianceCategory[] = [
     nameFa: "یخچال و فریزر",
     description: "French door, side-by-side, and smart refrigerators",
     descriptionFa: "یخچال‌های ساید بای ساید، دوقلو و هوشمند",
-    image: "/images/cat-refrigerator.jpg",
+    image: "/images/cat-refrigerator.png",
     productCount: 55,
     icon: "Refrigerator"
   },
@@ -65,7 +65,7 @@ export const applianceCategories: ApplianceCategory[] = [
     nameFa: "ماشین لباسشویی",
     description: "Front load, top load, and washer-dryer combos",
     descriptionFa: "ماشین لباسشویی درب از جلو، درب از بالا و خشک‌کن‌دار",
-    image: "/images/cat-washing.jpg",
+    image: "/images/8_198_344_Lifestyle_Appliances_Royalty.png",
     productCount: 55,
     icon: "WashingMachine"
   },
@@ -75,7 +75,7 @@ export const applianceCategories: ApplianceCategory[] = [
     nameFa: "کولر گازی",
     description: "Split, portable, and inverter AC units",
     descriptionFa: "کولر گازی اسپلیت، پرتابل و اینورتر",
-    image: "/images/cat-air-conditioner.jpg",
+    image: "/images/cat-air-conditioner.png",
     productCount: 67,
     icon: "Wind"
   },
@@ -85,7 +85,7 @@ export const applianceCategories: ApplianceCategory[] = [
     nameFa: "جاروبرقی",
     description: "Robot, cordless, and canister vacuums",
     descriptionFa: "جاروبرقی رباتیک، شارژی و سطلی",
-    image: "/images/cat-vacuum.jpg",
+    image: "/images/1_Modern_White_Air_Purifier_Minimal.png",
     productCount: 126,
     icon: "Sparkles"
   },
@@ -95,7 +95,7 @@ export const applianceCategories: ApplianceCategory[] = [
     nameFa: "لوازم آشپزخانه",
     description: "Mixers, air fryers, microwaves, and more",
     descriptionFa: "میکسر، سرخ‌کن، مایکروویو و موارد دیگر",
-    image: "/images/cat-kitchen.jpg",
+    image: "/images/cat-kitchen.png",
     productCount: 103,
     icon: "ChefHat"
   }

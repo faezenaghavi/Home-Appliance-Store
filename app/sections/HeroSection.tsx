@@ -13,6 +13,7 @@ import { getProductById } from "@/app/data/catalog";
 import type { Product } from "@/app/types";
 import { useSplashReady } from "@/app/components/AppLoader";
 import { heroEnter, heroGray } from "@/app/lib/motion";
+import { getProductDisplayImage } from "@/app/lib/categoryImages";
 
 const slides = [
   {
@@ -248,29 +249,29 @@ export default function HeroSection() {
                     aria-label={isRTL ? "مشاهده محصول" : "View product"}
                     aria-expanded={isOpen}
                     onClick={() => toggleHotspot(idx)}
-                    className="relative cursor-pointer group"
+                    className="relative cursor-pointer group touch-manipulation"
                   >
                     <div
                       className={`absolute inset-0 rounded-full bg-[#808080]/30 ${isOpen ? "" : "animate-ping"}`}
                     />
                     <div
-                      className={`relative w-9 h-9 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(128,128,128,0.4)] transition-all duration-150 active:scale-95 ${
+                      className={`relative w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(128,128,128,0.4)] transition-all duration-150 active:scale-95 ${
                         isOpen
                           ? "bg-[#666666] rotate-45"
                           : "bg-[#808080] group-hover:scale-110"
                       }`}
                     >
                       {isOpen ? (
-                        <X className="w-4 h-4 text-white" strokeWidth={2.5} />
+                        <X className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" strokeWidth={2.5} />
                       ) : (
-                        <Plus className="w-4 h-4 text-white" strokeWidth={2.5} />
+                        <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" strokeWidth={2.5} />
                       )}
                     </div>
                   </button>
 
                   {"line" in spot && spot.line && (
                     <div
-                      className="absolute w-[50px] h-[1px] bg-gradient-to-r from-[#808080] to-transparent top-1/2 origin-left pointer-events-none"
+                      className="hidden sm:block absolute w-[50px] h-[1px] bg-gradient-to-r from-[#808080] to-transparent top-1/2 origin-left pointer-events-none"
                       style={{
                         right: "-40px",
                         transform: `translateY(-50%) rotate(${spot.lineAngle ?? 0}deg)`,
@@ -285,30 +286,30 @@ export default function HeroSection() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 8, scale: 0.95 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute top-full mt-3 left-1/2 -translate-x-1/2 w-[220px] bg-[#454545]/98 backdrop-blur-xl border border-[#808080]/25 rounded-2xl p-3 shadow-2xl z-30"
+                        className="max-sm:fixed max-sm:inset-x-3 max-sm:bottom-4 max-sm:top-auto max-sm:w-auto max-sm:max-w-none max-sm:translate-x-0 max-sm:translate-y-0 max-sm:mt-0 sm:absolute sm:top-full sm:mt-3 sm:left-1/2 sm:-translate-x-1/2 sm:w-[220px] bg-[#454545]/98 backdrop-blur-xl border border-[#808080]/25 rounded-2xl p-3 shadow-2xl z-40"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <p className="text-[#eceae6] text-[12px] font-semibold leading-snug mb-1 line-clamp-2">
+                        <p className="text-[#eceae6] text-[11px] sm:text-[12px] font-semibold leading-snug mb-1 line-clamp-2">
                           {getProductName(product)}
                         </p>
-                        <p className="text-[#b0b0b0] text-[11px] font-medium mb-3">
+                        <p className="text-[#b0b0b0] text-[10px] sm:text-[11px] font-medium mb-3">
                           {formatPrice(product.price)} {t("common.currency")}
                         </p>
                         <div className="flex gap-2">
                           <button
                             type="button"
                             onClick={(e) => goToProduct(product.id, e)}
-                            className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-white/10 hover:bg-white/15 text-white text-[10px] font-semibold rounded-lg transition-colors duration-150 active:scale-95"
+                            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 sm:py-2 bg-white/10 hover:bg-white/15 text-white text-[10px] font-semibold rounded-lg transition-colors duration-150 active:scale-95 touch-manipulation"
                           >
-                            <Eye className="w-3 h-3" />
+                            <Eye className="w-3 h-3 shrink-0" />
                             {isRTL ? "جزئیات" : "Details"}
                           </button>
                           <button
                             type="button"
                             onClick={(e) => handleAddToCart(product, e)}
-                            className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-[#808080] hover:bg-[#666666] text-white text-[10px] font-semibold rounded-lg transition-colors duration-150 active:scale-95"
+                            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 sm:py-2 bg-[#808080] hover:bg-[#666666] text-white text-[10px] font-semibold rounded-lg transition-colors duration-150 active:scale-95 touch-manipulation"
                           >
-                            <ShoppingBag className="w-3 h-3" />
+                            <ShoppingBag className="w-3 h-3 shrink-0" />
                             {isRTL ? "خرید" : "Add"}
                           </button>
                         </div>
@@ -320,38 +321,32 @@ export default function HeroSection() {
             })}
 
             {/* Floating Product Card */}
-            {featuredProduct && (
+            {featuredProduct && activeHotspot === null && (
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: ready ? 1 : 0, y: ready ? 0 : 30 }}
                 transition={heroEnter(1.05, 0.75)}
-                className="absolute bottom-6 right-4 lg:bottom-12 lg:right-8 bg-[#454545]/90 backdrop-blur-xl rounded-2xl p-3 flex gap-3 items-center max-w-[280px] border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.25)] hover:border-[#808080]/30 transition-all duration-200 group z-10"
+                className="absolute z-10 inset-x-3 bottom-12 sm:inset-x-auto sm:left-auto sm:right-4 sm:bottom-6 lg:bottom-12 lg:right-8 bg-[#454545]/90 backdrop-blur-xl rounded-xl sm:rounded-2xl p-2.5 sm:p-3 flex gap-2.5 sm:gap-3 items-center sm:max-w-[280px] border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.25)] hover:border-[#808080]/30 transition-all duration-200 group"
               >
                 <button
                   type="button"
                   onClick={() => goToProduct(featuredProduct.id)}
-                  className="flex gap-3 items-center flex-1 min-w-0 text-start"
+                  className="flex gap-2.5 sm:gap-3 items-center flex-1 min-w-0 text-start touch-manipulation"
                 >
-                  <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0 ring-1 ring-white/10 bg-[#353535] flex items-center justify-center">
-                    {featuredProduct.images?.[0] ? (
-                      <Image
-                        src={featuredProduct.images[0]}
-                        alt={getProductName(featuredProduct)}
-                        width={56}
-                        height={56}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-200"
-                      />
-                    ) : (
-                      <span className="text-[#808080] text-lg font-bold">
-                        {getProductName(featuredProduct).charAt(0)}
-                      </span>
-                    )}
+                  <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl overflow-hidden shrink-0 ring-1 ring-white/10 bg-[#353535] flex items-center justify-center">
+                    <Image
+                      src={getProductDisplayImage(featuredProduct)}
+                      alt={getProductName(featuredProduct)}
+                      width={56}
+                      height={56}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-200"
+                    />
                   </div>
                   <div className="text-[#eceae6] flex-1 min-w-0">
-                    <p className="text-[11px] leading-[1.4] mb-1 text-[#eceae6]/90 truncate font-medium group-hover:text-[#808080] transition-colors">
+                    <p className="text-[10px] sm:text-[11px] leading-[1.4] mb-0.5 sm:mb-1 text-[#eceae6]/90 line-clamp-2 sm:truncate font-medium group-hover:text-[#808080] transition-colors">
                       {getProductName(featuredProduct)}
                     </p>
-                    <span className="text-[11px] text-[#b0b0b0] font-medium">
+                    <span className="text-[10px] sm:text-[11px] text-[#b0b0b0] font-medium">
                       {formatPrice(featuredProduct.price)} {t("common.currency")}
                     </span>
                   </div>
@@ -360,26 +355,26 @@ export default function HeroSection() {
                 <button
                   type="button"
                   onClick={(e) => handleAddToCart(featuredProduct, e)}
-                  className="shrink-0 bg-[#808080] hover:bg-[#666666] text-white px-3 py-2 rounded-lg text-[10px] font-semibold flex items-center gap-1.5 transition-all duration-150 active:scale-95"
+                  className="shrink-0 bg-[#808080] hover:bg-[#666666] text-white px-2.5 sm:px-3 py-2 rounded-lg text-[9px] sm:text-[10px] font-semibold flex items-center gap-1 sm:gap-1.5 transition-all duration-150 active:scale-95 touch-manipulation"
                   aria-label={t("product.addToCart") as string}
                 >
-                  <ShoppingBag className="w-3.5 h-3.5" />
-                  {isRTL ? "خرید" : "Add"}
+                  <ShoppingBag className="w-3.5 h-3.5 shrink-0" />
+                  <span className="hidden sm:inline">{isRTL ? "خرید" : "Add"}</span>
                 </button>
               </motion.div>
             )}
 
             {/* Navigation Arrows */}
-            <div className="absolute top-1/2 -translate-y-1/2 left-4 right-4 flex justify-between pointer-events-none">
+            <div className="absolute top-1/2 -translate-y-1/2 left-2 right-2 sm:left-4 sm:right-4 flex justify-between pointer-events-none">
               <button
                 type="button"
                 onClick={() => {
                   setActiveHotspot(null);
                   setActiveSlide((p) => (p === 0 ? slides.length - 1 : p - 1));
                 }}
-                className="pointer-events-auto w-10 h-10 rounded-full bg-white/10 backdrop-blur-xl border border-white/15 flex items-center justify-center hover:bg-[#808080]/25 hover:border-[#808080]/35 transition-all duration-150 active:scale-95"
+                className="pointer-events-auto w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10 backdrop-blur-xl border border-white/15 flex items-center justify-center hover:bg-[#808080]/25 hover:border-[#808080]/35 transition-all duration-150 active:scale-95 touch-manipulation"
               >
-                <ChevronLeft className="w-5 h-5 text-white/75" strokeWidth={2} />
+                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-white/75" strokeWidth={2} />
               </button>
               <button
                 type="button"
@@ -387,14 +382,14 @@ export default function HeroSection() {
                   setActiveHotspot(null);
                   setActiveSlide((p) => (p === slides.length - 1 ? 0 : p + 1));
                 }}
-                className="pointer-events-auto w-10 h-10 rounded-full bg-white/10 backdrop-blur-xl border border-white/15 flex items-center justify-center hover:bg-[#808080]/25 hover:border-[#808080]/35 transition-all duration-150 active:scale-95"
+                className="pointer-events-auto w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10 backdrop-blur-xl border border-white/15 flex items-center justify-center hover:bg-[#808080]/25 hover:border-[#808080]/35 transition-all duration-150 active:scale-95 touch-manipulation"
               >
-                <ChevronRight className="w-5 h-5 text-white/75" strokeWidth={2} />
+                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-white/75" strokeWidth={2} />
               </button>
             </div>
 
             {/* Dots */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+            <div className="absolute bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 sm:gap-2 z-10">
               {slides.map((_, i) => (
                 <button
                   key={i}
@@ -418,7 +413,7 @@ export default function HeroSection() {
         <button
           type="button"
           aria-label="Close"
-          className="fixed inset-0 z-[5] lg:z-[15] bg-transparent"
+          className="fixed inset-0 z-30 sm:z-[15] bg-black/25 sm:bg-transparent"
           onClick={() => setActiveHotspot(null)}
         />
       )}

@@ -77,6 +77,28 @@
   }
 }
 
+@keyframes promo-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.promo-progress-bar {
+  transform-origin: left;
+  animation: promo-progress 5s linear forwards;
+}
+
+.promo-progress-bar.is-paused {
+  animation-play-state: paused;
+}
+
+.promo-progress-bar.is-rtl {
+  transform-origin: right;
+}
+
 @keyframes account-wave-drift {
   0% {
     transform: translateX(0);

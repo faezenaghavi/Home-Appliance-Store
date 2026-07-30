@@ -10,6 +10,7 @@ import { useI18n } from "@/app/i18n/Provider";
 import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
 import { useToast } from "@/app/context/Toastcontext";
+import { getProductDisplayImage } from "@/app/lib/categoryImages";
 
 interface ProductCardProps {
   product: Product;
@@ -41,7 +42,7 @@ const ProductCard = memo(function ProductCard({ product, index = 0 }: ProductCar
     hex: "#808080",
   };
   const liked = isWishlisted(product.id);
-  const imageSrc = product.images?.[selectedColorIdx] ?? product.images?.[0] ?? "";
+  const imageSrc = getProductDisplayImage(product, selectedColorIdx);
 
   const formatPrice = (price: number) =>
     price.toLocaleString(isRTL ? "fa-IR" : "en-US");
