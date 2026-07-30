@@ -2,7 +2,8 @@
 
 import { useSearchParams } from "next/navigation";
 import { useI18n } from "@/app/i18n/Provider";
-import { appliances, applianceCategories } from "@/app/data/appliances";
+import { applianceCategories } from "@/app/data/appliances";
+import { searchCatalogProducts, getAllCatalogProducts } from "@/app/data/catalog";
 import ProductCard from "@/app/components/ProductCard";
 import { useMemo } from "react";
 import { X, ChevronRight, ChevronLeft, Home } from "lucide-react";
@@ -20,47 +21,64 @@ export default function ProductsContent() {
   const searchQuery = searchParams.get("search");
 
   const filteredProducts = useMemo(() => {
-    let products = appliances;
-    
-    // فیلتر بر اساس دسته‌بندی
+    let products = searchQuery ? searchCatalogProducts(searchQuery) : getAllCatalogProducts();
+
     if (category) {
       const catObj = applianceCategories.find((c) => c.id === category);
-      if (catObj) products = products.filter((p) => p.category === catObj.name || p.categoryFa === catObj.nameFa);
-      else products = [];
+      if (catObj) {
+        products = products.filter(
+          (p) => p.category === catObj.name || p.categoryFa === catObj.nameFa
+        );
+      } else {
+        products = [];
+      }
     }
-    
-    // فیلتر بر اساس برند (بدون حساسیت به حروف بزرگ و کوچک)
+
     if (brand) {
-      products = products.filter((p) => 
-        (p.brand && p.brand.toLowerCase() === brand.toLowerCase()) || 
-        (p.brandFa && p.brandFa === brand)
+      products = products.filter(
+        (p) =>
+          (p.brand && p.brand.toLowerCase() === brand.toLowerCase()) ||
+          (p.brandFa && p.brandFa === brand)
       );
     }
-    
-    // فیلتر تخفیف‌دارها
-    if (isOffers) products = products.filter((p) => p.originalPrice != null && p.originalPrice > p.price);
-    
-    // فیلتر محصولات ویژه
-    if (isFeatured) products = products.filter((p) => p.isBestseller || p.isNew || p.badge);
-    
-    // فیلتر جستجو
-    if (searchQuery) {
-      const lowerQuery = searchQuery.toLowerCase();
-      products = products.filter((p) => 
-        p.name.toLowerCase().includes(lowerQuery) || 
-        (p.nameFa && p.nameFa.includes(searchQuery))
+
+    if (isOffers) {
+      products = products.filter(
+        (p) => p.originalPrice != null && p.originalPrice > p.price
       );
     }
-    
+
+    if (isFeatured) {
+      products = products.filter((p) => p.isBestseller || p.isNew || p.badge);
+    }
+
     return products;
   }, [category, brand, isOffers, isFeatured, searchQuery]);
 
   // استخراج نام فارسی و انگلیسی برای نمایش در هدر و برد کرامب
-  const currentBrandFa = isRTL && brand ? appliances.find(p => p.brand?.toLowerCase() === brand.toLowerCase())?.brandFa || brand : brand;
+  const currentBrandFa = isRTL && brand ? getAllCatalogProducts().find(p => p.brand?.toLowerCase() === brand.toLowerCase())?.brandFa || brand : brand;
   const currentCategoryObj = category ? applianceCategories.find(c => c.id === category) : null;
   const currentCategoryName = currentCategoryObj ? (isRTL ? currentCategoryObj.nameFa : currentCategoryObj.name) : "";
 
   const renderHeader = () => {
+    if (searchQuery) {
+      return (
+        <div className="mb-12 text-center">
+          <span style={{ color: "#808080", letterSpacing: "0.2em" }} className="text-xs font-semibold uppercase mb-4 block">
+            {isRTL ? "جستجو" : "Search"}
+          </span>
+          <h1 style={{ color: "#1a1a1a", fontFamily: "var(--font-display), 'Playfair Display', serif" }} className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
+            {isRTL ? `نتایج «${searchQuery}»` : `Results for “${searchQuery}”`}
+          </h1>
+          <p style={{ color: "#8a8577" }} className="text-sm max-w-md mx-auto leading-relaxed mb-8">
+            {isRTL
+              ? "محصولات مرتبط با عبارت جستجو شده"
+              : "Products matching your search term"}
+          </p>
+          <div className="w-16 sm:w-24 h-[2px] bg-gradient-to-r from-transparent via-[#808080] to-transparent mx-auto rounded-full" />
+        </div>
+      );
+    }
     if (isOffers) {
       return (
         <div className="mb-12 text-center">
@@ -163,6 +181,12 @@ export default function ProductsContent() {
             {isRTL ? "محصولات" : "Products"}
           </Link>
           
+          {searchQuery && (
+            <>
+              {isRTL ? <ChevronLeft className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+              <span className="text-[#1a1a1a] font-medium">{searchQuery}</span>
+            </>
+          )}
           {isOffers && (
             <>
               {isRTL ? <ChevronLeft className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}

@@ -73,13 +73,13 @@ interface AccountContextType {
   addresses: Address[];
   orders: Order[];
   settings: UserSettings;
-  login: (email: string, password: string) => { ok: boolean; error?: string };
+  login: (email: string, password: string) => { ok: boolean; error?: string; name?: string };
   register: (data: {
     name: string;
     email: string;
     phone: string;
     password: string;
-  }) => { ok: boolean; error?: string };
+  }) => { ok: boolean; error?: string; name?: string };
   logout: () => void;
   updateProfile: (profile: Partial<UserProfile>) => { ok: boolean; error?: string };
   changePassword: (
@@ -190,7 +190,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
         return { ok: false, error: "wrong_password" as const };
       }
       setSessionEmail(key);
-      return { ok: true };
+      return { ok: true, name: user.profile.name };
     },
     [users]
   );
@@ -217,7 +217,7 @@ export function AccountProvider({ children }: { children: ReactNode }) {
       };
       setUsers((prev) => ({ ...prev, [key]: newUser }));
       setSessionEmail(key);
-      return { ok: true };
+      return { ok: true, name: newUser.profile.name };
     },
     [users]
   );

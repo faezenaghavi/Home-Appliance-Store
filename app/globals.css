@@ -70,6 +70,32 @@
     background-color: var(--color-accent);
     color: white;
   }
+
+  nav a,
+  nav button {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@keyframes account-wave-drift {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-account-wave-slow {
+  animation: account-wave-drift 20s linear infinite;
+}
+
+.animate-account-wave-medium {
+  animation: account-wave-drift 14s linear infinite;
+}
+
+.animate-account-wave-fast {
+  animation: account-wave-drift 9s linear infinite;
 }
 
 @layer components {

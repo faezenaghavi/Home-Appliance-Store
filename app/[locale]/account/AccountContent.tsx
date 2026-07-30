@@ -17,11 +17,21 @@ import {
   Plus,
   X,
   Loader2,
+  LogIn,
+  UserPlus,
+  Sparkles,
 } from "lucide-react";
 import { useI18n } from "@/app/i18n/Provider";
 import Breadcrumb from "@/app/components/Breadcrumb";
+import AccountWaveBackground from "@/app/components/account/AccountWaveBackground";
+import AuthSuccessScreen from "@/app/components/account/AuthSuccessScreen";
 import { useAccount, Order, Address } from "@/app/context/AccountContext";
 import { useToast } from "@/app/context/Toastcontext";
+
+const DEMO_EMAIL = "demo@novira.com";
+const DEMO_PASSWORD = "demo123";
+const DEMO_NAME_FA = "کاربر آزمایشی";
+const DEMO_NAME_EN = "Demo User";
 
 type Tab = "profile" | "orders" | "addresses" | "settings";
 
@@ -80,6 +90,16 @@ export default function AccountContent() {
     isDefault: false,
   });
   const [saving, setSaving] = useState(false);
+  const [pendingAuth, setPendingAuth] = useState<{
+    type: "login" | "register";
+    name: string;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!pendingAuth) return;
+    const timer = window.setTimeout(() => setPendingAuth(null), 2000);
+    return () => window.clearTimeout(timer);
+  }, [pendingAuth]);
 
   useEffect(() => {
     if (user) {
@@ -170,6 +190,7 @@ export default function AccountContent() {
     const result = login(authForm.email, authForm.password);
     setSaving(false);
     if (result.ok) {
+      setPendingAuth({ type: "login", name: result.name ?? authForm.email });
       showToast({
         variant: "success",
         title: isRTL ? "ورود موفق" : "Signed in",
@@ -198,10 +219,46 @@ export default function AccountContent() {
     });
     setSaving(false);
     if (result.ok) {
+      setPendingAuth({ type: "register", name: result.name ?? authForm.name });
       showToast({
         variant: "success",
         title: isRTL ? "ثبت‌نام موفق" : "Account created",
         description: isRTL ? "حساب شما ساخته شد." : "Your account has been created.",
+      });
+    } else {
+      showToast({ variant: "error", title: authErrorMessage(result.error) });
+    }
+  };
+
+  const handleDemoAuth = (mode: "login" | "register") => {
+    setSaving(true);
+    const demoName = isRTL ? DEMO_NAME_FA : DEMO_NAME_EN;
+
+    let result = login(DEMO_EMAIL, DEMO_PASSWORD);
+
+    if (!result.ok && result.error === "user_not_found") {
+      result = register({
+        name: demoName,
+        email: DEMO_EMAIL,
+        phone: "09120000000",
+        password: DEMO_PASSWORD,
+      });
+    }
+
+    setSaving(false);
+
+    if (result.ok) {
+      setPendingAuth({ type: mode, name: result.name ?? demoName });
+      showToast({
+        variant: "success",
+        title:
+          mode === "register"
+            ? isRTL
+              ? "ثبت‌نام آزمایشی موفق"
+              : "Demo registration successful"
+            : isRTL
+              ? "ورود آزمایشی موفق"
+              : "Demo sign-in successful",
       });
     } else {
       showToast({ variant: "error", title: authErrorMessage(result.error) });
@@ -306,139 +363,248 @@ export default function AccountContent() {
     );
   }
 
+  if (pendingAuth) {
+    return (
+      <AuthSuccessScreen
+        type={pendingAuth.type}
+        name={pendingAuth.name}
+        isRTL={isRTL}
+        direction={direction}
+      />
+    );
+  }
+
   if (!isLoggedIn) {
     return (
-      <main dir={direction} className="min-h-screen bg-[#faf8f5]">
-        <div className="px-4 sm:px-6 lg:px-8 xl:px-12 max-w-lg mx-auto pt-24 sm:pt-28 pb-16">
-          <Breadcrumb
-            items={[{ label: isRTL ? "حساب کاربری" : "My Account" }]}
-            className="mb-8"
-          />
-          <div className="bg-white rounded-2xl border border-[#1a1a1a]/5 p-6 sm:p-8 shadow-sm">
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#1a1a1a] mb-2">
-              {authMode === "login"
-                ? isRTL
-                  ? "ورود به حساب"
-                  : "Sign In"
-                : isRTL
-                  ? "ثبت‌نام"
-                  : "Create Account"}
-            </h1>
-            <p className="text-[#8a8577] text-sm mb-6">
-              {isRTL
-                ? "برای مدیریت سفارش‌ها و آدرس‌ها وارد حساب خود شوید."
-                : "Sign in to manage orders, addresses, and settings."}
-            </p>
+      <main dir={direction} className="relative min-h-screen overflow-hidden">
+        <AccountWaveBackground />
 
-            <div className="flex gap-2 mb-6 p-1 bg-[#faf8f5] rounded-xl">
-              <button
-                type="button"
-                onClick={() => setAuthMode("login")}
-                className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
-                  authMode === "login"
-                    ? "bg-[#1a1a1a] text-white"
-                    : "text-[#8a8577] hover:text-[#1a1a1a]"
-                }`}
-              >
-                {isRTL ? "ورود" : "Login"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setAuthMode("register")}
-                className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
-                  authMode === "register"
-                    ? "bg-[#1a1a1a] text-white"
-                    : "text-[#8a8577] hover:text-[#1a1a1a]"
-                }`}
-              >
-                {isRTL ? "ثبت‌نام" : "Register"}
-              </button>
+        <div className="relative z-10 min-h-screen flex flex-col justify-center px-4 sm:px-6 pt-24 sm:pt-28 pb-16">
+          <div className="w-full max-w-5xl mx-auto">
+            <div className="lg:hidden mb-6">
+              <Breadcrumb items={[{ label: isRTL ? "حساب کاربری" : "My Account" }]} />
             </div>
 
-            {authMode === "login" ? (
-              <form onSubmit={handleLogin} className="space-y-4">
-                <Field label={isRTL ? "ایمیل" : "Email"}>
-                  <input
-                    type="email"
-                    required
-                    value={authForm.email}
-                    onChange={(e) => setAuthForm((f) => ({ ...f, email: e.target.value }))}
-                    className={inputClass}
-                  />
-                </Field>
-                <Field label={isRTL ? "رمز عبور" : "Password"}>
-                  <input
-                    type="password"
-                    required
-                    value={authForm.password}
-                    onChange={(e) => setAuthForm((f) => ({ ...f, password: e.target.value }))}
-                    className={inputClass}
-                  />
-                </Field>
+            <div className="grid lg:grid-cols-[1fr_420px] gap-8 lg:gap-12 items-center">
+              <div className="hidden lg:block text-start pe-4">
+                <Breadcrumb
+                  items={[{ label: isRTL ? "حساب کاربری" : "My Account" }]}
+                  className="mb-8"
+                />
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#808080]/10 border border-[#808080]/20 text-[#666666] text-[11px] font-semibold uppercase tracking-wider mb-6">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  NOVIRA Account
+                </div>
+              <h1 className="font-display text-4xl xl:text-5xl font-bold text-[#1a1a1a] leading-tight mb-4">
+                {isRTL ? "به دنیای لوازم خانگی لوکس خوش آمدید" : "Welcome to luxury home living"}
+              </h1>
+              <p className="text-[#8a8577] text-base leading-relaxed max-w-md mb-8">
+                {isRTL
+                  ? "سفارش‌ها، آدرس‌ها و تنظیمات خود را در یک پنل مدیریت کنید."
+                  : "Manage orders, addresses, and preferences in one elegant panel."}
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <div className="px-4 py-2 rounded-xl bg-white/60 border border-[#808080]/15 text-sm text-[#1a1a1a]">
+                  {isRTL ? "گارانتی معتبر" : "Valid warranty"}
+                </div>
+                <div className="px-4 py-2 rounded-xl bg-white/60 border border-[#808080]/15 text-sm text-[#1a1a1a]">
+                  {isRTL ? "پیگیری سفارش" : "Order tracking"}
+                </div>
+                <div className="px-4 py-2 rounded-xl bg-white/60 border border-[#808080]/15 text-sm text-[#1a1a1a]">
+                  {isRTL ? "پشتیبانی سریع" : "Fast support"}
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full max-w-md mx-auto lg:max-w-none">
+              <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/70 p-6 sm:p-8 shadow-[0_24px_80px_rgba(26,26,26,0.1)]">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-11 h-11 rounded-2xl bg-[#808080]/15 border border-[#808080]/25 flex items-center justify-center">
+                    {authMode === "login" ? (
+                      <LogIn className="w-5 h-5 text-[#808080]" />
+                    ) : (
+                      <UserPlus className="w-5 h-5 text-[#808080]" />
+                    )}
+                  </div>
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-bold text-[#1a1a1a]">
+                      {authMode === "login"
+                        ? isRTL
+                          ? "ورود به حساب"
+                          : "Sign In"
+                        : isRTL
+                          ? "ثبت‌نام"
+                          : "Create Account"}
+                    </h2>
+                    <p className="text-[#8a8577] text-xs sm:text-sm">
+                      {isRTL
+                        ? "برای ادامه وارد شوید یا حساب جدید بسازید."
+                        : "Sign in or create a new account to continue."}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-2 mb-6 p-1 bg-[#faf8f5]/80 rounded-xl border border-[#1a1a1a]/5">
+                  <button
+                    type="button"
+                    onClick={() => setAuthMode("login")}
+                    className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
+                      authMode === "login"
+                        ? "bg-[#808080] text-white shadow-sm"
+                        : "text-[#8a8577] hover:text-[#1a1a1a]"
+                    }`}
+                  >
+                    {isRTL ? "ورود" : "Login"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAuthMode("register")}
+                    className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
+                      authMode === "register"
+                        ? "bg-[#808080] text-white shadow-sm"
+                        : "text-[#8a8577] hover:text-[#1a1a1a]"
+                    }`}
+                  >
+                    {isRTL ? "ثبت‌نام" : "Register"}
+                  </button>
+                </div>
+
+                {authMode === "login" ? (
+                  <form onSubmit={handleLogin} className="space-y-4">
+                    <Field label={isRTL ? "ایمیل" : "Email"}>
+                      <input
+                        type="email"
+                        required
+                        value={authForm.email}
+                        onChange={(e) => setAuthForm((f) => ({ ...f, email: e.target.value }))}
+                        className={inputClass}
+                        placeholder="demo@novira.com"
+                      />
+                    </Field>
+                    <Field label={isRTL ? "رمز عبور" : "Password"}>
+                      <input
+                        type="password"
+                        required
+                        value={authForm.password}
+                        onChange={(e) => setAuthForm((f) => ({ ...f, password: e.target.value }))}
+                        className={inputClass}
+                        placeholder="••••••"
+                      />
+                    </Field>
+                    <button
+                      type="submit"
+                      disabled={saving}
+                      className="w-full py-3.5 bg-[#1a1a1a] text-white rounded-xl text-sm font-semibold hover:bg-[#808080] transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+                    >
+                      {saving ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <>
+                          <LogIn className="w-4 h-4" />
+                          {isRTL ? "ورود" : "Sign In"}
+                        </>
+                      )}
+                    </button>
+                  </form>
+                ) : (
+                  <form onSubmit={handleRegister} className="space-y-4">
+                    <Field label={isRTL ? "نام و نام خانوادگی" : "Full Name"}>
+                      <input
+                        required
+                        value={authForm.name}
+                        onChange={(e) => setAuthForm((f) => ({ ...f, name: e.target.value }))}
+                        className={inputClass}
+                      />
+                    </Field>
+                    <Field label={isRTL ? "ایمیل" : "Email"}>
+                      <input
+                        type="email"
+                        required
+                        value={authForm.email}
+                        onChange={(e) => setAuthForm((f) => ({ ...f, email: e.target.value }))}
+                        className={inputClass}
+                      />
+                    </Field>
+                    <Field label={isRTL ? "شماره موبایل" : "Phone"}>
+                      <input
+                        value={authForm.phone}
+                        onChange={(e) => setAuthForm((f) => ({ ...f, phone: e.target.value }))}
+                        className={inputClass}
+                      />
+                    </Field>
+                    <Field label={isRTL ? "رمز عبور" : "Password"}>
+                      <input
+                        type="password"
+                        required
+                        minLength={6}
+                        value={authForm.password}
+                        onChange={(e) => setAuthForm((f) => ({ ...f, password: e.target.value }))}
+                        className={inputClass}
+                      />
+                    </Field>
+                    <Field label={isRTL ? "تکرار رمز عبور" : "Confirm Password"}>
+                      <input
+                        type="password"
+                        required
+                        value={authForm.confirmPassword}
+                        onChange={(e) =>
+                          setAuthForm((f) => ({ ...f, confirmPassword: e.target.value }))
+                        }
+                        className={inputClass}
+                      />
+                    </Field>
+                    <button
+                      type="submit"
+                      disabled={saving}
+                      className="w-full py-3.5 bg-[#1a1a1a] text-white rounded-xl text-sm font-semibold hover:bg-[#808080] transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+                    >
+                      {saving ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <>
+                          <UserPlus className="w-4 h-4" />
+                          {isRTL ? "ثبت‌نام" : "Create Account"}
+                        </>
+                      )}
+                    </button>
+                  </form>
+                )}
+
+                <div className="relative my-6">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-[#1a1a1a]/10" />
+                  </div>
+                  <div className="relative flex justify-center">
+                    <span className="px-3 bg-white/80 text-[11px] text-[#8a8577] uppercase tracking-wider">
+                      {isRTL ? "یا تست سریع" : "Or quick test"}
+                    </span>
+                  </div>
+                </div>
+
                 <button
-                  type="submit"
+                  type="button"
                   disabled={saving}
-                  className="w-full py-3 bg-[#808080] text-white rounded-xl text-sm font-semibold hover:bg-[#666666] transition-colors disabled:opacity-60"
+                  onClick={() => handleDemoAuth(authMode)}
+                  className="w-full py-3 rounded-xl border-2 border-dashed border-[#808080]/35 bg-[#808080]/5 text-[#666666] text-sm font-semibold hover:bg-[#808080]/10 hover:border-[#808080]/50 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
                 >
-                  {saving ? "..." : isRTL ? "ورود" : "Sign In"}
+                  <Sparkles className="w-4 h-4" />
+                  {authMode === "login"
+                    ? isRTL
+                      ? "ورود آزمایشی (بدون فرم)"
+                      : "Demo sign-in (no form)"
+                    : isRTL
+                      ? "ثبت‌نام آزمایشی (بدون فرم)"
+                      : "Demo register (no form)"}
                 </button>
-              </form>
-            ) : (
-              <form onSubmit={handleRegister} className="space-y-4">
-                <Field label={isRTL ? "نام و نام خانوادگی" : "Full Name"}>
-                  <input
-                    required
-                    value={authForm.name}
-                    onChange={(e) => setAuthForm((f) => ({ ...f, name: e.target.value }))}
-                    className={inputClass}
-                  />
-                </Field>
-                <Field label={isRTL ? "ایمیل" : "Email"}>
-                  <input
-                    type="email"
-                    required
-                    value={authForm.email}
-                    onChange={(e) => setAuthForm((f) => ({ ...f, email: e.target.value }))}
-                    className={inputClass}
-                  />
-                </Field>
-                <Field label={isRTL ? "شماره موبایل" : "Phone"}>
-                  <input
-                    value={authForm.phone}
-                    onChange={(e) => setAuthForm((f) => ({ ...f, phone: e.target.value }))}
-                    className={inputClass}
-                  />
-                </Field>
-                <Field label={isRTL ? "رمز عبور" : "Password"}>
-                  <input
-                    type="password"
-                    required
-                    minLength={6}
-                    value={authForm.password}
-                    onChange={(e) => setAuthForm((f) => ({ ...f, password: e.target.value }))}
-                    className={inputClass}
-                  />
-                </Field>
-                <Field label={isRTL ? "تکرار رمز عبور" : "Confirm Password"}>
-                  <input
-                    type="password"
-                    required
-                    value={authForm.confirmPassword}
-                    onChange={(e) =>
-                      setAuthForm((f) => ({ ...f, confirmPassword: e.target.value }))
-                    }
-                    className={inputClass}
-                  />
-                </Field>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="w-full py-3 bg-[#808080] text-white rounded-xl text-sm font-semibold hover:bg-[#666666] transition-colors disabled:opacity-60"
-                >
-                  {saving ? "..." : isRTL ? "ثبت‌نام" : "Create Account"}
-                </button>
-              </form>
-            )}
+
+                <p className="mt-4 text-center text-[11px] text-[#8a8577] leading-relaxed">
+                  {isRTL ? "حساب تست:" : "Test account:"}{" "}
+                  <span className="font-mono text-[#1a1a1a]">{DEMO_EMAIL}</span> /{" "}
+                  <span className="font-mono text-[#1a1a1a]">{DEMO_PASSWORD}</span>
+                </p>
+              </div>
+            </div>
+            </div>
           </div>
         </div>
       </main>

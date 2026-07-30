@@ -1,16 +1,17 @@
 ﻿"use client";
 
-import { useState, useEffect, useRef, useCallback, memo } from "react";
+import { useState, useEffect, useRef, useCallback, memo, useMemo } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Menu, X, ArrowUpRight, Search, ShoppingBag, Heart, User,
-  ChevronDown, Globe, LogOut, Package, Settings, Tag, Sparkles,
+  ChevronDown, Globe, Package, Settings, Tag, Sparkles,
   Grid3X3, Info, Newspaper, Home,
 } from "lucide-react";
 import { useI18n } from "@/app/i18n/Provider";
 import { Locale, localeLabels } from "@/app/i18n/config";
 import { applianceCategories } from "@/app/data/appliances";
+import { searchCatalogProducts } from "@/app/data/catalog";
 import { useCart } from "@/app/context/CartContext";
 import { useWishlist } from "@/app/context/WishlistContext";
 
@@ -83,12 +84,16 @@ export default function Navbar() {
   const [isUserOpen, setIsUserOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentSearch, setCurrentSearch] = useState("");
+  const [showSearchResults, setShowSearchResults] = useState(false);
 
   const categoryRef = useRef<HTMLDivElement>(null);
   const langRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLDivElement>(null);
 
   const basePath = `/${locale}`;
+  const isHome = pathname === basePath || pathname === `${basePath}/`;
+  const showGlassNav = isHome && !isScrolled;
 
   const formatBadgeCount = (count: number) =>
     count.toLocaleString(isRTL ? "fa-IR" : "en-US");
@@ -101,7 +106,16 @@ export default function Navbar() {
 
   useEffect(() => {
     setCurrentSearch(typeof window !== "undefined" ? window.location.search : "");
-  }, [pathname]);
+    window.scrollTo({ top: 0, behavior: "auto" });
+    setIsScrolled(false);
+
+    const params = new URLSearchParams(
+      typeof window !== "undefined" ? window.location.search : ""
+    );
+    if (pathname === `${basePath}/products`) {
+      setSearchQuery(params.get("search") ?? "");
+    }
+  }, [pathname, basePath]);
 
   useEffect(() => {
     const routes = [
@@ -130,6 +144,7 @@ export default function Navbar() {
       if (categoryRef.current && !categoryRef.current.contains(target)) setIsCategoryOpen(false);
       if (langRef.current && !langRef.current.contains(target)) setIsLangOpen(false);
       if (userRef.current && !userRef.current.contains(target)) setIsUserOpen(false);
+      if (searchRef.current && !searchRef.current.contains(target)) setShowSearchResults(false);
     };
 
     const handleResize = () => {
@@ -188,16 +203,35 @@ export default function Navbar() {
     [pathname, currentSearch, basePath]
   );
 
+  const searchResults = useMemo(() => {
+    const q = searchQuery.trim();
+    if (q.length < 2) return [];
+    return searchCatalogProducts(q).slice(0, 6);
+  }, [searchQuery]);
+
+  const getProductLabel = useCallback(
+    (name: string, nameFa?: string) =>
+      locale === "fa" && nameFa ? nameFa : name,
+    [locale]
+  );
+
+  const goToSearchResults = useCallback(
+    (query?: string) => {
+      const q = (query ?? searchQuery).trim();
+      if (!q) return;
+      setShowSearchResults(false);
+      setIsMobileMenuOpen(false);
+      router.push(`${basePath}/products?search=${encodeURIComponent(q)}`);
+    },
+    [searchQuery, router, basePath]
+  );
+
   const handleSearch = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      const q = searchQuery.trim();
-      if (!q) return;
-      router.push(`${basePath}/products?search=${encodeURIComponent(q)}`);
-      setSearchQuery("");
-      setIsMobileMenuOpen(false);
+      goToSearchResults();
     },
-    [searchQuery, router, basePath]
+    [goToSearchResults]
   );
 
   const switchLocale = useCallback(
@@ -220,29 +254,35 @@ export default function Navbar() {
 
       setIsMobileMenuOpen(false);
       setIsCategoryOpen(false);
+      setIsLangOpen(false);
+      setIsUserOpen(false);
 
-      const fullHref = link.href ? `${basePath}${link.href}` : basePath;
       if (!link.href && (pathname === basePath || pathname === `${basePath}/`)) {
         e.preventDefault();
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      } else if (fullHref === pathname) {
-        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: "auto" });
       }
     },
     [pathname, basePath]
   );
 
+  const navLinkClass = (active: boolean) =>
+    active
+      ? "text-white bg-[#808080] shadow-sm"
+      : "text-white/80 hover:text-white hover:bg-white/[0.08] active:bg-white/[0.14] active:text-white";
+
   const iconBtn =
-    "relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center border bg-white/5 border-white/10 hover:border-[#808080]/40 hover:bg-[#808080]/10 active:scale-95 transition-[transform,background-color,border-color] duration-150";
+    "relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center border bg-white/5 border-white/10 text-white/70 hover:text-white hover:border-[#808080]/40 hover:bg-[#808080]/10 active:bg-[#808080]/20 active:text-white active:scale-95 transition-[transform,background-color,border-color,color] duration-100";
 
   return (
     <>
       <nav
         dir={direction}
-        className={`fixed top-0 left-0 right-0 z-50 transition-[background-color,padding,box-shadow,backdrop-filter] duration-200 ${
-          isScrolled
-            ? "bg-[#1a1a1a]/75 backdrop-blur-2xl backdrop-saturate-150 shadow-[0_4px_24px_rgba(0,0,0,0.25)] py-2 sm:py-3"
-            : "bg-[#1a1a1a]/92 py-3 sm:py-4"
+        className={`fixed top-0 left-0 right-0 z-50 isolate text-white transition-[background-color,padding,box-shadow,backdrop-filter] duration-150 ${
+          showGlassNav
+            ? "bg-transparent backdrop-blur-xl border-b border-white/[0.06] py-3 sm:py-4"
+            : isScrolled
+              ? "bg-[#141414] shadow-[0_4px_24px_rgba(0,0,0,0.35)] border-b border-white/[0.08] py-2 sm:py-3"
+              : "bg-[#141414] border-b border-white/[0.06] py-3 sm:py-4"
         }`}
       >
         <div className="px-4 sm:px-6 lg:px-8 xl:px-12 max-w-[1440px] mx-auto">
@@ -275,13 +315,8 @@ export default function Navbar() {
                     <Link
                       href={href}
                       prefetch
-                      scroll
                       onClick={(e) => handleNavClick(e, link)}
-                      className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[13px] font-medium transition-colors duration-100 active:scale-[0.98] ${
-                        active
-                          ? "text-[#1a1a1a] bg-[#808080]"
-                          : "text-white/75 hover:text-white hover:bg-white/10"
-                      }`}
+                      className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[13px] font-medium transition-colors duration-75 ${navLinkClass(active)}`}
                     >
                       {getLabel(link)}
                       {link.hasDropdown && (
@@ -315,24 +350,87 @@ export default function Navbar() {
             </div>
 
             <div className="flex items-center gap-1.5 sm:gap-2">
-              <form
-                onSubmit={handleSearch}
-                className="hidden md:flex items-center h-9 rounded-full px-3.5 border bg-white/5 border-white/10 focus-within:border-[#808080]/40 w-[140px] xl:w-[180px] focus-within:w-[200px] xl:focus-within:w-[240px] transition-[width,border-color] duration-200"
-              >
-                <Search className="w-3.5 h-3.5 shrink-0 text-white/40" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={locale === "fa" ? "جستجو..." : "Search..."}
-                  className={`bg-transparent border-none outline-none text-[12px] w-full text-white placeholder:text-white/40 ${isRTL ? "pr-2" : "pl-2"}`}
-                />
-              </form>
+              <div ref={searchRef} className="relative hidden md:block">
+                <form
+                  onSubmit={handleSearch}
+                  className="flex items-center h-9 rounded-full px-3.5 border bg-white/5 border-white/10 focus-within:border-[#808080]/40 w-[140px] xl:w-[180px] focus-within:w-[200px] xl:focus-within:w-[240px] transition-[width,border-color] duration-200"
+                >
+                  <Search className="w-3.5 h-3.5 shrink-0 text-white/40" />
+                  <input
+                    type="search"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setShowSearchResults(true);
+                    }}
+                    onFocus={() => setShowSearchResults(true)}
+                    placeholder={locale === "fa" ? "جستجوی محصول..." : "Search products..."}
+                    className={`bg-transparent border-none outline-none text-[12px] w-full text-white placeholder:text-white/40 ${isRTL ? "pr-2" : "pl-2"}`}
+                  />
+                </form>
+
+                {showSearchResults && searchQuery.trim().length >= 2 && (
+                  <div
+                    className={`absolute top-full mt-2 w-[320px] bg-[#1c1c1c] rounded-2xl shadow-[0_16px_48px_rgba(0,0,0,0.5)] border border-white/[0.08] overflow-hidden z-[60] ${
+                      isRTL ? "left-0" : "right-0"
+                    }`}
+                  >
+                    {searchResults.length > 0 ? (
+                      <>
+                        <div className="p-2">
+                          {searchResults.map((product) => (
+                            <Link
+                              key={product.id}
+                              href={`${basePath}/products/${product.id}`}
+                              prefetch
+                              onClick={() => {
+                                setShowSearchResults(false);
+                                setIsMobileMenuOpen(false);
+                              }}
+                              className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5 transition-colors group"
+                            >
+                              <div className="w-9 h-9 rounded-lg bg-[#808080]/15 flex items-center justify-center shrink-0 text-[#808080] text-xs font-bold">
+                                {getProductLabel(product.name, product.nameFa).charAt(0)}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-white text-[13px] font-medium truncate">
+                                  {getProductLabel(product.name, product.nameFa)}
+                                </p>
+                                {product.brand && (
+                                  <p className="text-white/40 text-[11px] truncate">
+                                    {locale === "fa" && product.brandFa
+                                      ? product.brandFa
+                                      : product.brand}
+                                  </p>
+                                )}
+                              </div>
+                              <ArrowUpRight className="w-3.5 h-3.5 text-white/30 group-hover:text-[#808080] shrink-0" />
+                            </Link>
+                          ))}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => goToSearchResults()}
+                          className="w-full px-4 py-3 text-[12px] font-semibold text-[#808080] border-t border-white/[0.06] hover:bg-white/5 transition-colors"
+                        >
+                          {locale === "fa"
+                            ? `مشاهده همه نتایج «${searchQuery.trim()}»`
+                            : `View all results for “${searchQuery.trim()}”`}
+                        </button>
+                      </>
+                    ) : (
+                      <p className="px-4 py-5 text-[13px] text-white/50 text-center">
+                        {locale === "fa" ? "محصولی یافت نشد" : "No products found"}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
 
               <span className="hidden md:inline w-px h-5 bg-white/10" />
 
               <Link href={`${basePath}/wishlist`} prefetch className={`${iconBtn} group`}>
-                <Heart className="w-[17px] h-[17px] text-white/70 group-hover:text-[#808080] transition-colors duration-150" />
+                <Heart className="w-[17px] h-[17px] group-hover:text-[#808080] transition-colors duration-100" />
                 {wishlistCount > 0 && (
                   <span className={`absolute -top-1.5 min-w-[18px] h-[18px] px-0.5 bg-[#808080] text-[#1a1a1a] text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-[#1a1a1a] ${isRTL ? "-left-1.5" : "-right-1.5"}`}>
                     {formatBadgeCount(wishlistCount)}
@@ -341,7 +439,7 @@ export default function Navbar() {
               </Link>
 
               <Link href={`${basePath}/cart`} prefetch className={`${iconBtn} group`}>
-                <ShoppingBag className="w-[17px] h-[17px] text-white/70 group-hover:text-[#808080] transition-colors duration-150" />
+                <ShoppingBag className="w-[17px] h-[17px] group-hover:text-[#808080] transition-colors duration-100" />
                 {cartCount > 0 && (
                   <span className={`absolute -top-1.5 min-w-[18px] h-[18px] px-0.5 bg-[#808080] text-[#1a1a1a] text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-[#1a1a1a] ${isRTL ? "-left-1.5" : "-right-1.5"}`}>
                     {formatBadgeCount(cartCount)}
@@ -355,7 +453,7 @@ export default function Navbar() {
                   onClick={() => setIsLangOpen((v) => !v)}
                   className={`${iconBtn} ${isLangOpen ? "bg-[#808080]/10 border-[#808080]/40" : ""}`}
                 >
-                  <Globe className="w-[17px] h-[17px] text-white/70" />
+                  <Globe className="w-[17px] h-[17px]" />
                 </button>
                 {isLangOpen && (
                   <div className={`absolute top-full mt-1.5 w-36 bg-[#1c1c1c] rounded-xl shadow-xl border border-white/[0.08] overflow-hidden ${isRTL ? "left-0" : "right-0"}`}>
@@ -382,7 +480,7 @@ export default function Navbar() {
                   onClick={() => setIsUserOpen((v) => !v)}
                   className={`${iconBtn} ${isUserOpen ? "bg-[#808080]/10 border-[#808080]/40" : ""}`}
                 >
-                  <User className="w-[17px] h-[17px] text-white/70" />
+                  <User className="w-[17px] h-[17px]" />
                 </button>
                 {isUserOpen && (
                   <div className={`absolute top-full mt-1.5 w-60 bg-[#1c1c1c] rounded-xl shadow-xl border border-white/[0.08] overflow-hidden ${isRTL ? "left-0" : "right-0"}`}>
@@ -451,13 +549,51 @@ export default function Navbar() {
               <div className="flex items-center h-11 bg-white/5 rounded-xl px-4 border border-white/10">
                 <Search className="w-4 h-4 text-white/40 shrink-0" />
                 <input
-                  type="text"
+                  type="search"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={locale === "fa" ? "جستجو..." : "Search..."}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setShowSearchResults(true);
+                  }}
+                  placeholder={locale === "fa" ? "جستجوی محصول..." : "Search products..."}
                   className={`bg-transparent w-full text-sm text-white placeholder:text-white/40 outline-none ${isRTL ? "pr-3" : "pl-3"}`}
                 />
               </div>
+              {showSearchResults && searchQuery.trim().length >= 2 && (
+                <div className="mt-3 rounded-xl border border-white/10 overflow-hidden bg-white/[0.03]">
+                  {searchResults.length > 0 ? (
+                    <>
+                      {searchResults.map((product) => (
+                        <Link
+                          key={product.id}
+                          href={`${basePath}/products/${product.id}`}
+                          prefetch
+                          onClick={() => {
+                            setShowSearchResults(false);
+                            setIsMobileMenuOpen(false);
+                          }}
+                          className="flex items-center gap-3 px-3 py-2.5 border-b border-white/[0.06] last:border-0 hover:bg-white/5"
+                        >
+                          <span className="text-[13px] truncate">
+                            {getProductLabel(product.name, product.nameFa)}
+                          </span>
+                        </Link>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => goToSearchResults()}
+                        className="w-full px-3 py-2.5 text-[12px] font-semibold text-[#808080] hover:bg-white/5"
+                      >
+                        {locale === "fa" ? "مشاهده همه نتایج" : "View all results"}
+                      </button>
+                    </>
+                  ) : (
+                    <p className="px-3 py-3 text-[12px] text-white/50 text-center">
+                      {locale === "fa" ? "محصولی یافت نشد" : "No products found"}
+                    </p>
+                  )}
+                </div>
+              )}
             </form>
 
             <div className="flex-1 overflow-y-auto py-2">
@@ -471,8 +607,10 @@ export default function Navbar() {
                       href={href}
                       prefetch
                       onClick={(e) => handleNavClick(e, link)}
-                      className={`flex items-center gap-3 mx-2 px-4 py-3 rounded-xl text-[14px] font-medium transition-colors duration-150 active:bg-white/10 ${
-                        active ? "bg-[#808080]/10 text-[#808080]" : "text-white hover:bg-white/5"
+                      className={`flex items-center gap-3 mx-2 px-4 py-3 rounded-xl text-[14px] font-medium transition-colors duration-75 ${
+                        active
+                          ? "bg-[#808080]/20 text-white"
+                          : "text-white/90 hover:bg-white/[0.08] active:bg-white/[0.14] active:text-white"
                       }`}
                     >
                       <link.icon className="w-4 h-4 shrink-0" />

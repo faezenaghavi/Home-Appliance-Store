@@ -37,20 +37,7 @@ export default async function RootLayout({
       suppressHydrationWarning
       className={`splash-pending ${inter.variable} ${playfair.variable} ${vazirmatn.variable}`}
     >
-      <head>
-        <style
-          dangerouslySetInnerHTML={{
-            __html:
-              "html.splash-pending,html.splash-pending body{background:#3a3a3a!important;overflow:hidden}html.splash-pending .splash-app-shell{visibility:hidden!important;pointer-events:none}",
-          }}
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: "document.documentElement.classList.add('splash-pending');",
-          }}
-        />
-      </head>
-      <body className="antialiased">
+      <body className="antialiased" suppressHydrationWarning>
         <I18nProvider initialLocale={defaultLocale} initialDictionary={dictionary}>
           <CartProvider>
             <WishlistProvider>
