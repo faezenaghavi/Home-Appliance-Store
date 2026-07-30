@@ -96,19 +96,17 @@ function FeaturedCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.35, delay: index * 0.06 }}
+      className="flex flex-col h-full bg-white rounded-2xl border border-[#1a1a1a]/5 overflow-hidden hover:border-[#808080]/30 hover:shadow-lg transition-all duration-200"
     >
-      <Link
-        href={`/${locale}/products/${product.id}`}
-        className="group flex flex-col h-full bg-white rounded-2xl border border-[#1a1a1a]/5 overflow-hidden hover:border-[#808080]/30 hover:shadow-lg transition-all duration-200"
-      >
+      <Link href={`/${locale}/products/${product.id}`} className="block group/image">
         <div className="relative aspect-[4/5] bg-[#f0eeea] overflow-hidden">
           {image ? (
             <Image
               src={image}
               alt={name}
               fill
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
-              sizes="(max-width: 640px) 100vw, 20vw"
+              className="object-cover group-hover/image:scale-105 transition-transform duration-500"
+              sizes="(max-width: 640px) 50vw, 20vw"
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center text-[#808080]/25 text-4xl font-bold">
@@ -144,43 +142,44 @@ function FeaturedCard({
             />
           </button>
         </div>
-
-        <div className="p-4 flex flex-col flex-1 gap-3">
-          <div>
-            <p className="text-[10px] uppercase tracking-wider text-[#808080] font-semibold mb-1">
-              {category}
-            </p>
-            <h3 className="text-sm font-semibold text-[#1a1a1a] leading-snug line-clamp-2 group-hover:text-[#808080] transition-colors">
-              {name}
-            </h3>
-          </div>
-
-          <div className="flex items-center gap-1 text-[#8a8577]">
-            <Star className="w-3.5 h-3.5 fill-[#808080] text-[#808080]" />
-            <span className="text-xs font-medium">{product.rating}</span>
-            <span className="text-xs text-[#8a8577]/60">
-              ({product.reviews.toLocaleString(isRTL ? "fa-IR" : "en-US")})
-            </span>
-          </div>
-
-          <div className="mt-auto flex items-center justify-between gap-2 pt-2 border-t border-[#1a1a1a]/5">
-            <div>
-              <p className="text-base font-bold text-[#1a1a1a]">
-                {formatPrice(product.price)}
-              </p>
-              <p className="text-[10px] text-[#8a8577]">{t("common.currency")}</p>
-            </div>
-            <button
-              type="button"
-              onClick={handleAddToCart}
-              className="flex items-center gap-1.5 px-3.5 py-2 bg-[#1a1a1a] text-white text-xs font-semibold rounded-xl hover:bg-[#808080] transition-colors duration-150 active:scale-95"
-            >
-              <ShoppingBag className="w-3.5 h-3.5" />
-              {t("product.addToCart")}
-            </button>
-          </div>
-        </div>
       </Link>
+
+      <div className="p-3 sm:p-4 flex flex-col flex-1 gap-2 sm:gap-3 min-w-0">
+        <Link href={`/${locale}/products/${product.id}`} className="block min-w-0 group/title">
+          <p className="text-[10px] uppercase tracking-wider text-[#808080] font-semibold mb-1 truncate">
+            {category}
+          </p>
+          <h3 className="text-xs sm:text-sm font-semibold text-[#1a1a1a] leading-snug line-clamp-2 group-hover/title:text-[#808080] transition-colors">
+            {name}
+          </h3>
+        </Link>
+
+        <div className="flex items-center gap-1 text-[#8a8577]">
+          <Star className="w-3.5 h-3.5 fill-[#808080] text-[#808080] shrink-0" />
+          <span className="text-xs font-medium">{product.rating}</span>
+          <span className="text-xs text-[#8a8577]/60 truncate">
+            ({product.reviews.toLocaleString(isRTL ? "fa-IR" : "en-US")})
+          </span>
+        </div>
+
+        <div className="mt-auto flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between pt-2 border-t border-[#1a1a1a]/5">
+          <div className="min-w-0">
+            <p className="text-sm sm:text-base font-bold text-[#1a1a1a] truncate">
+              {formatPrice(product.price)}
+            </p>
+            <p className="text-[10px] text-[#8a8577]">{t("common.currency")}</p>
+          </div>
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            className="w-full sm:w-auto shrink-0 flex items-center justify-center gap-1.5 px-3 py-2.5 sm:px-3.5 sm:py-2 bg-[#1a1a1a] text-white text-[10px] sm:text-xs font-semibold rounded-xl hover:bg-[#808080] transition-colors duration-150 active:scale-95 touch-manipulation"
+            aria-label={t("product.addToCart") as string}
+          >
+            <ShoppingBag className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">{isRTL ? "افزودن" : "Add"}</span>
+          </button>
+        </div>
+      </div>
     </motion.div>
   );
 }

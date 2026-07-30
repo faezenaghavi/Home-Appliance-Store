@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   Search,
@@ -14,16 +16,19 @@ import {
 import { useI18n } from "@/app/i18n/Provider";
 import Breadcrumb from "@/app/components/Breadcrumb";
 import { getBlogImage } from "@/app/lib/categoryImages";
+import { blogPosts, type BlogPostData } from "@/app/data/blogPosts";
 
-interface BlogPost {
-  id: string;
-  title: string;
-  excerpt: string;
-  category: string;
-  date: string;
-  readTime: number;
-  image: string;
-  featured?: boolean;
+function localizePost(post: BlogPostData, isRTL: boolean) {
+  return {
+    id: post.id,
+    title: isRTL ? post.titleFa : post.titleEn,
+    excerpt: isRTL ? post.excerptFa : post.excerptEn,
+    category: isRTL ? post.categoryFa : post.categoryEn,
+    date: isRTL ? post.dateFa : post.dateEn,
+    readTime: post.readTime,
+    image: getBlogImage(post.imageIndex),
+    featured: post.featured,
+  };
 }
 
 export default function BlogContent() {
@@ -33,127 +38,10 @@ export default function BlogContent() {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string>("all");
 
-  const posts: BlogPost[] = useMemo(() => {
-    if (locale === "fa") {
-      return [
-        {
-          id: "1",
-          title: "آینده خانه‌های هوشمند در سال ۱۴۰۵",
-          excerpt:
-            "چگونه لوازم نوویرا با هوش مصنوعی و اتوماسیون، زندگی روزمره شما را متحول می‌کنند و آینده زندگی لوکس را شکل می‌دهند.",
-          category: "تکنولوژی",
-          date: "۱۲ اسفند ۱۴۰۴",
-          readTime: 5,
-          image: getBlogImage(0),
-          featured: true,
-        },
-        {
-          id: "2",
-          title: "طراحی آرام و بی‌سروصدا",
-          excerpt: "ورود به دنیای مهندسی سکوت برای لوازم خانگی — چرا آرامش صوتی در خانه‌های مدرن اهمیت دارد.",
-          category: "طراحی",
-          date: "۵ بهمن ۱۴۰۴",
-          readTime: 3,
-          image: getBlogImage(1),
-        },
-        {
-          id: "3",
-          title: "نگهداری و افزایش عمر دستگاه‌ها",
-          excerpt: "نکات کلیدی برای حفظ کارایی و زیبایی لوازم خانگی لوکس در طولانی‌مدت.",
-          category: "نگهداری",
-          date: "۲۰ دی ۱۴۰۴",
-          readTime: 4,
-          image: getBlogImage(2),
-        },
-        {
-          id: "4",
-          title: "راهنمای انتخاب یخچال ساید بای ساید",
-          excerpt: "معیارهای مهم خرید یخچال حرفه‌ای برای آشپزخانه‌های مدرن و خانواده‌های پرجمعیت.",
-          category: "راهنمای خرید",
-          date: "۸ دی ۱۴۰۴",
-          readTime: 6,
-          image: getBlogImage(3),
-        },
-        {
-          id: "5",
-          title: "صرفه‌جویی انرژی با لوازم A+++",
-          excerpt: "چگونه با انتخاب لوازم کم‌مصرف، هم به محیط زیست کمک کنید و هم هزینه برق را کاهش دهید.",
-          category: "تکنولوژی",
-          date: "۱ دی ۱۴۰۴",
-          readTime: 4,
-          image: getBlogImage(4),
-        },
-        {
-          id: "6",
-          title: "دکوراسیون آشپزخانه مینیمال",
-          excerpt: "ترکیب لوازم استیل و مشکی مات برای فضایی لوکس، تمیز و کاربردی.",
-          category: "طراحی",
-          date: "۲۵ آذر ۱۴۰۴",
-          readTime: 3,
-          image: getBlogImage(5),
-        },
-      ];
-    }
-
-    return [
-      {
-        id: "1",
-        title: "The Future of Smart Homes in 2026",
-        excerpt:
-          "How Novira appliances with AI and automation transform daily living and shape the future of luxury homes.",
-        category: "Technology",
-        date: "Mar 2, 2026",
-        readTime: 5,
-        image: getBlogImage(0),
-        featured: true,
-      },
-      {
-        id: "2",
-        title: "Quiet Engineering Design",
-        excerpt: "Entering the world of silence engineering — why acoustic comfort matters in modern homes.",
-        category: "Design",
-        date: "Jan 25, 2026",
-        readTime: 3,
-        image: getBlogImage(1),
-      },
-      {
-        id: "3",
-        title: "Maintenance & Longevity",
-        excerpt: "Key tips for preserving the performance and beauty of luxury home appliances.",
-        category: "Care",
-        date: "Jan 10, 2026",
-        readTime: 4,
-        image: getBlogImage(2),
-      },
-      {
-        id: "4",
-        title: "Side-by-Side Refrigerator Buying Guide",
-        excerpt: "Essential criteria for choosing a professional fridge for modern kitchens.",
-        category: "Buying Guide",
-        date: "Jan 3, 2026",
-        readTime: 6,
-        image: getBlogImage(3),
-      },
-      {
-        id: "5",
-        title: "Energy Savings with A+++ Appliances",
-        excerpt: "How efficient appliances help the environment and reduce electricity bills.",
-        category: "Technology",
-        date: "Jan 1, 2026",
-        readTime: 4,
-        image: getBlogImage(4),
-      },
-      {
-        id: "6",
-        title: "Minimalist Kitchen Styling",
-        excerpt: "Combining stainless steel and matte black for a clean, luxurious kitchen.",
-        category: "Design",
-        date: "Dec 15, 2025",
-        readTime: 3,
-        image: getBlogImage(5),
-      },
-    ];
-  }, [locale]);
+  const posts = useMemo(
+    () => blogPosts.map((p) => localizePost(p, isRTL)),
+    [isRTL]
+  );
 
   const categories = useMemo(() => Array.from(new Set(posts.map((p) => p.category))), [posts]);
 
@@ -190,7 +78,6 @@ export default function BlogContent() {
           <Breadcrumb items={[{ label: t("nav.blog") as string }]} className="mb-8 sm:mb-10" />
         </motion.div>
 
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -218,7 +105,6 @@ export default function BlogContent() {
           <div className="w-16 sm:w-24 h-[2px] bg-gradient-to-r from-transparent via-[#808080] to-transparent mx-auto rounded-full mt-6 sm:mt-8" />
         </motion.div>
 
-        {/* Search + Filters */}
         <div className="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between mb-10 sm:mb-12">
           <div className="flex flex-wrap gap-2">
             <button
@@ -266,63 +152,64 @@ export default function BlogContent() {
           </div>
         ) : (
           <>
-            {/* Featured Post */}
             {featuredPost && (
               <motion.article
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                className="group relative mb-8 sm:mb-10 rounded-3xl overflow-hidden bg-[#1a1a1a] cursor-pointer"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-[#808080]/20 via-transparent to-[#1a1a1a] opacity-60" />
-                <div
-                  className="absolute inset-0 opacity-[0.04]"
-                  style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23808080' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                  }}
-                />
+                <Link
+                  href={`/${locale}/blog/${featuredPost.id}`}
+                  className="group relative block mb-8 sm:mb-10 rounded-3xl overflow-hidden bg-[#1a1a1a]"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#808080]/20 via-transparent to-[#1a1a1a] opacity-60 z-[1]" />
 
-                <div className="relative z-10 grid lg:grid-cols-2 gap-0 min-h-[320px] sm:min-h-[380px]">
-                  <div className="flex items-center justify-center p-8 sm:p-12 bg-[#141210]/50">
-                    <span className="font-display text-7xl sm:text-8xl font-bold text-[#808080]/20 select-none">
-                      {featuredPost.title.charAt(0)}
-                    </span>
-                  </div>
+                  <div className="relative z-10 grid lg:grid-cols-2 gap-0 min-h-[320px] sm:min-h-[380px]">
+                    <div className="relative min-h-[200px] sm:min-h-[240px] lg:min-h-full">
+                      <Image
+                        src={featuredPost.image}
+                        alt={featuredPost.title}
+                        fill
+                        sizes="(max-width: 1024px) 100vw, 50vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-700"
+                      />
+                      <div className="absolute inset-0 bg-[#141210]/40 lg:bg-[#141210]/50" />
+                    </div>
 
-                  <div className="flex flex-col justify-center p-8 sm:p-12">
-                    <span className="inline-flex items-center gap-1.5 w-fit px-3 py-1 bg-[#808080]/20 border border-[#808080]/30 text-[#a8a8a8] text-[10px] font-bold uppercase tracking-widest rounded-full mb-5">
-                      <Sparkles className="w-3 h-3" />
-                      {isRTL ? "مقاله ویژه" : "Featured"}
-                    </span>
-                    <span className="inline-block w-fit px-3 py-1 bg-white/10 text-white/80 text-[10px] font-semibold rounded-full mb-4">
-                      {featuredPost.category}
-                    </span>
-                    <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 leading-snug group-hover:text-[#a8a8a8] transition-colors duration-300">
-                      {featuredPost.title}
-                    </h2>
-                    <p className="text-white/60 text-sm sm:text-base leading-relaxed mb-6 line-clamp-3">
-                      {featuredPost.excerpt}
-                    </p>
-                    <div className="flex items-center gap-5 text-white/50 text-xs mb-6">
-                      <span className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5" />
-                        {featuredPost.date}
+                    <div className="flex flex-col justify-center p-8 sm:p-12">
+                      <span className="inline-flex items-center gap-1.5 w-fit px-3 py-1 bg-[#808080]/20 border border-[#808080]/30 text-[#a8a8a8] text-[10px] font-bold uppercase tracking-widest rounded-full mb-5">
+                        <Sparkles className="w-3 h-3" />
+                        {isRTL ? "مقاله ویژه" : "Featured"}
                       </span>
-                      <span className="flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5" />
-                        {featuredPost.readTime} {isRTL ? "دقیقه" : "min"}
+                      <span className="inline-block w-fit px-3 py-1 bg-white/10 text-white/80 text-[10px] font-semibold rounded-full mb-4">
+                        {featuredPost.category}
+                      </span>
+                      <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 leading-snug group-hover:text-[#a8a8a8] transition-colors duration-300">
+                        {featuredPost.title}
+                      </h2>
+                      <p className="text-white/60 text-sm sm:text-base leading-relaxed mb-6 line-clamp-3">
+                        {featuredPost.excerpt}
+                      </p>
+                      <div className="flex items-center gap-5 text-white/50 text-xs mb-6">
+                        <span className="flex items-center gap-1.5">
+                          <Calendar className="w-3.5 h-3.5" />
+                          {featuredPost.date}
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5" />
+                          {featuredPost.readTime} {isRTL ? "دقیقه" : "min"}
+                        </span>
+                      </div>
+                      <span className="inline-flex items-center gap-2 text-[#a8a8a8] text-sm font-semibold group-hover:text-white transition-colors">
+                        {t("common.more")}
+                        <ArrowIcon className="w-4 h-4 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5 transition-transform" />
                       </span>
                     </div>
-                    <span className="inline-flex items-center gap-2 text-[#a8a8a8] text-sm font-semibold group-hover:text-white transition-colors">
-                      {t("common.more")}
-                      <ArrowIcon className="w-4 h-4 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5 transition-transform" />
-                    </span>
                   </div>
-                </div>
+                </Link>
               </motion.article>
             )}
 
-            {/* Grid */}
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
               {gridPosts.map((post, index) => (
                 <motion.article
@@ -330,49 +217,56 @@ export default function BlogContent() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.05 * index }}
-                  className="group bg-white rounded-2xl sm:rounded-3xl border border-[#e5dfd6] overflow-hidden hover:border-[#808080]/40 hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] transition-all duration-500 cursor-pointer flex flex-col"
                 >
-                  <div className="relative aspect-[16/10] bg-gradient-to-br from-[#faf8f5] to-[#f0ebe4] overflow-hidden flex items-center justify-center">
-                    <span className="font-display text-5xl font-bold text-[#808080]/15 group-hover:scale-110 transition-transform duration-500">
-                      {post.title.charAt(0)}
-                    </span>
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a1a]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    <span
-                      className={`absolute top-3 px-3 py-1 bg-[#1a1a1a] text-white text-[10px] font-semibold tracking-wide rounded-full ${isRTL ? "right-3" : "left-3"}`}
-                    >
-                      {post.category}
-                    </span>
-                  </div>
-
-                  <div className="p-5 sm:p-6 flex flex-col flex-1">
-                    <div className="flex items-center gap-4 text-[#8a8577] text-xs mb-3">
-                      <span className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5" />
-                        {post.date}
-                      </span>
-                      <span className="flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5" />
-                        {post.readTime} {isRTL ? "دقیقه" : "min"}
+                  <Link
+                    href={`/${locale}/blog/${post.id}`}
+                    className="group bg-white rounded-2xl sm:rounded-3xl border border-[#e5dfd6] overflow-hidden hover:border-[#808080]/40 hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] transition-all duration-500 flex flex-col h-full"
+                  >
+                    <div className="relative aspect-[16/10] overflow-hidden">
+                      <Image
+                        src={post.image}
+                        alt={post.title}
+                        fill
+                        sizes="(max-width: 640px) 100vw, 33vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a1a]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <span
+                        className={`absolute top-3 px-3 py-1 bg-[#1a1a1a] text-white text-[10px] font-semibold tracking-wide rounded-full ${isRTL ? "right-3" : "left-3"}`}
+                      >
+                        {post.category}
                       </span>
                     </div>
-                    <h3 className="font-display text-lg sm:text-xl font-semibold text-[#1a1a1a] mb-2 leading-snug group-hover:text-[#808080] transition-colors duration-300">
-                      {post.title}
-                    </h3>
-                    <p className="text-[#8a8577] text-sm leading-relaxed mb-5 line-clamp-2 flex-1">
-                      {post.excerpt}
-                    </p>
-                    <span className="inline-flex items-center gap-1.5 text-[#808080] text-sm font-semibold group-hover:text-[#1a1a1a] transition-colors">
-                      {t("common.more")}
-                      <ArrowIcon className="w-3.5 h-3.5 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5 transition-transform" />
-                    </span>
-                  </div>
+
+                    <div className="p-5 sm:p-6 flex flex-col flex-1">
+                      <div className="flex items-center gap-4 text-[#8a8577] text-xs mb-3">
+                        <span className="flex items-center gap-1.5">
+                          <Calendar className="w-3.5 h-3.5" />
+                          {post.date}
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5" />
+                          {post.readTime} {isRTL ? "دقیقه" : "min"}
+                        </span>
+                      </div>
+                      <h3 className="font-display text-lg sm:text-xl font-semibold text-[#1a1a1a] mb-2 leading-snug group-hover:text-[#808080] transition-colors duration-300">
+                        {post.title}
+                      </h3>
+                      <p className="text-[#8a8577] text-sm leading-relaxed mb-5 line-clamp-2 flex-1">
+                        {post.excerpt}
+                      </p>
+                      <span className="inline-flex items-center gap-1.5 text-[#808080] text-sm font-semibold group-hover:text-[#1a1a1a] transition-colors">
+                        {t("common.more")}
+                        <ArrowIcon className="w-3.5 h-3.5 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5 transition-transform" />
+                      </span>
+                    </div>
+                  </Link>
                 </motion.article>
               ))}
             </div>
           </>
         )}
 
-        {/* Newsletter CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
